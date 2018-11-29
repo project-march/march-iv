@@ -16,7 +16,6 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
         FILES
         Gait.msg
-        PerformGait.msg
         GaitStatus.msg
         PlayInputMaster.msg
 )
@@ -25,7 +24,7 @@ add_service_files(
         FILES
         GaitInput.srv
         GaitInstruction.srv
-        GaitRequest.srv
+        PerformGait.srv
         PlayInput.srv
         Trigger.srv
 )

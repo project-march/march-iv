@@ -6,6 +6,10 @@
     <arg name="rviz" default="true" doc="Launch rviz"/>
     <arg name="gazebo_ui" default="false" doc="Launch Gazebo with a ui"/>
 
+    <!-- Launch the main package, including api.-->
+    <include file="$(find march_main)/launch/march_main.launch"/>
+
+
     <!-- Launch the description package-->
     <!-- Load the URDF of the exoskeleton in the ROS parameter server.-->
     <include file="$(find march_description)/launch/load_description.launch"/>
@@ -18,8 +22,6 @@
     <!-- Launch the control package.-->
     <include file="$(find march_control)/launch/march_control.launch"/>
 
-    <!-- Launch the main package, including api.-->
-    <include file="$(find march_main)/launch/march_main.launch"/>
 
     <!-- Launch the state machine package.-->
     <include file="$(find march_state_machine)/launch/march_state_machine.launch"/>
@@ -28,9 +30,6 @@
     <group if="$(arg rqt)">
         <include file="$(find march_main)/launch/rqt.launch"/>
     </group>
-
-    <node name="rqt_gui_ros_input" pkg="rqt_gui" type="rqt_gui" args = "--perspective-file $(find march_main)/rqt_config/ros_input.perspective"/>
-
 
     <!-- OPTIONAL: Load the rviz plugin which visualizes the actual position of the exoskeleton.-->
     <group if="$(arg rviz)">

@@ -17,7 +17,6 @@ int main(int argc, char** argv)
   ros::ServiceServer urdf_validator = n.advertiseService(ServiceNames::urdf_validation, LaunchAPI::urdf_validator);
 
   ros::ServiceServer xml_validator = n.advertiseService(ServiceNames::xml_validation, LaunchAPI::xml_validator);
-  ros::ServiceServer move_to_gait_file = n.advertiseService(ServiceNames::request_gait_file, MovementAPI::request_gait_file);
 
   ROS_INFO("api_node started successfully!");
   ros::Rate rate(100);

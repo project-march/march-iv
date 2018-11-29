@@ -9,5 +9,4 @@ class Walking(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('Walking')
-        time.sleep(5)
         return 'succeeded'

@@ -8,15 +8,8 @@ class XmlState(smach.State):
         smach.State.__init__(self, outcomes=['succeeded', 'failed'])
 
     def execute(self, userdata):
-        rospy.loginfo('Checking config')
-        checkConfig = rospy.ServiceProxy('march/config_validation', Trigger)
-        result = checkConfig()
-        self.request_preempt()
-        rospy.loginfo(result)
-        if result.success:
-            return 'succeeded'
-        else:
-            return 'failed'
+        rospy.loginfo('Checking xml')
+        return 'succeeded'
 
     def service_preempt(self):
         rospy.logwarn("SERVICE PREEMPT")
