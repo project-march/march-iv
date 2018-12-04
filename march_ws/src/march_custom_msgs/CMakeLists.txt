@@ -16,11 +16,11 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
         FILES
         Gait.msg
-        PerformGait.msg
-        GaitStatus.msg
-        PlayInputMaster.msg
-        PlayInput.msg
         GaitInput.msg
+        GaitStatus.msg
+        PerformGait.msg
+        PlayInput.msg
+        PlayInputMaster.msg
 )
 
 add_service_files(
