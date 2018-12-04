@@ -10,6 +10,7 @@
   <build_depend>march_custom_msgs</build_depend>
   <build_depend>roscpp</build_depend>
   <build_depend>roslint</build_depend>
+  <build_depend>rqt_gui</build_depend>
   <build_depend>march_main</build_depend>
   <build_export_depend>march_custom_msgs</build_export_depend>
   <build_export_depend>roscpp</build_export_depend>

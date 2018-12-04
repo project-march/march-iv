@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
         march_main
         roscpp
         roslint
+        rqt_gui
         )
 
 catkin_package(

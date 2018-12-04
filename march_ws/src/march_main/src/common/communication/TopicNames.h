@@ -20,7 +20,7 @@ const char* const input_device_stop = "input_device/instruction/stop";
 const char* const input_device_trigger = "input_device/instruction/trigger";
 
 const char* const input_device_gait_done = "input_device/done/gait";
-const char* const input_device_gait_performing= "input_device/performing/gait";
+const char* const input_device_gait_performing = "input_device/performing/gait";
 
 };  // namespace TopicNames
 
