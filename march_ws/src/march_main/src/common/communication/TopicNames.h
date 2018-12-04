@@ -16,7 +16,11 @@ const char* const right_knee_position = "march/right_knee_position_controller/co
 const char* const perform_gait = "march/perform_gait";
 
 const char* const input_device_gait = "input_device/instruction/gait";
-const char* const input_device_play = "input_device/instruction/play";
+const char* const input_device_stop = "input_device/instruction/stop";
+const char* const input_device_trigger = "input_device/instruction/trigger";
+
+const char* const input_device_gait_done = "input_device/done/gait";
+const char* const input_device_gait_performing= "input_device/performing/gait";
 
 };  // namespace TopicNames
 

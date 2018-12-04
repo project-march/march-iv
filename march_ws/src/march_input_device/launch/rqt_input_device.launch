@@ -1,0 +1,3 @@
+<launch>
+    <node name="rqt_input_device" pkg="rqt_gui" type="rqt_gui" args = "--perspective-file $(find march_input_device)/rqt_config/input_device.perspective"/>
+</launch>
