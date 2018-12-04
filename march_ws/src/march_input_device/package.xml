@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>march_input_device</name>
+  <version>0.0.0</version>
+  <description>The main logic for the march IV</description>
+  <maintainer email="software@projectmarch.nl">Project March</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>march_custom_msgs</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>roslint</build_depend>
+  <build_depend>march_main</build_depend>
+  <build_export_depend>march_custom_msgs</build_export_depend>
+  <build_export_depend>roscpp</build_export_depend>
+  <exec_depend>march_custom_msgs</exec_depend>
+  <exec_depend>roscpp</exec_depend>
+
+  <export>
+  </export>
+</package>
