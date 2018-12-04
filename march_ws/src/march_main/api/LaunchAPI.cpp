@@ -4,7 +4,8 @@
 #include "../src/Validator.h"
 #include "ros/ros.h"
 
-bool LaunchAPI::urdf_validator(march_custom_msgs::Trigger::Request& request, march_custom_msgs::Trigger::Response& response)
+bool LaunchAPI::urdf_validator(march_custom_msgs::Trigger::Request& request,
+                               march_custom_msgs::Trigger::Response& response)
 {
   ROS_INFO("URDF validator called");
 
@@ -19,7 +20,8 @@ bool LaunchAPI::urdf_validator(march_custom_msgs::Trigger::Request& request, mar
   return true;
 }
 
-bool LaunchAPI::config_validator(march_custom_msgs::Trigger::Request& request, march_custom_msgs::Trigger::Response& response)
+bool LaunchAPI::config_validator(march_custom_msgs::Trigger::Request& request,
+                                 march_custom_msgs::Trigger::Response& response)
 {
   ROS_INFO("config validator called");
 
@@ -29,7 +31,8 @@ bool LaunchAPI::config_validator(march_custom_msgs::Trigger::Request& request, m
   return true;
 }
 
-bool LaunchAPI::xml_validator(march_custom_msgs::Trigger::Request& request, march_custom_msgs::Trigger::Response& response)
+bool LaunchAPI::xml_validator(march_custom_msgs::Trigger::Request& request,
+                              march_custom_msgs::Trigger::Response& response)
 {
   ROS_INFO("xml validator called");
 

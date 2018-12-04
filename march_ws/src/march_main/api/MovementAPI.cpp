@@ -10,6 +10,6 @@
 bool MovementAPI::request_gait_file(march_custom_msgs::GaitRequest::Request& request,
                                     march_custom_msgs::GaitRequest::Response& response)
 {
-    ROS_INFO("asdasd");
-    return true;
+  ROS_INFO("asdasd");
+  return true;
 }

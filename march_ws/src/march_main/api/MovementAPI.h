@@ -8,7 +8,8 @@
 class MovementAPI
 {
 public:
-  static bool request_gait_file(march_custom_msgs::GaitRequest::Request& request, march_custom_msgs::GaitRequest::Response& response);
+  static bool request_gait_file(march_custom_msgs::GaitRequest::Request& request,
+                                march_custom_msgs::GaitRequest::Response& response);
 };
 
 #endif  // PROJECT_MOVEMENT_API_H

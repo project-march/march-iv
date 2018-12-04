@@ -11,7 +11,7 @@ def create():
     with sm_healthy:
         # Add states to the container
         smach.StateMachine.add('READY', ready_sm.create(),
-                              transitions={'succeeded': 'MOVING',
+                              transitions={'succeeded': 'READY',
                                            'failed': 'failed'})
         smach.StateMachine.add('MOVING', moving_sm.create(),
                                transitions={'succeeded': 'succeeded',

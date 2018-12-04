@@ -19,14 +19,14 @@ add_message_files(
         PerformGait.msg
         GaitStatus.msg
         PlayInputMaster.msg
+        PlayInput.msg
+        GaitInput.msg
 )
 
 add_service_files(
         FILES
-        GaitInput.srv
         GaitInstruction.srv
         GaitRequest.srv
-        PlayInput.srv
         Trigger.srv
 )
 

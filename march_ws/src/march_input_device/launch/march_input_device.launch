@@ -1,0 +1,5 @@
+<launch>input_device_node
+
+  <node name="input_device_node" pkg="march_input_device" type="input_device_node" output="screen"/>
+
+</launch>

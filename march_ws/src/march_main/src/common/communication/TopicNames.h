@@ -13,7 +13,10 @@ const char* const left_ankle_position = "march/left_ankle_position_controller/co
 const char* const right_hip_position = "march/right_hip_position_controller/command";
 const char* const right_knee_position = "march/right_knee_position_controller/command";
 
-const char* const perform_gait  = "march/perform_gait";
+const char* const perform_gait = "march/perform_gait";
+
+const char* const input_device_gait = "input_device/instruction/gait";
+const char* const input_device_play = "input_device/instruction/play";
 
 };  // namespace TopicNames
 
@@ -24,7 +27,6 @@ const char* const config_validation = "march/config_validation";
 const char* const xml_validation = "march/xml_validation";
 
 const char* const request_gait_file = "march/request_gait_file";
-
 };
 
 #endif  // MARCH_MAIN_TOPICNAMES_H

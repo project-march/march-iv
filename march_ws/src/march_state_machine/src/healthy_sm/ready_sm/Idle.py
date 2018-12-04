@@ -1,6 +1,5 @@
 import rospy
 import smach
-from march_custom_msgs.srv import Trigger
 
 import time
 
@@ -10,4 +9,5 @@ class Idle(smach.State):
 
     def execute(self, userdata):
         rospy.loginfo('Idle')
+        time.sleep(5)
         return 'succeeded'
