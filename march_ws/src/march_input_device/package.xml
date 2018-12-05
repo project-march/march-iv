@@ -2,7 +2,7 @@
 <package format="2">
   <name>march_input_device</name>
   <version>0.0.0</version>
-  <description>The main logic for the march IV</description>
+  <description>The input device of the pilot, which is the main input for the system.</description>
   <maintainer email="software@projectmarch.nl">Project March</maintainer>
   <license>TODO</license>
 

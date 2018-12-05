@@ -3,18 +3,17 @@
 #include "ros/ros.h"
 #include "input_device_node.h"
 #include "std_msgs/Float64.h"
-#include "std_msgs/Time.h"
+#include "std_msgs/Empty.h"
 #include "../../march_main/src/common/communication/TopicNames.h"
-#include <march_custom_msgs/GaitInput.h>
-#include <march_custom_msgs/PlayInput.h>
-#include <march_custom_msgs/StepSizeInput.h>
 
-void gaitDoneCallback(const march_custom_msgs::GaitInput msg)
+void gaitDoneCallback(const march_custom_msgs::Gait msg)
 {
+  //@todo implement callback gait done
 }
 
-void gaitPerformingCallback(const march_custom_msgs::GaitInput msg)
+void gaitPerformingCallback(const march_custom_msgs::Gait msg)
 {
+  //@todo implement callback performing gait
 }
 
 int main(int argc, char** argv)
@@ -23,10 +22,10 @@ int main(int argc, char** argv)
   ros::NodeHandle n;
   ros::Rate rate(200);
 
-  ros::Publisher input_device_gait = n.advertise<march_custom_msgs::GaitInput>(TopicNames::input_device_gait, 1000);
-  ros::Publisher input_device_stop = n.advertise<std_msgs::Time>(TopicNames::input_device_stop, 1000);
-  ros::Publisher input_device_trigger = n.advertise<std_msgs::Time>(TopicNames::input_device_trigger, 1000);
-  ros::Publisher input_device_step_size = n.advertise<march_custom_msgs::StepSizeInput>(TopicNames::input_device_step_size, 1000);
+  ros::Publisher input_device_gait = n.advertise<march_custom_msgs::Gait>(TopicNames::input_device_gait, 1000);
+  ros::Publisher input_device_stop = n.advertise<std_msgs::Empty>(TopicNames::input_device_stop, 1000);
+  ros::Publisher input_device_trigger = n.advertise<std_msgs::Empty>(TopicNames::input_device_trigger, 1000);
+  ros::Publisher input_device_step_size = n.advertise<march_custom_msgs::StepSize>(TopicNames::input_device_step_size, 1000);
 
   ros::Subscriber input_device_gait_done = n.subscribe(TopicNames::input_device_gait_done, 1000, gaitDoneCallback);
   ros::Subscriber input_device_gait_performing =
