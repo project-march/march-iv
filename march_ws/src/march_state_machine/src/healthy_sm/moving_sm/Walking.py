@@ -8,6 +8,6 @@ class Walking(smach.GaitMonitorState):
         smach.State.__init__(self, outcomes=['succeeded', 'failed'])
 
     def execute(self, userdata):
-        rospy.loginfo('Walking'
+        rospy.loginfo('Walking')
         time.sleep(5)
         return 'succeeded'

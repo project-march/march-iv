@@ -2,7 +2,6 @@ import rospy
 import smach
 from march_custom_msgs.srv import Trigger
 
-
 class XmlState(smach.State):
     def __init__(self):
         smach.State.__init__(self, outcomes=['succeeded', 'failed'])

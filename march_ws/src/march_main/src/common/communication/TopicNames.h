@@ -22,6 +22,7 @@ const char* const input_device_step_size = "input_device/instruction/step_size";
 
 const char* const input_device_gait_done = "input_device/done/gait";
 const char* const input_device_gait_performing = "input_device/performing/gait";
+const char* const input_device_gait_denied = "input_device/denied/gait";
 
 };  // namespace TopicNames
 
