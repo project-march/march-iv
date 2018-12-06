@@ -5,7 +5,7 @@ from march_custom_msgs.msg import Gait
 from march_custom_msgs.msg import StepSize
 from std_msgs.msg import Empty
 
-class GaitMonitorState():
+class GaitMonitorState(smach.State):
     _pub_input_gait_denied = None
     _dictionary_callbacks = {"":""}
 
