@@ -11,4 +11,4 @@
 [submodule "march_ws/src/pilot-devices-coordinator"]
 	path = march_ws/src/pilot-devices-coordinator
 	url = https://github.com/project-march/pilot-devices-coordinator.git
-	branch = improvement/use-march-iv-msgs
+	branch = develop
