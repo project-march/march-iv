@@ -7,3 +7,7 @@
 	path = march_ws/src/state-machine
 	url = https://github.com/project-march/state-machine.git
 	branch = develop
+
+[submodule "march_ws/src/pilot-devices-coordinator"]
+	path = march_ws/src/pilot-devices-coordinator
+	url = https://github.com/project-march/pilot-devices-coordinator.git
