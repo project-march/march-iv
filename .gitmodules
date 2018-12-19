@@ -12,3 +12,8 @@
 	path = march_ws/src/pilot-devices-coordinator
 	url = https://github.com/project-march/pilot-devices-coordinator.git
 	branch = develop
+  
+[submodule "march_ws/src/ethercat-master"]
+	path = march_ws/src/ethercat-master
+	url = https://github.com/project-march/ethercat-master.git
+	branch = develop
