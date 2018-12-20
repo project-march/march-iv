@@ -121,7 +121,11 @@ before_script:
 - echo $DEPENDENT_BUILD
 - echo $TRIGGER_REPO
 - echo $TRIGGER_BRANCH
-- cd src/march-iv/march_ws/src
+- cd src/march-iv/march_ws
+- git submodule init
+- git submodule sync
+- git submodule foreach "(git checkout develop; git pull)"
+- cd src
 - if [[ -n $DEPENDENT_BUILD ]] ; then cd `echo $TRIGGER_REPO | sed 's|[^/]*/||'` ; git fetch ; git checkout $TRIGGER_BRANCH ; git status; git pull ; fi
 - cd ~/catkin_ws
 # Compile and test (mark the build as failed if any step fails). If the
