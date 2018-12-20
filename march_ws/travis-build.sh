@@ -20,6 +20,6 @@ echo "$shebang" | cat - trigger-dependent-build.sh > temp && mv temp trigger-dep
 git submodule foreach cp ../../trigger-dependent-build.sh .
 git submodule foreach cp ../../../.travis.yml .
 
-rm ./trigger-dependent-build-base.sh
+rm ./trigger-dependent-build.sh
 
 
