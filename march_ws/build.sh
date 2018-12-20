@@ -18,12 +18,15 @@ notify () {
 
 catkin_make || build_failed "Catkin_make failed"
 
+
 # cpplinter.
 catkin_make roslint_march_state_machine_service || build_failed "ros_lint failed in march_state_machine_service"
 catkin_make roslint_march_control || build_failed "ros_lint failed in march_control"
+catkin_make roslint_march_state_machine || build_failed "ros_lint failed in march_control"
 
 # Catkin lint, fail on errors only. TODO remove missing_directory.
 catkin_lint src/*/ --ignore missing_directory --ignore literal_project_name --ignore missing_install_target --explain -W2 || build_failed "catkin_lint failed"
+
 
 # Run the tests, ensuring the path is set correctly.
 source devel/setup.bash || exit 1
