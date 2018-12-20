@@ -1,0 +1,4 @@
+language: cpp
+
+script:
+  - ./trigger-dependent-build.sh
