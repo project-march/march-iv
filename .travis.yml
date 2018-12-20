@@ -109,10 +109,6 @@ install:
 # Install all dependencies, using wstool first and rosdep second.
 # wstool looks for a ROSINSTALL_FILE defined in the environment variables.
 before_script:
-- echo $DEPENDENT_BUILD
-- echo $TRIGGER_REPO
-- echo $TRIGGER_COMMIT
-- if [[ -n $DEPENDENT_BUILD ]] ; then cd `echo $TRIGGER_REPO | sed 's|[^/]*/||'` ; git fetch ; git checkout $TRIGGER_COMMIT ; fi
 # source dependencies: install using wstool.
 - cd ~/catkin_ws/src
 - wstool init
@@ -122,7 +118,12 @@ before_script:
 - cd ~/catkin_ws
 - rosdep update
 - rosdep install -y --from-paths src --ignore-src --rosdistro $ROS_DISTRO
-
+- echo $DEPENDENT_BUILD
+- echo $TRIGGER_REPO
+- echo $TRIGGER_BRANCH
+- cd src/march-iv/march_ws/src
+- if [[ -n $DEPENDENT_BUILD ]] ; then cd `echo $TRIGGER_REPO | sed 's|[^/]*/||'` ; git fetch ; git checkout $TRIGGER_BRANCH ; git status; git pull ; fi
+- cd ~/catkin_ws
 # Compile and test (mark the build as failed if any step fails). If the
 # CATKIN_OPTIONS file exists, use it as an argument to catkin_make, for example
 # to blacklist certain packages.
