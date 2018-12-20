@@ -87,9 +87,7 @@ get-state () {
     https://api.travis-ci.org/repo/${DOWNSTREAM_REPO_SLUG}/request/$1 | jq '.builds[0].state')
 
     # Remove quotes around the state
-    temp="${state%\"}"
-    temp="${temp#\"}"
-    state="$temp"
+    state=$(sed -e 's/^"//' -e 's/"$//' <<<"$state")
     echo ${state}
 }
 
