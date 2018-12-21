@@ -79,7 +79,7 @@ env:
 
 # Install system dependencies, namely a very barebones ROS setup.
 before_install:
-  git submodule init
+  git submodule update --init
   git submodule sync
   git submodule foreach "(git checkout develop; git pull)"
 
