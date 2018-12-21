@@ -51,7 +51,7 @@ notifications:
   slack: projectmarch:VQJiTUJ2UeXcTvKc7MKezeN0
 
 git:
-  submodules: false
+  submodules: true
 
 # Build all valid Ubuntu/ROS combinations available on Travis VMs.
 matrix:
@@ -79,9 +79,6 @@ env:
 
 # Install system dependencies, namely a very barebones ROS setup.
 before_install:
-- git submodule update --init
-- git submodule sync
-- git submodule foreach "(git checkout develop; git pull)"
 
 - sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu $ROS_CI_DESKTOP main\" > /etc/apt/sources.list.d/ros-latest.list"
 - sudo apt-key adv --keyserver hkp://ha.pool.sks-keyservers.net:80 --recv-key 421C365BD9FF1F717815A3895523BAEEB01FA116
