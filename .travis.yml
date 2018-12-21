@@ -51,7 +51,7 @@ notifications:
   slack: projectmarch:VQJiTUJ2UeXcTvKc7MKezeN0
 
 git:
-  submodules: true
+  submodules: false
 
 # Build all valid Ubuntu/ROS combinations available on Travis VMs.
 matrix:
@@ -79,7 +79,8 @@ env:
 
 # Install system dependencies, namely a very barebones ROS setup.
 before_install:
-- git submodule init
+- sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
+- git submodule update --init --recursive
 - git submodule sync
 - git submodule foreach "(git checkout develop; git pull)"
 
