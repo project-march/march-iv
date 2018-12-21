@@ -121,7 +121,7 @@ before_script:
 - echo $DEPENDENT_BUILD
 - echo $TRIGGER_REPO
 - echo $TRIGGER_BRANCH
-- cd src/march-iv/march_ws/src
+- cd src/march-iv/march_ws
 - git submodule init
 - git submodule sync
 - git submodule foreach "(git checkout develop; git pull)"
