@@ -17,6 +17,7 @@
     <build_depend>march_gazebo</build_depend>
     <build_depend>march_state_machine</build_depend>
     <build_depend>march_state_machine_service</build_depend>
+    <build_depend>rostest</build_depend>
 
     <build_export_depend>rviz</build_export_depend>
     <build_export_depend>rqt_gui</build_export_depend>
