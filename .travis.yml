@@ -80,8 +80,8 @@ env:
 # Install system dependencies, namely a very barebones ROS setup.
 before_install:
 - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
-- git submodule update --init --recursive
 - git submodule sync
+- git submodule update --init --recursive
 - git submodule foreach "(git checkout develop; git pull)"
 
 - sudo sh -c "echo \"deb http://packages.ros.org/ros/ubuntu $ROS_CI_DESKTOP main\" > /etc/apt/sources.list.d/ros-latest.list"
