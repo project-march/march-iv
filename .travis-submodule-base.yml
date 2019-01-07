@@ -1,4 +1,10 @@
 language: cpp
 
+install:
+  - pip install --user catkin_lint
+  - pip install --user pycodestyle
+
 script:
-  - ./trigger-dependent-build.sh
+  - catkin_lint */ --ignore missing_directory --ignore literal_project_name --ignore missing_install_target --explain -W2
+  - pycodestyle
+  - if [ ! "${TRAVIS_PULL_REQUEST}" == "false" ]; then ./trigger-dependent-build.sh ; fi
