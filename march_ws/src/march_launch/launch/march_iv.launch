@@ -29,8 +29,6 @@
         <include file="$(find march_launch)/launch/rqt.launch"/>
     </group>
 
-    <node name="rqt_gui_ros_input" pkg="rqt_gui" type="rqt_gui" args = "--perspective-file $(find march_launch)/rqt_config/ros_input.perspective"/>
-
     <!-- OPTIONAL: Load the rviz plugin which visualizes the actual position of the exoskeleton.-->
     <group if="$(arg rviz)">
         <node name="rviz" pkg="rviz" type="rviz"/>
