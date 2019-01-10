@@ -26,6 +26,7 @@ catkin_make roslint_march_control || build_failed "ros_lint failed in march_cont
 # Catkin lint, fail on errors only. TODO remove missing_directory.
 catkin_lint src/*/ --ignore missing_directory --ignore literal_project_name --ignore missing_install_target --explain -W2 || build_failed "catkin_lint failed"
 
+# Pycodestyle runs on the state_machine python package
 pycodestyle src/state-machine/march_state_machine || build_failed "pycodestyle failed in march_state_machine"
 
 # Run the tests, ensuring the path is set correctly.
