@@ -8,7 +8,6 @@ project(march_shared_resources)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-        actionlib_msgs
         message_generation
         message_runtime
         std_msgs
@@ -32,14 +31,8 @@ add_service_files(
         Trigger.srv
 )
 
-add_action_files(
-        DIRECTORY action
-        FILES MoveToPose.action
-)
-
 generate_messages(
         DEPENDENCIES
-        actionlib_msgs
         std_msgs
 )
 
@@ -47,7 +40,6 @@ catkin_package(
         INCLUDE_DIRS include
         #LIBRARIES march_shared_resources
         CATKIN_DEPENDS
-        actionlib_msgs
         message_generation
         message_runtime
         std_msgs
