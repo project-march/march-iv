@@ -16,6 +16,8 @@ notify () {
     fi
 }
 
+catkin_make --pkg march_shared_resources || build_failed "march shared resources catkin_make failed"
+
 catkin_make || build_failed "Catkin_make failed"
 
 # cpplinter.
