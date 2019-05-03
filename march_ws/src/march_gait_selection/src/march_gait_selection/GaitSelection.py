@@ -3,7 +3,7 @@ import rospy
 import actionlib
 
 from control_msgs.msg import FollowJointTrajectoryAction, FollowJointTrajectoryActionGoal, FollowJointTrajectoryResult
-from march_shared_resources.msg import GaitNameAction
+from march_shared_resources.msg import GaitAction
 from trajectory_msgs.msg import JointTrajectoryPoint
 
 
@@ -17,7 +17,7 @@ class PoseToTrajectoryAction(object):
                                                                        auto_start=False)
         self._target_gait_action_server.start()
         self._trajectory_execution_client = actionlib.SimpleActionClient("march/gait/schedule",
-                                                                         FollowJointTrajectoryAction)
+                                                                         GaitAction)
         self._trajectory_execution_client.wait_for_server()
 
     def target_gait_callback(self, goal):
