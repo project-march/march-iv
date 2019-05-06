@@ -54,6 +54,7 @@
     <!-- Used for fixing robot to Gazebo 'base_link' -->
     <link name="${parent_name}"/>
 
+<!--    TODO: Add the HAA joints!-->
     <joint name="hip" type="fixed">
         <parent link="${parent_name}"/>
         <child link="hip_bone"/>
@@ -198,6 +199,7 @@
         <collision>
             <geometry>
                 <box size="${foot_height} ${width} ${width}"/>
+                <!--    TODO: The joint turns around this point, but the actual foot begins a little bit lower (70 mm?).-->
             </geometry>
         </collision>
     </link>
@@ -262,6 +264,7 @@
         <collision>
             <geometry>
                 <box size="${foot_height} ${width} ${width}"/>
+                <!--    TODO: The joint turns around this point, but the actual foot begins a little bit lower (70 mm?).-->
             </geometry>
         </collision>
     </link>
