@@ -141,9 +141,10 @@
     <!-- Upper Leg Left-->
     <link name="upper_leg_left">
         <visual>
-            <origin xyz="0 0 ${-upper_leg_height/2}" rpy="0 0 0"/>
+            <origin xyz="0 0 ${-0.9*upper_leg_height}" rpy="0 0 1.8"/>
             <geometry>
-                <box size="${width} ${width} ${upper_leg_height}"/>
+<!--                <box size="${width} ${width} ${upper_leg_height}"/>-->
+                <mesh filename="package://march_description/urdf/stl-files/UpperLegRight1.stl" scale="1.2 1.2 1.2"/>
             </geometry>
         </visual>
 
@@ -160,9 +161,10 @@
     <!-- Lower Leg Left -->
     <link name="lower_leg_left">
         <visual>
-            <origin xyz="0 0 ${-lower_leg_height/2}" rpy="0 0 0"/>
+            <origin xyz="${-0.4*width} 0 ${-1.0*lower_leg_height}" rpy="0 0 1.8"/>
             <geometry>
-                <box size="${width} ${width} ${lower_leg_height}"/>
+<!--                <box size="${width} ${width} ${lower_leg_height}"/>-->
+                <mesh filename="package://march_description/urdf/stl-files/LowerLeg.stl" scale="1.2 1.2 1.2"/>
             </geometry>
         </visual>
 
@@ -204,9 +206,10 @@
     <!-- Upper Leg Right-->
     <link name="upper_leg_right">
         <visual>
-            <origin xyz="0 0 ${-upper_leg_height/2}" rpy="0 0 0"/>
+            <origin xyz="0 0 ${-0.9*upper_leg_height}" rpy="0 0 -1.8"/>
             <geometry>
-                <box size="${width} ${width} ${upper_leg_height}"/>
+<!--                <box size="${width} ${width} ${upper_leg_height}"/>-->
+                <mesh filename="package://march_description/urdf/stl-files/UpperLegRight1.stl" scale="1.2 1.2 1.2"/>
             </geometry>
         </visual>
 
