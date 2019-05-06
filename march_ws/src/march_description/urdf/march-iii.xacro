@@ -146,6 +146,7 @@
             <geometry>
 <!--                <box size="${width} ${width} ${upper_leg_height}"/>-->
                 <mesh filename="package://march_description/urdf/stl-files/UpperLegRight1.stl" scale="1.2 1.2 1.2"/>
+<!--                TODO: both upper legs are the same. So one of them has to be replaced.-->
             </geometry>
         </visual>
 
