@@ -12,16 +12,16 @@
     <xacro:property name="mass" value="1"/> <!-- arbitrary value for mass -->
     <xacro:property name="width" value="0.05"/> <!-- Square dimensions (widthxwidth) of beams -->
 
-    <xacro:property name="upper_leg_height" value="${0.39}"/>
+    <xacro:property name="upper_leg_height" value="${0.385}"/>
     <xacro:property name="upper_leg_mass" value="1.080"/>
 
-    <xacro:property name="lower_leg_height" value="${0.39}"/>
+    <xacro:property name="lower_leg_height" value="${0.385}"/>
     <xacro:property name="lower_leg_mass" value="1.133"/>
 
-    <xacro:property name="foot_height" value="${0.14*1}"/>
+    <xacro:property name="foot_height" value="${0.184}"/>
     <xacro:property name="foot_mass" value="0.393"/>
 
-    <xacro:property name="hip_height" value="0.33"/>
+    <xacro:property name="hip_height" value="0.420"/>
 
     <xacro:property name="hip_rotation_lower_limit" value="${-15*pi/180}"/> <!-- rad -->
     <xacro:property name="hip_rotation_upper_limit" value="${105*pi/180}"/> <!-- rad -->
@@ -163,8 +163,8 @@
         <visual>
             <origin xyz="${-0.4*width} 0 ${-1.0*lower_leg_height}" rpy="0 0 1.8"/>
             <geometry>
-<!--                <box size="${width} ${width} ${lower_leg_height}"/>-->
-                <mesh filename="package://march_description/urdf/stl-files/LowerLeg.stl" scale="1.2 1.2 1.2"/>
+                <box size="${width} ${width} ${lower_leg_height}"/>
+<!--                <mesh filename="package://march_description/urdf/stl-files/LowerLeg.stl" scale="1.2 1.2 1.2"/>-->
             </geometry>
         </visual>
 
