@@ -22,11 +22,18 @@
     <xacro:property name="foot_mass" value="0.393"/>
 
     <xacro:property name="hip_height" value="0.420"/>
+    <xacro:property name="hip_base_height" value="0.160"/>
+    <xacro:property name="hip_moving_height" value="0.130"/>
 
-    <xacro:property name="hip_rotation_lower_limit" value="${-15*pi/180}"/> <!-- rad -->
-    <xacro:property name="hip_rotation_upper_limit" value="${105*pi/180}"/> <!-- rad -->
-    <xacro:property name="hip_effort_limit" value="10927.0"/> <!-- IU -->
-    <xacro:property name="hip_velocity_limit" value="48.0"/> <!-- rad/s -->
+    <xacro:property name="hipFE_rotation_lower_limit" value="${-15*pi/180}"/> <!-- rad -->
+    <xacro:property name="hipFE_rotation_upper_limit" value="${105*pi/180}"/> <!-- rad -->
+    <xacro:property name="hipFE_effort_limit" value="10927.0"/> <!-- IU -->
+    <xacro:property name="hipFE_velocity_limit" value="48.0"/> <!-- rad/s -->
+
+    <xacro:property name="hipAA_rotation_lower_limit" value="${20*pi/180}"/> <!-- rad -->
+    <xacro:property name="hipAA_rotation_upper_limit" value="${-30*pi/180}"/> <!-- rad -->
+    <xacro:property name="hipAA_effort_limit" value="10927.0"/> <!-- IU -->
+    <xacro:property name="hipAA_velocity_limit" value="15.0"/> <!-- rad/s -->
 
     <xacro:property name="knee_rotation_lower_limit" value="${-5*pi/180}"/>
     <xacro:property name="knee_rotation_upper_limit" value="${115*pi/180}"/>
@@ -57,16 +64,24 @@
 <!--    TODO: Add the HAA joints!-->
     <joint name="hip" type="fixed">
         <parent link="${parent_name}"/>
-        <child link="hip_bone"/>
+        <child link="hip_base"/>
         <origin xyz="0 0 ${lower_leg_height+upper_leg_height+hover_height}" rpy="0 0 0"/>
     </joint>
 
-    <joint name="left_hip" type="revolute">
-        <parent link="hip_bone"/>
+    <joint name="left_hipAA" type="revolute">
+        <parent link="hip_base"/>
+        <child link="hip_moving_left"/>
+        <origin xyz="0 ${-hip_base_height/2} 0" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit velocity="${hipAA_velocity_limit}" effort="${hipAA_effort_limit}" lower="${hipAA_rotation_lower_limit}" upper="${hipAA_rotation_upper_limit}"/>
+    </joint>
+
+    <joint name="left_hipFE" type="revolute">
+        <parent link="hip_moving_left"/>
         <child link="upper_leg_left"/>
-        <origin xyz="0 ${-hip_height/2} 0" rpy="0 0 0"/>
+        <origin xyz="0 ${-hip_moving_height} 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
-        <limit velocity="${hip_velocity_limit}" effort="${hip_effort_limit}" lower="${hip_rotation_lower_limit}" upper="${hip_rotation_upper_limit}"/>
+        <limit velocity="${hipFE_velocity_limit}" effort="${hipFE_effort_limit}" lower="${hipFE_rotation_lower_limit}" upper="${hipFE_rotation_upper_limit}"/>
     </joint>
 
     <joint name="left_knee" type="revolute">
@@ -85,12 +100,20 @@
         <limit velocity="${ankle_velocity_limit}" effort="${ankle_effort_limit}" lower="${ankle_rotation_lower_limit}" upper="${ankle_rotation_upper_limit}"/>
     </joint>
 
-    <joint name="right_hip" type="revolute">
-        <parent link="hip_bone"/>
+    <joint name="right_hipAA" type="revolute">
+        <parent link="hip_base"/>
+        <child link="hip_moving_right"/>
+        <origin xyz="0 ${hip_base_height/2} 0" rpy="0 0 0"/>
+        <axis xyz="1 0 0"/>
+        <limit velocity="${hipAA_velocity_limit}" effort="${hipAA_effort_limit}" lower="${-hipAA_rotation_lower_limit}" upper="${-hipAA_rotation_upper_limit}"/>
+    </joint>
+
+    <joint name="right_hipFE" type="revolute">
+        <parent link="hip_moving_right"/>
         <child link="upper_leg_right"/>
-        <origin xyz="0 ${hip_height/2} 0" rpy="0 0 0"/>
+        <origin xyz="0 ${hip_moving_height} 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
-        <limit velocity="${hip_velocity_limit}" effort="${hip_effort_limit}" lower="${hip_rotation_lower_limit}" upper="${hip_rotation_upper_limit}"/>
+        <limit velocity="${hipFE_velocity_limit}" effort="${hipFE_effort_limit}" lower="${hipFE_rotation_lower_limit}" upper="${hipFE_rotation_upper_limit}"/>
     </joint>
 
     <joint name="right_knee" type="revolute">
@@ -110,7 +133,7 @@
     </joint>
 
     <!-- give colors to some links in gazebo -->
-    <gazebo reference="hip_bone">
+    <gazebo reference="hip_base">
         <material>Gazebo/Blue</material>
     </gazebo>
     <gazebo reference="foot_left">
@@ -121,16 +144,35 @@
     </gazebo>
 
     <!-- Hip-->
-    <link name="hip_bone">
+    <link name="hip_base">
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <box size="${width} ${hip_height} ${width}"/>
+                <box size="${width} ${hip_base_height} ${width}"/>
             </geometry>
         </visual>
 
         <inertial>
             <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="${mass}"/>
+            <inertia
+                    ixx="${mass / 12.0 * (width*width + lower_leg_height*lower_leg_height)}" ixy="0.0" ixz="0.0"
+                    iyy="${mass / 12.0 * (lower_leg_height*lower_leg_height + width*width)}" iyz="0.0"
+                    izz="${mass / 12.0 * (width*width + width*width)}"/>
+        </inertial>
+    </link>
+
+    <!-- Left Moving Hip-->
+    <link name="hip_moving_left">
+        <visual>
+            <origin xyz="0 ${-hip_moving_height/2} 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="${width} ${hip_moving_height} ${width}"/>
+            </geometry>
+        </visual>
+
+        <inertial>
+            <origin xyz="0 ${hip_moving_height/2} 0" rpy="0 0 0"/>
             <mass value="${mass}"/>
             <inertia
                     ixx="${mass / 12.0 * (width*width + lower_leg_height*lower_leg_height)}" ixy="0.0" ixz="0.0"
@@ -163,7 +205,7 @@
     <!-- Lower Leg Left -->
     <link name="lower_leg_left">
         <visual>
-            <origin xyz="${-0.4*width} 0 ${-1.0*lower_leg_height}" rpy="0 0 1.8"/>
+            <origin xyz="0 0 ${-lower_leg_height/2}" rpy="0 0 1.8"/>
             <geometry>
                 <box size="${width} ${width} ${lower_leg_height}"/>
 <!--                <mesh filename="package://march_description/urdf/stl-files/LowerLeg.stl" scale="1.2 1.2 1.2"/>-->
@@ -205,6 +247,24 @@
         </collision>
     </link>
 
+    <!-- Right Moving Hip-->
+    <link name="hip_moving_right">
+        <visual>
+            <origin xyz="0 ${hip_moving_height/2} 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="${width} ${hip_moving_height} ${width}"/>
+            </geometry>
+        </visual>
+
+        <inertial>
+            <origin xyz="0 ${hip_moving_height/2} 0" rpy="0 0 0"/>
+            <mass value="${mass}"/>
+            <inertia
+                    ixx="${mass / 12.0 * (width*width + lower_leg_height*lower_leg_height)}" ixy="0.0" ixz="0.0"
+                    iyy="${mass / 12.0 * (lower_leg_height*lower_leg_height + width*width)}" iyz="0.0"
+                    izz="${mass / 12.0 * (width*width + width*width)}"/>
+        </inertial>
+    </link>
 
     <!-- Upper Leg Right-->
     <link name="upper_leg_right">
