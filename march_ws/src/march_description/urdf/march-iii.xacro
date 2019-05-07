@@ -21,6 +21,8 @@
     <xacro:property name="foot_height" value="${0.184}"/>
     <xacro:property name="foot_mass" value="0.393"/>
 
+    <xacro:property name="ankle_plate_height" value="0.07"/>
+
     <xacro:property name="hip_height" value="0.420"/>
     <xacro:property name="hip_base_height" value="0.160"/>
     <xacro:property name="hip_aa_frame_height" value="0.130"/>
@@ -100,10 +102,16 @@
 
     <joint name="left_ankle" type="revolute">
         <parent link="lower_leg_left"/>
-        <child link="foot_left"/>
+        <child link="ankle_plate_left"/>
         <origin xyz="0 0 ${-lower_leg_height}" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
         <limit velocity="${ankle_velocity_limit}" effort="${ankle_effort_limit}" lower="${ankle_rotation_lower_limit}" upper="${ankle_rotation_upper_limit}"/>
+    </joint>
+
+    <joint name="left_foot_angle" type="fixed">
+        <parent link="ankle_plate_left"/>
+        <child link="foot_left"/>
+        <origin xyz="0 0 ${-ankle_plate_height}" rpy="0 0 0"/>
     </joint>
 
     <joint name="right_hip_aa" type="revolute">
@@ -138,10 +146,16 @@
 
     <joint name="right_ankle" type="revolute">
         <parent link="lower_leg_right"/>
-        <child link="foot_right"/>
+        <child link="ankle_plate_right"/>
         <origin xyz="0 0 ${-lower_leg_height}" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
         <limit velocity="${ankle_velocity_limit}" effort="${ankle_effort_limit}" lower="${ankle_rotation_lower_limit}" upper="${ankle_rotation_upper_limit}"/>
+    </joint>
+
+    <joint name="right_foot_angle" type="fixed">
+        <parent link="ankle_plate_right"/>
+        <child link="foot_right"/>
+        <origin xyz="0 0 ${-ankle_plate_height}" rpy="0 0 0"/>
     </joint>
 
     <!-- give colors to some links in gazebo -->
@@ -260,6 +274,26 @@
         </inertial>
     </link>
 
+    <!-- Lower Leg Left -->
+    <link name="ankle_plate_left">
+        <visual>
+            <origin xyz="0 0 ${-ankle_plate_height/2}" rpy="0 0 0"/>
+            <geometry>
+                <box size="${width} ${width} ${ankle_plate_height}"/>
+                <!--                <mesh filename="package://march_description/urdf/stl-files/LowerLeg.stl" scale="1.2 1.2 1.2"/>-->
+            </geometry>
+        </visual>
+
+        <inertial>
+            <origin xyz="0 0 ${-ankle_plate_height/2}" rpy="0 0 0"/>
+            <mass value="${mass}"/>
+            <inertia
+                    ixx="${mass / 12.0 * (width*width + lower_leg_height*lower_leg_height)}" ixy="0.0" ixz="0.0"
+                    iyy="${mass / 12.0 * (lower_leg_height*lower_leg_height + width*width)}" iyz="0.0"
+                    izz="${mass / 12.0 * (width*width + width*width)}"/>
+        </inertial>
+    </link>
+
     <!-- Foot Left -->
     <link name="foot_left">
         <visual>
@@ -280,7 +314,6 @@
         <collision>
             <geometry>
                 <box size="${foot_height} ${width} ${width}"/>
-                <!--    TODO: The joint turns around this point, but the actual foot begins a little bit lower (70 mm?).-->
             </geometry>
         </collision>
     </link>
@@ -368,6 +401,26 @@
         </inertial>
     </link>
 
+    <!-- Lower Leg Right -->
+    <link name="ankle_plate_right">
+        <visual>
+            <origin xyz="0 0 ${-ankle_plate_height/2}" rpy="0 0 0"/>
+            <geometry>
+                <box size="${width} ${width} ${ankle_plate_height}"/>
+                <!--                <mesh filename="package://march_description/urdf/stl-files/LowerLeg.stl" scale="1.2 1.2 1.2"/>-->
+            </geometry>
+        </visual>
+
+        <inertial>
+            <origin xyz="0 0 ${-ankle_plate_height/2}" rpy="0 0 0"/>
+            <mass value="${mass}"/>
+            <inertia
+                    ixx="${mass / 12.0 * (width*width + lower_leg_height*lower_leg_height)}" ixy="0.0" ixz="0.0"
+                    iyy="${mass / 12.0 * (lower_leg_height*lower_leg_height + width*width)}" iyz="0.0"
+                    izz="${mass / 12.0 * (width*width + width*width)}"/>
+        </inertial>
+    </link>
+
     <!-- Foot Right -->
     <link name="foot_right">
         <visual>
@@ -388,7 +441,6 @@
         <collision>
             <geometry>
                 <box size="${foot_height} ${width} ${width}"/>
-                <!--    TODO: The joint turns around this point, but the actual foot begins a little bit lower (70 mm?).-->
             </geometry>
         </collision>
     </link>
