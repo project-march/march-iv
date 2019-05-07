@@ -332,12 +332,23 @@
 
 
     <!-- ROS Control plugin for Gazebo -->
-    <transmission name="left_hip">
+    <transmission name="left_hipAA">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="left_hip">
+        <joint name="left_hipAA">
             <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
-        <actuator name="left_hip_motor">
+        <actuator name="left_hipAA_motor">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <transmission name="left_hipFE">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="left_hipFE">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="left_hipFE_motor">
             <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
@@ -365,12 +376,23 @@
         </actuator>
     </transmission>
 
-    <transmission name="right_hip">
+    <transmission name="right_hipAA">
         <type>transmission_interface/SimpleTransmission</type>
-        <joint name="right_hip">
+        <joint name="right_hipAA">
             <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
-        <actuator name="right_hip_motor">
+        <actuator name="right_hipAA_motor">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+            <mechanicalReduction>1</mechanicalReduction>
+        </actuator>
+    </transmission>
+
+    <transmission name="right_hipFE">
+        <type>transmission_interface/SimpleTransmission</type>
+        <joint name="right_hipFE">
+            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+        </joint>
+        <actuator name="right_hipFE_motor">
             <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
             <mechanicalReduction>1</mechanicalReduction>
         </actuator>
