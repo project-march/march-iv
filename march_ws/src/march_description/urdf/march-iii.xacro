@@ -155,7 +155,7 @@
     <joint name="right_foot_angle" type="fixed">
         <parent link="ankle_plate_right"/>
         <child link="foot_right"/>
-        <origin xyz="0 0 ${-ankle_plate_height}" rpy="0 0 0"/>
+        <origin xyz="0 0 ${-ankle_pslate_height}" rpy="0 0 0"/>
     </joint>
 
     <!-- give colors to some links in gazebo -->
@@ -170,7 +170,6 @@
     </gazebo>
 
     <!-- Hip-->
-<!--    TODO: add angle in hip moving part -->
     <link name="hip_base">
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -305,6 +304,7 @@
 
         <inertial>
             <origin xyz="${-foot_height/2} 0 0" rpy="0 0 0"/>
+<!--            TODO: adjust the origin so the foot also sticks out a little bit to the back-->
             <mass value="${foot_mass}"/>
             <inertia
                     ixx="${mass / 12.0 * (width*width + lower_leg_height*lower_leg_height)}" ixy="0.0" ixz="0.0"
@@ -432,6 +432,7 @@
 
         <inertial>
             <origin xyz="${-foot_height/2} 0 0" rpy="0 0 0"/>
+            <!--            TODO: adjust the origin so the foot also sticks out a little bit to the back-->
             <mass value="${mass}"/>
             <inertia
                     ixx="${mass / 12.0 * (width*width + lower_leg_height*lower_leg_height)}" ixy="0.0" ixz="0.0"
