@@ -36,6 +36,13 @@ QGroupBox::title {
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
+       <widget class="QCheckBox" name="ShowPreview">
+        <property name="text">
+         <string>Show gait preview</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="Refresh">
         <property name="text">
          <string>Refresh</string>

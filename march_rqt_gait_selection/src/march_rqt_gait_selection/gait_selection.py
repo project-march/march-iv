@@ -1,6 +1,6 @@
 import ast
+import math
 import os
-import sys
 
 import rospy
 import rospkg
@@ -18,6 +18,10 @@ from python_qt_binding.QtWidgets import QComboBox
 from python_qt_binding.QtWidgets import QHBoxLayout
 from python_qt_binding.QtWidgets import QGridLayout
 from python_qt_binding.QtWidgets import QPlainTextEdit
+from python_qt_binding.QtWidgets import QCheckBox
+
+import networkx as nx
+import pyqtgraph
 
 class Color(Enum):
     Debug = "#009100"
@@ -100,7 +104,7 @@ class GaitSelectionPlugin(Plugin):
         scrollbar = self._widget.findChild(QPlainTextEdit, "Log").verticalScrollBar()
         scrollbar.setValue(scrollbar.maximum())
 
-    def refresh(self, notify = False):
+    def refresh(self, notify=False):
         if notify:
             self.log("Refreshing gait directory", Color.Debug)
         rospy.logdebug("Refreshing ui with %s", str(self.get_directory_structure().message))
@@ -131,10 +135,12 @@ class GaitSelectionPlugin(Plugin):
                 selection_map = gait_selection_map[gait_name]
             except KeyError:
                 selection_map = None
-            gait_group_box = self.create_gait(gait_name, gait, selection_map)
+            gait_preview = self._widget.findChild(QCheckBox, "ShowPreview").isChecked()
+
+            gait_group_box = self.create_gait(gait_name, gait, selection_map, gait_preview)
             self._widget.Gaits.layout().addWidget(gait_group_box)
 
-    def create_gait(self, name, gait, selections):
+    def create_gait(self, name, gait, selections, gait_preview=False):
         gait_group_box = QGroupBox()
         gait_group_box.setObjectName("Gait")
         gait_group_box.setLayout(QHBoxLayout())
@@ -145,6 +151,16 @@ class GaitSelectionPlugin(Plugin):
             "background: url(" + gait["image"] + ") no-repeat center center 100px 100px;")
         image.setFixedSize(64, 80)
         gait_group_box.layout().addWidget(image)
+
+        if gait_preview:
+            from_subgait =  ["start",      "right_open", "left_swing",  "right_swing", "left_swing", "right_close", "right_swing", "left_close"]
+            to_subgait  =   ["right_open", "left_swing", "right_swing", "left_swing" , "right_close", "end",        "left_close", "end"]
+            graph = zip(from_subgait, to_subgait)
+
+            gait_preview = self.create_gait_preview(graph)
+
+            gait_group_box.layout().addWidget(gait_preview)
+
         for subgait_name, subgait in gait["subgaits"].iteritems():
             subgait_group_box = self.create_subgait(subgait_name, subgait, selections)
             gait_group_box.layout().addWidget(subgait_group_box)
@@ -212,3 +228,46 @@ class GaitSelectionPlugin(Plugin):
             self.log(res.message, Color.Error)
             self.log("Resetting to last valid selection", Color.Warning)
             rospy.logwarn(res.message)
+
+    def create_gait_preview(self, graph):
+        G = nx.DiGraph()
+        G.add_edges_from(graph)
+        graph_items = nx.kamada_kawai_layout(G)
+
+        background_color = pyqtgraph.mkColor("#F2F1F0")
+        pyqtgraph.setConfigOption('background', background_color)
+        pyqtgraph.setConfigOptions(antialias=True)
+        plot_widget = pyqtgraph.PlotWidget()
+        plot_widget.setFixedSize(300, 200)
+        plot_widget.setDisabled(True)
+        plot_widget.plotItem.hideAxis('bottom')
+        plot_widget.plotItem.hideAxis('left')
+
+        # Draw lines
+        for node in graph:
+            from_pos = graph_items[node[0]]
+            to_pos = graph_items[node[1]]
+            x1 = from_pos[0]
+            y1 = from_pos[1]
+            x2 = to_pos[0]
+            y2 = to_pos[1]
+            plot_widget.plot([x1, x2], [y1, y2], pen=pyqtgraph.mkPen(color='k', width=3))
+
+        # Draw arrowheads, in a different loop so lines don't get drawn over them.
+        for node in graph:
+            from_pos = graph_items[node[0]]
+            to_pos = graph_items[node[1]]
+            x1 = from_pos[0]
+            y1 = from_pos[1]
+            x2 = to_pos[0]
+            y2 = to_pos[1]
+            angle = 180 - math.degrees(math.atan2((y2-y1),(x2-x1)))
+            plot_widget.addItem(pyqtgraph.ArrowItem(pos=(x2, y2), angle=angle, brush=pyqtgraph.mkBrush(color='k'), pen=pyqtgraph.mkPen(color='k')))
+
+        # Draw text
+        for key, value in graph_items.iteritems():
+            graph_item = pyqtgraph.TextItem(text=key, anchor=(1, 1), color='k')
+            graph_item.setPos(value[0], value[1])
+            plot_widget.addItem(graph_item)
+
+        return plot_widget
