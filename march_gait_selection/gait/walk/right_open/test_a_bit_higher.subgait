@@ -1,21 +1,18 @@
-name: left_swing
-version: a_wrong_subgait
-
 duration:
   secs: 1
   nsecs: 0
 
 trajectory:
-  joint_names: [wrong_joint]
+  joint_names: [left_hip, right_hip, left_knee, right_knee, left_ankle, right_ankle]
   points:
-    - positions: [-0.1, 0.3, 0.0, 0.0, 0.0, 0.0]
+    - positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
       velocities: [0.0, 0, 0, 0, 0, 0]
       accelerations: []
       effort: []
       time_from_start:
         secs: 0
         nsecs: 000000000
-    - positions: [0.3, -0.1, 0.0, 0.0, 0.0, 0.0]
+    - positions: [-0.1, 0.3, 0.0, 0.0, 0.0, 0.0]
       velocities: [0.0, 0, 0, 0, 0, 0]
       accelerations: []
       effort: []

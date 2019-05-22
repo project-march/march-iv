@@ -44,6 +44,8 @@ class GaitSelection(object):
 
         subgait_yaml = yaml.load(open(subgait_path), Loader=yaml.SafeLoader)
         subgait = message_converter.convert_dictionary_to_ros_message('march_shared_resources/Subgait', subgait_yaml)
+        subgait.name = subgait_name
+        subgait.version = self.gait_version_map[gait_name][subgait_name]
         return subgait
 
     def validate_subgait_name(self, gait_name, subgait_name):

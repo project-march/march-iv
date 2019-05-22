@@ -25,6 +25,7 @@ add_message_files(
         PerformGait.msg
         PlayInputMaster.msg
         StepSize.msg
+        Setpoint.msg
         Sound.msg
         Subgait.msg
 )

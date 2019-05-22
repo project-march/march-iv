@@ -1,6 +1,3 @@
-name: right_close
-version: right_close
-
 duration:
   secs: 1
   nsecs: 0
@@ -15,6 +12,13 @@ trajectory:
       time_from_start:
         secs: 0
         nsecs: 000000000
+    - positions: [0.1, -0.05, 0.0, 0.0, 0.0, 0.0]
+      velocities: [0.0, 0, 0, 0, 0, 0]
+      accelerations: []
+      effort: []
+      time_from_start:
+        secs: 0
+        nsecs: 500000000
     - positions: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
       velocities: [0.0, 0, 0, 0, 0, 0]
       accelerations: []
