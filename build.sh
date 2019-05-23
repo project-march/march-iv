@@ -29,7 +29,7 @@ source devel/setup.bash
 
 # Catkin lint
 catkin lint -W2 --pkg march_description || build_failed "Catkin lint failed in march_description"
-#catkin lint -W2 --pkg march_gait_selection || build_failed "Catkin lint failed in march_gait_selection"
+catkin lint -W2 --pkg march_gait_selection || build_failed "Catkin lint failed in march_gait_selection"
 catkin lint -W2 --pkg march_gait_scheduler || build_failed "Catkin lint failed in march_gait_scheduler"
 catkin lint -W2 --pkg march_launch || build_failed "Catkin lint failed in march_launch"
 catkin lint -W2 --pkg march_safety || build_failed "Catkin lint failed in march_safety"
