@@ -44,4 +44,4 @@ catkin build --no-deps --verbose march_safety --no-notify --catkin-make-args ros
 catkin build --no-deps --verbose march_shared_resources --no-notify --catkin-make-args roslint || build_failed "Roslint failed in march_shared_resources"
 
 # Run all tests in the workspace, including roslaunch-checks if they exist
-catkin build march_gait_selection --summarize --catkin-make-args run_tests && catkin_test_results build/ --verbose || build_failed "Tests failed"
+catkin build --summarize --catkin-make-args run_tests && catkin_test_results build/ --verbose || build_failed "Tests failed"
