@@ -18,6 +18,8 @@ notify () {
 
 # Enable test coverage by exporting the environment variable for nosetest and setting the cmake flag for gtest.
 export CATKIN_TEST_COVERAGE=1
+export NOSE_COVER_INCLUSIVE=1
+export NOSE_COVER_BRANCHES=1
 export NOSE_COVER_PACKAGE=march_gait_selection
 catkin config --cmake-args -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug
 

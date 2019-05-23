@@ -42,6 +42,7 @@ before_install:
 - sudo apt-get install ros-kinetic-roslaunch
 - pip install --user catkin_lint
 - pip install --user catkin_tools_document
+- pip install --user codecov
 - sudo apt-get install python-catkin-tools
 install:
 - mkdir -p ~/catkin_ws/src
@@ -70,12 +71,11 @@ script:
 # Code coverage
 after_success:
   - catkin build march_gait_scheduler -v --no-deps --catkin-make-args march_gait_scheduler_coverage
-#  - catkin build march_gait_selection -v --no-deps --catkin-make-args march_gait_selection_coverage
   - catkin build march_safety -v --no-deps --catkin-make-args march_safety_coverage
   - cd ~/catkin_ws/src/march-iv
-  - bash <(curl -s https://codecov.io/bash) -f ~/catkin_ws/build/march_gait_scheduler/march_gait_scheduler_coverage.info
-#  - bash <(curl -s https://codecov.io/bash) -f ~/catkin_ws/build/march_gait_selection/march_gait_selection_coverage.info
-  - bash <(curl -s https://codecov.io/bash) -f ~/catkin_ws/build/march_safety/march_safety_coverage.info
+  - codecov -f ~/catkin_ws/build/march_gait_scheduler/march_gait_scheduler_coverage.info
+  - codecov -f ~/catkin_ws/build/march_gait_selection/.coverage
+  - codecov -f ~/catkin_ws/build/march_safety/march_safety_coverage.info
 
 
 deploy:
