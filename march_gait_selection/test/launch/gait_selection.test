@@ -1,5 +1,5 @@
 <launch>
-    <node name="march_gait_selection" pkg="march_gait_selection" type="GaitSelectionNode.py" output="screen"/>
+    <node name="march_gait_selection" pkg="march_gait_selection" type="march_gait_selection" output="screen"/>
 
     <rosparam param="/march/gait_file_package">march_gait_selection</rosparam>
     <rosparam param="/march/gait_file_directory">test/correct_walking_gait</rosparam>
