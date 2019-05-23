@@ -25,6 +25,7 @@ class PerformGaitAction(object):
                                                           execute_cb=self.target_gait_callback,
                                                           auto_start=False)
         self.action_server.start()
+
         self.schedule_gait_client = actionlib.SimpleActionClient("march/gait/schedule", GaitAction)
 
     def target_gait_callback(self, goal):
