@@ -73,9 +73,12 @@ after_success:
   - catkin build march_gait_scheduler -v --no-deps --catkin-make-args march_gait_scheduler_coverage
   - catkin build march_safety -v --no-deps --catkin-make-args march_safety_coverage
   - cd ~/catkin_ws/src/march-iv
-  - codecov -f ~/catkin_ws/build/march_gait_scheduler/march_gait_scheduler_coverage.info
-  - codecov -f ~/catkin_ws/build/march_gait_selection/.coverage
-  - codecov -f ~/catkin_ws/build/march_safety/march_safety_coverage.info
+  - codecov -f ~/catkin_ws/build/march_gait_scheduler/march_gait_scheduler_coverage.info.removed
+  - cd ~/catkin_ws/build/march_gait_selection
+  - coverage xml
+  - codecov -f ~/catkin_ws/build/march_gait_selection/coverage.xml
+  - codecov -f ~/catkin_ws/build/march_safety/march_safety_coverage.info.removed
+  - cd ~/catkin_ws
 
 
 deploy:
