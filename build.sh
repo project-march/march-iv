@@ -16,7 +16,9 @@ notify () {
     fi
 }
 
-# Enable test coverage
+# Enable test coverage by exporting the environment variable for nosetest and setting the cmake flag for gtest.
+export CATKIN_TEST_COVERAGE=1
+export NOSE_COVER_PACKAGE=march_gait_selection
 catkin config --cmake-args -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug
 
 # Build entire workspace
@@ -25,7 +27,7 @@ source devel/setup.bash
 
 # Catkin lint
 catkin lint -W2 --pkg march_description || build_failed "Catkin lint failed in march_description"
-catkin lint -W2 --pkg march_gait_selection || build_failed "Catkin lint failed in march_gait_selection"
+#catkin lint -W2 --pkg march_gait_selection || build_failed "Catkin lint failed in march_gait_selection"
 catkin lint -W2 --pkg march_gait_scheduler || build_failed "Catkin lint failed in march_gait_scheduler"
 catkin lint -W2 --pkg march_launch || build_failed "Catkin lint failed in march_launch"
 catkin lint -W2 --pkg march_safety || build_failed "Catkin lint failed in march_safety"
@@ -39,4 +41,4 @@ catkin build --no-deps --verbose march_safety --no-notify --catkin-make-args ros
 catkin build --no-deps --verbose march_shared_resources --no-notify --catkin-make-args roslint || build_failed "Roslint failed in march_shared_resources"
 
 # Run all tests in the workspace, including roslaunch-checks if they exist
-catkin build --summarize --catkin-make-args run_tests && catkin_test_results build/ --verbose || build_failed "Tests failed"
+catkin build march_gait_selection --summarize --catkin-make-args run_tests && catkin_test_results build/ --verbose || build_failed "Tests failed"
