@@ -80,7 +80,6 @@ after_success:
   - codecov -f ~/catkin_ws/build/march_safety/march_safety_coverage.info.removed
   - cd ~/catkin_ws
 
-
 deploy:
   provider: pages
   skip_cleanup: true
