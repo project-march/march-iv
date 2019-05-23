@@ -20,6 +20,7 @@ notify () {
 export CATKIN_TEST_COVERAGE=1
 export NOSE_COVER_INCLUSIVE=1
 export NOSE_COVER_BRANCHES=1
+export NOSE_WHERE=src/march-iv
 export NOSE_COVER_PACKAGE=march_gait_selection
 catkin config --cmake-args -DENABLE_COVERAGE_TESTING=ON -DCMAKE_BUILD_TYPE=Debug
 
@@ -43,4 +44,4 @@ catkin build --no-deps --verbose march_safety --no-notify --catkin-make-args ros
 catkin build --no-deps --verbose march_shared_resources --no-notify --catkin-make-args roslint || build_failed "Roslint failed in march_shared_resources"
 
 # Run all tests in the workspace, including roslaunch-checks if they exist
-catkin build --summarize --catkin-make-args run_tests && catkin_test_results build/ --verbose || build_failed "Tests failed"
+catkin build march_gait_selection --summarize --catkin-make-args run_tests && catkin_test_results build/ --verbose || build_failed "Tests failed"
