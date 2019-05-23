@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import sys
 
 import rospy
 import rospkg
@@ -89,7 +90,7 @@ def update_default_versions(default_yaml, default_directory,  gait_version_map):
     return [True, "Succesfully wrote defaults " + str(gait_version_map) + " to file " + default_yaml]
 
 
-if __name__ == '__main__':
+def main():
     rospy.init_node("gait_selection")
     gait_package = rospy.get_param("/march/gait_file_package", "march_gait_files")
     gait_directory = rospy.get_param("/march/gait_file_directory", "gait")
@@ -122,3 +123,7 @@ if __name__ == '__main__':
 
     rate = rospy.Rate(10)
     rospy.spin()
+
+
+if __name__ == "__main__":
+    sys.exit(main())

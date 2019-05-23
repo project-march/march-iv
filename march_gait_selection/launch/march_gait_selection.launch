@@ -13,6 +13,6 @@
 
     <rosparam param="/march/gait_file_package" subst_value="true">$(arg gait_file_package)</rosparam>
     <rosparam param="/march/gait_file_directory" subst_value="true">$(arg gait_file_directory)</rosparam>
-    <node name="march_gait_selection" pkg="march_gait_selection" type="GaitSelectionNode.py" output="screen"/>
+    <node name="march_gait_selection" pkg="march_gait_selection" type="march_gait_selection" output="screen"/>
 
 </launch>
