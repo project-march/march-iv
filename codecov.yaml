@@ -9,5 +9,4 @@ ignore:
   - "march_gait_scheduler/test/.*"
   - "march_gait_selection/test/.*"
   - "march_safety/test/.*"
-  - "**/__init__.py"
 
