@@ -4,14 +4,15 @@
 
 #include "ros/ros.h"
 #include "std_msgs/Time.h"
+#include "ErrorHandler.h"
 #include <sstream>
 
 #include <march_shared_resources/Error.h>
 
 class InputDeviceSafety
 {
-  ros::NodeHandle n;
-  ros::Publisher* error_publisher;
+  ErrorHandler* errorHandler;
+  ros::NodeHandle* n;
   ros::Duration connection_timeout;
   ros::Time time_last_alive;
   ros::Time time_last_send_error;
@@ -24,8 +25,7 @@ class InputDeviceSafety
   void createSubscribers();
 
 public:
-  InputDeviceSafety(ros::Publisher* error_publisher, ros::NodeHandle n);
-
+  InputDeviceSafety(ErrorHandler* errorHandler, ros::NodeHandle* n);
   void checkConnection();
 };
 

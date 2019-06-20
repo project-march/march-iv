@@ -4,6 +4,7 @@
 
 #include "ros/ros.h"
 #include "sensor_msgs/Temperature.h"
+#include "ErrorHandler.h"
 #include <sstream>
 
 #include <march_shared_resources/TopicNames.h>
@@ -11,8 +12,8 @@
 
 class TemperatureSafety
 {
-  ros::NodeHandle n;
-  ros::Publisher* error_publisher;
+  ErrorHandler* errorHandler;
+  ros::NodeHandle* n;
   double default_temperature_threshold;
   std::map<std::string, double> temperature_thresholds_map;
   std::vector<ros::Subscriber> temperature_subscribers = {};
@@ -45,7 +46,7 @@ class TemperatureSafety
   double getThreshold(const std::string& sensor_name);
 
 public:
-  TemperatureSafety(ros::Publisher* error_publisher, ros::NodeHandle n);
+  TemperatureSafety(ErrorHandler* errorHandler, ros::NodeHandle* n);
 };
 
 #endif  // PROJECT_TEMPERATURESAFETY_H

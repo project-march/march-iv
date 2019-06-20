@@ -11,6 +11,7 @@
 
 #include <march_safety/InputDeviceSafety.h>
 #include <march_safety/TemperatureSafety.h>
+#include <march_safety/ErrorHandler.h>
 
 int main(int argc, char** argv)
 {
@@ -21,10 +22,12 @@ int main(int argc, char** argv)
   // Create an error publisher to notify the system (state machine) if something is wrong
   ros::Publisher error_publisher = n.advertise<march_shared_resources::Error>(TopicNames::error, 1000);
 
-  // Create a subscriber for each sensor
-  TemperatureSafety temperatureSafety = TemperatureSafety(&error_publisher, n);
 
-  InputDeviceSafety inputDeviceSafety = InputDeviceSafety(&error_publisher, n);
+  ErrorHandler errorHandler = ErrorHandler(&error_publisher, &n);
+
+  TemperatureSafety temperatureSafety = TemperatureSafety(&errorHandler, &n);
+
+  InputDeviceSafety inputDeviceSafety = InputDeviceSafety(&errorHandler, &n);
 
   while (ros::ok())
   {
