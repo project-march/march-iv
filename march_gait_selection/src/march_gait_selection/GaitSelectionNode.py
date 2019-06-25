@@ -45,8 +45,10 @@ class PerformGaitAction(object):
         rospy.loginfo("Trying to schedule home gait %s/%s", goal.name, goal.subgait_name)
         subgait = self.gait_selection.get_subgait(goal.name, goal.subgait_name)
         trajectory_result = self.schedule_gait(goal.name, subgait)
-        print trajectory_result
-        self.perform_home_gait_server.set_succeeded(True)
+        if trajectory_result:
+            self.perform_home_gait_server.set_succeeded(True)
+        else:
+            self.perform_home_gait_server.set_succeeded(False)
 
     def schedule_gait(self, gait_name, subgait):
         gait_action_goal = GaitGoal()
