@@ -20,22 +20,33 @@ class PerformGaitAction(object):
 
     def __init__(self, gait_selection):
         self.gait_selection = gait_selection
-        self.action_server = actionlib.SimpleActionServer("march/gait/perform", GaitNameAction,
-                                                          execute_cb=self.target_gait_callback,
-                                                          auto_start=False)
-        self.action_server.start()
+        self.perform_gait_server = actionlib.SimpleActionServer("march/gait/perform", GaitNameAction,
+                                                                execute_cb=self.target_gait_callback,
+                                                                auto_start=False)
+        self.perform_home_gait_server = actionlib.SimpleActionServer("march/home_gait/perform", GaitNameAction,
+                                                                     execute_cb=self.target_home_gait_callback,
+                                                                     auto_start=False)
+        self.perform_gait_server.start()
+        self.perform_home_gait_server.start()
         self.schedule_gait_client = actionlib.SimpleActionClient("march/gait/schedule", GaitAction)
 
     def target_gait_callback(self, goal):
         rospy.loginfo("Trying to schedule subgait %s/%s", goal.name, goal.subgait_name)
         if not self.gait_selection.validate_gait_by_name(goal.name):
             rospy.logerr("Gait %s is invalid", goal.name)
-            self.action_server.set_succeeded(False)
+            self.perform_gait_server.set_succeeded(False)
             return False
         subgait = self.gait_selection.get_subgait(goal.name, goal.subgait_name)
         trajectory_result = self.schedule_gait(goal.name, subgait)
         # @TODO(Isha, Tim) monitor the scheduled gait and pass feedback to the state machine.
-        self.action_server.set_succeeded(True)
+        self.perform_gait_server.set_succeeded(True)
+
+    def target_home_gait_callback(self, goal):
+        rospy.loginfo("Trying to schedule home gait %s/%s", goal.name, goal.subgait_name)
+        subgait = self.gait_selection.get_subgait(goal.name, goal.subgait_name)
+        trajectory_result = self.schedule_gait(goal.name, subgait)
+        print trajectory_result
+        self.perform_home_gait_server.set_succeeded(True)
 
     def schedule_gait(self, gait_name, subgait):
         gait_action_goal = GaitGoal()
