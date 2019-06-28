@@ -4,10 +4,12 @@ import os
 import yaml
 import rospkg
 import rospy
+import socket
 
 from march_shared_resources.msg import Subgait
 from trajectory_msgs.msg import JointTrajectory
 from rospy_message_converter import message_converter
+from urdf_parser_py import urdf
 
 
 class GaitSelection(object):
@@ -27,6 +29,23 @@ class GaitSelection(object):
         self.gait_directory = os.path.join(rospkg.RosPack().get_path(package), directory)
 
         self.gait_version_map = default_config["gaits"]
+
+        self.joint_names = []
+        self.robot = None
+
+        try:
+            self.robot = urdf.Robot.from_parameter_server()
+
+            for joint in self.robot.joints:
+                if joint.type != "fixed":
+                    self.joint_names.append(joint.name)
+
+        except KeyError:
+            rospy.logwarn("No urdf found, cannot filter out unused joints. "
+                          "The gait selection will publish gaits with all joints.")
+        except socket.error:
+            rospy.loginfo("Could not connect to parameter server.")
+
         rospy.loginfo("GaitSelection initialized with gait_directory %s/%s.", package, directory)
         rospy.logdebug("GaitSelection initialized with gait_version_map %s.", str(self.gait_version_map))
 
@@ -47,6 +66,29 @@ class GaitSelection(object):
         subgait = message_converter.convert_dictionary_to_ros_message('march_shared_resources/Subgait', subgait_yaml)
         subgait.name = subgait_name
         subgait.version = self.gait_version_map[gait_name][subgait_name]
+
+        if self.robot is not None:
+            subgait = self.filter_subgait(subgait, self.joint_names)
+
+        return subgait
+
+    def filter_subgait(self, subgait, joint_names):
+        """Remove joints from the subgait if they are not present in the urdf."""
+
+        for i in reversed(range(0, len(subgait.trajectory.joint_names))):
+            joint = subgait.trajectory.joint_names[i]
+            if joint not in joint_names:
+                del subgait.trajectory.joint_names[i]
+                for j in range(0, len(subgait.trajectory.points)):
+                    if len(subgait.trajectory.points[j].positions) > 0:
+                        del subgait.trajectory.points[j].positions[i]
+                    if len(subgait.trajectory.points[j].velocities) > 0:
+                        del subgait.trajectory.points[j].velocities[i]
+                    if len(subgait.trajectory.points[j].accelerations) > 0:
+                        del subgait.trajectory.points[j].acceleration[i]
+                    if len(subgait.trajectory.points[j].effort) > 0:
+                        del subgait.trajectory.points[j].effort[i]
+
         return subgait
 
     def validate_subgait_name(self, gait_name, subgait_name):

@@ -6,6 +6,7 @@ ignore:
   - "march_rqt_gait_selection/.*"
 
 # Ignore test folders
+  - "march_sound_scheduler/test/.*"
   - "march_gait_scheduler/test/.*"
   - "march_gait_selection/test/.*"
   - "march_safety/test/.*"

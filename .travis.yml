@@ -69,10 +69,12 @@ script:
 
 # Code coverage
 after_success:
+  - catkin build march_sound_scheduler -v --no-deps --catkin-make-args march_gait_sound_coverage
   - catkin build march_gait_scheduler -v --no-deps --catkin-make-args march_gait_scheduler_coverage
 #  - catkin build march_gait_selection -v --no-deps --catkin-make-args march_gait_selection_coverage
   - catkin build march_safety -v --no-deps --catkin-make-args march_safety_coverage
   - cd ~/catkin_ws/src/march-iv
+  - bash <(curl -s https://codecov.io/bash) -f ~/catkin_ws/build/march_sound_scheduler/march_gait_sound_coverage.info.removed
   - bash <(curl -s https://codecov.io/bash) -f ~/catkin_ws/build/march_gait_scheduler/march_gait_scheduler_coverage.info.removed
 #  - bash <(curl -s https://codecov.io/bash) -f ~/catkin_ws/build/march_gait_selection/march_gait_selection_coverage.info
   - bash <(curl -s https://codecov.io/bash) -f ~/catkin_ws/build/march_safety/march_safety_coverage.info.removed

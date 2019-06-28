@@ -1,6 +1,7 @@
 import os
 import rospy
 import rospkg
+import threading
 
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
@@ -8,6 +9,7 @@ from python_qt_binding.QtCore import QSize
 from python_qt_binding.QtWidgets import QWidget
 from march_shared_resources.msg import Error
 from march_shared_resources.msg import GaitInstruction
+from std_msgs.msg import Time
 
 from march_rqt_input_device.MarchButton import MarchButton
 from march_rqt_input_device.LayoutBuilder import LayoutBuilder
@@ -105,13 +107,23 @@ class InputDevicePlugin(Plugin):
         self.instruction_gait_pub = rospy.Publisher(
             'march/input_device/instruction', GaitInstruction, queue_size=10)
 
+        self.alive_pub = rospy.Publisher(
+            'march/input_device/alive', Time, queue_size=10)
+
         self.error_pub = rospy.Publisher('march/error', Error, queue_size=10)
+
+        self.publish_alive = True
+
+        self.pub_thread = threading.Thread(target=self.publish_alive_msg)
+        self.pub_thread.start()
 
     def shutdown_plugin(self):
         # unregister all publishers here
+        self.publish_alive = False
+        self.pub_thread.join()
         self.instruction_gait_pub.unregister()
-
         self.error_pub.unregister()
+        self.alive_pub.unregister()
 
     def save_settings(self, plugin_settings, instance_settings):
         # TODO save intrinsic configuration, usually using:
@@ -134,6 +146,12 @@ class InputDevicePlugin(Plugin):
     def publish_error(self):
         rospy.logdebug("Mock Input Device published error")
         self.error_pub.publish(Error(-1, "Fake error thrown by the develop input device.", Error.FATAL))
+
+    def publish_alive_msg(self):
+        rate = rospy.Rate(20)
+        while not rospy.is_shutdown() and self.publish_alive:
+            self.alive_pub.publish(Time(rospy.Time.now()))
+            rate.sleep()
 
     # def trigger_configuration(self):
     # Comment in to signal that the plugin has a way to configure

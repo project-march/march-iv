@@ -1,2 +1,2 @@
-duration time_from_start
+time time
 string file_name

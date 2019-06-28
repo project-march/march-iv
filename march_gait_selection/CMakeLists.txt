@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
         rospy
         std_msgs
         rospy_message_converter
+        urdfdom_py
         )
 
 ## System dependencies are found with CMake's conventions

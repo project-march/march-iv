@@ -7,7 +7,7 @@
     />
     <arg
             name="gait_file_directory"
-            default="gait"
+            default="airgait"
             doc="The directory where the gait files are located, relative to the above package"
     />
 

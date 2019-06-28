@@ -31,23 +31,27 @@
 
     <xacro:property name="hip_fe_rotation_lower_limit" value="${-20*pi/180}"/> <!-- rad -->
     <xacro:property name="hip_fe_rotation_upper_limit" value="${100*pi/180}"/> <!-- rad -->
+    <xacro:property name="hip_fe_soft_buffer" value="${5*pi/180}"/> <!-- rad -->
     <xacro:property name="hip_fe_effort_limit" value="10927.0"/> <!-- IU -->
-    <xacro:property name="hip_fe_velocity_limit" value="48.0"/> <!-- rad/s -->
+    <xacro:property name="hip_fe_velocity_limit" value="4.80"/> <!-- rad/s -->
 
     <xacro:property name="hip_aa_rotation_lower_limit" value="${-20*pi/180}"/> <!-- rad -->
     <xacro:property name="hip_aa_rotation_upper_limit" value="${15*pi/180}"/> <!-- rad -->
+    <xacro:property name="hip_aa_soft_buffer" value="${5*pi/180}"/> <!-- rad -->
     <xacro:property name="hip_aa_effort_limit" value="10927.0"/> <!-- IU -->
-    <xacro:property name="hip_aa_velocity_limit" value="15.0"/> <!-- rad/s -->
+    <xacro:property name="hip_aa_velocity_limit" value="1.50"/> <!-- rad/s -->
 
     <xacro:property name="knee_rotation_lower_limit" value="${-5*pi/180}"/>
     <xacro:property name="knee_rotation_upper_limit" value="${115*pi/180}"/>
+    <xacro:property name="knee_soft_buffer" value="${5*pi/180}"/> <!-- rad -->
     <xacro:property name="knee_effort_limit" value="10927.0"/>
-    <xacro:property name="knee_velocity_limit" value="48.0"/>
+    <xacro:property name="knee_velocity_limit" value="4.8"/>
 
     <xacro:property name="ankle_rotation_lower_limit" value="${-15*pi/180}"/>
     <xacro:property name="ankle_rotation_upper_limit" value="${25*pi/180}"/>
+    <xacro:property name="ankle_soft_buffer" value="${5*pi/180}"/> <!-- rad -->
     <xacro:property name="ankle_effort_limit" value="10927.0"/>
-    <xacro:property name="ankle_velocity_limit" value="15.0"/>
+    <xacro:property name="ankle_velocity_limit" value="1.5"/>
 
     <xacro:property name="hover_height" value="0.3"/>
 
@@ -80,7 +84,10 @@
         <child link="hip_aa_frame_left_side"/>
         <origin xyz="0 ${-hip_base_height/2} 0" rpy="0 0 0"/>
         <axis xyz="-1 0 0"/>
+        
         <limit velocity="${hip_aa_velocity_limit}" effort="${hip_aa_effort_limit}" lower="${hip_aa_rotation_lower_limit}" upper="${hip_aa_rotation_upper_limit}"/>
+        <safety_controller soft_lower_limit="${hip_aa_rotation_lower_limit + hip_aa_soft_buffer}" soft_upper_limit="${hip_aa_rotation_upper_limit - hip_aa_soft_buffer}" k_position="100" k_velocity="10" />
+
     </joint>
 
     <joint name="left_hip_angle" type="fixed">
@@ -94,7 +101,9 @@
         <child link="upper_leg_left"/>
         <origin xyz="${-hip_aa_frame_width} 0 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
+        
         <limit velocity="${hip_fe_velocity_limit}" effort="${hip_fe_effort_limit}" lower="${hip_fe_rotation_lower_limit}" upper="${hip_fe_rotation_upper_limit}"/>
+        <safety_controller soft_lower_limit="${hip_fe_rotation_lower_limit + hip_fe_soft_buffer}" soft_upper_limit="${hip_fe_rotation_upper_limit - hip_fe_soft_buffer}" k_position="100" k_velocity="10" />
     </joint>
 
     <joint name="left_knee" type="revolute">
@@ -102,7 +111,9 @@
         <child link="lower_leg_left"/>
         <origin xyz="0 0 ${-upper_leg_height}" rpy="0 0 0"/>
         <axis xyz="0 -1 0"/>
+        
         <limit velocity="${knee_velocity_limit}" effort="${knee_effort_limit}" lower="${knee_rotation_lower_limit}" upper="${knee_rotation_upper_limit}"/>
+        <safety_controller soft_lower_limit="${knee_rotation_lower_limit + knee_soft_buffer}" soft_upper_limit="${knee_rotation_upper_limit - knee_soft_buffer}" k_position="100" k_velocity="10" />
     </joint>
 
     <joint name="left_ankle" type="revolute">
@@ -110,7 +121,9 @@
         <child link="ankle_plate_left"/>
         <origin xyz="0 0 ${-lower_leg_height}" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
+        
         <limit velocity="${ankle_velocity_limit}" effort="${ankle_effort_limit}" lower="${ankle_rotation_lower_limit}" upper="${ankle_rotation_upper_limit}"/>
+        <safety_controller soft_lower_limit="${ankle_rotation_lower_limit + ankle_soft_buffer}" soft_upper_limit="${ankle_rotation_upper_limit - ankle_soft_buffer}" k_position="100" k_velocity="10" />
     </joint>
 
     <joint name="left_foot_angle" type="fixed">
@@ -124,7 +137,10 @@
         <child link="hip_aa_frame_right_side"/>
         <origin xyz="0 ${hip_base_height/2} 0" rpy="0 0 0"/>
         <axis xyz="1 0 0"/>
+        
         <limit velocity="${hip_aa_velocity_limit}" effort="${hip_aa_effort_limit}" lower="${hip_aa_rotation_lower_limit}" upper="${hip_aa_rotation_upper_limit}"/>
+        <safety_controller soft_lower_limit="${hip_aa_rotation_lower_limit + hip_aa_soft_buffer}" soft_upper_limit="${hip_aa_rotation_upper_limit - hip_aa_soft_buffer}" k_position="100" k_velocity="10" />
+
     </joint>
 
     <joint name="right_hip_angle" type="fixed">
@@ -138,7 +154,10 @@
         <child link="upper_leg_right"/>
         <origin xyz="${-hip_aa_frame_width} 0 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
+        
         <limit velocity="${hip_fe_velocity_limit}" effort="${hip_fe_effort_limit}" lower="${hip_fe_rotation_lower_limit}" upper="${hip_fe_rotation_upper_limit}"/>
+        <safety_controller soft_lower_limit="${hip_fe_rotation_lower_limit + hip_fe_soft_buffer}" soft_upper_limit="${hip_fe_rotation_upper_limit - hip_fe_soft_buffer}" k_position="100" k_velocity="10" />
+
     </joint>
 
     <joint name="right_knee" type="revolute">
@@ -146,7 +165,9 @@
         <child link="lower_leg_right"/>
         <origin xyz="0 0 ${-upper_leg_height}" rpy="0 0 0"/>
         <axis xyz="0 -1 0"/>
+
         <limit velocity="${knee_velocity_limit}" effort="${knee_effort_limit}" lower="${knee_rotation_lower_limit}" upper="${knee_rotation_upper_limit}"/>
+        <safety_controller soft_lower_limit="${knee_rotation_lower_limit + knee_soft_buffer}" soft_upper_limit="${knee_rotation_upper_limit - knee_soft_buffer}" k_position="100" k_velocity="10" />
     </joint>
 
     <joint name="right_ankle" type="revolute">
@@ -154,7 +175,9 @@
         <child link="ankle_plate_right"/>
         <origin xyz="0 0 ${-lower_leg_height}" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
+
         <limit velocity="${ankle_velocity_limit}" effort="${ankle_effort_limit}" lower="${ankle_rotation_lower_limit}" upper="${ankle_rotation_upper_limit}"/>
+        <safety_controller soft_lower_limit="${ankle_rotation_lower_limit + ankle_soft_buffer}" soft_upper_limit="${ankle_rotation_upper_limit - ankle_soft_buffer}" k_position="100" k_velocity="10" />
     </joint>
 
     <joint name="right_foot_angle" type="fixed">
