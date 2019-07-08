@@ -81,6 +81,17 @@ class InputDevicePlugin(Plugin):
                                         callback=lambda: self.publish_gait(
                                             "gait_stand"))
 
+        gait_ankle_test_sit_button = MarchButton(name="gait_ankle_test_sit",
+                                                 text="Ankle test sit",
+                                        callback=lambda: self.publish_gait(
+                                            "gait_ankle_test_sit"))
+
+        gait_ankle_test_stand_button = MarchButton(name="gait_ankle_test_stand",
+                                                   text="Ankle test stand",
+                                                 callback=lambda: self.publish_gait(
+                                                     "gait_ankle_test_stand"))
+
+
         stop_button = MarchButton(name="gait_stop", image="/stop.png",
                                   callback=lambda: self.publish_stop())
 
@@ -90,10 +101,10 @@ class InputDevicePlugin(Plugin):
         # The button layout.
         # Position in the array determines position on screen.
         march_button_layout = [
-            [home_sit_button, home_stand_button],
-            [gait_sit_button, gait_stand_button],
-            [gait_walk_button, gait_single_step_button],
-            [stop_button, error_button],
+            [home_sit_button, home_stand_button, gait_ankle_test_sit_button],
+            [gait_sit_button, gait_stand_button, gait_ankle_test_stand_button],
+            [gait_walk_button, gait_single_step_button, None],
+            [stop_button, error_button, None],
         ]
 
         # Create the qt_layout from the button layout.
