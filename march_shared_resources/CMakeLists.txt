@@ -47,6 +47,7 @@ add_service_files(
 add_action_files(
         DIRECTORY action
         FILES Gait.action
+        GaitInstruction.action
         GaitName.action
         MoveToGait.action
 )
