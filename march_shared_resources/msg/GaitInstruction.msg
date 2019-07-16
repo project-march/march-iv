@@ -1,3 +1,4 @@
+# DEPRECATED MSG THIS IS NOW AN ACTION
 # The type of instruction.
 int16 type
 
