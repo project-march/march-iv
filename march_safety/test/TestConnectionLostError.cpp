@@ -54,7 +54,7 @@ TEST_F(TestConnectionLostError, connectionNotLost)
   timeMessage.data = ros::Time::now();
   pub_alive.publish(timeMessage);
   ros::spinOnce();
-  ros::Duration(send_errors_interval / 2 / 1000).sleep();
+  ros::Duration(send_errors_interval / 2.0 / 1000.0).sleep();
   ros::spinOnce();
   EXPECT_EQ(0, errorCounter.count);
 }
