@@ -13,7 +13,7 @@ class SafetyHandler
   ros::NodeHandle* n;
   ros::Publisher* error_publisher;
   ros::Publisher* sound_publisher;
-  ros::Publisher* enter_hold_position_publisher;
+  ros::Publisher* stop_trajectory_publisher;
 
   trajectory_msgs::JointTrajectory empty_trajectory;
 
@@ -28,7 +28,7 @@ public:
 
   void publishErrorSound(int8_t error_type) const;
 
-  void publishEmptyTrajectory();
+  void publishStopTrajectory();
 };
 
 #endif  // MARCH_WS_SAFETYHANDLER_H

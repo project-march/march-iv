@@ -48,9 +48,9 @@ void SafetyHandler::publishNonFatal(std::string message)
   publishErrorSound(march_shared_resources::Error::NON_FATAL);
 }
 
-void SafetyHandler::publishEmptyTrajectory()
+void SafetyHandler::publishStopTrajectory()
 {
     empty_trajectory.points.clear();
     empty_trajectory.joint_names.clear();
-    enter_hold_position_publisher->publish(empty_trajectory);
+    stop_trajectory_publisher->publish(empty_trajectory);
 }
