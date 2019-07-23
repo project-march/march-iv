@@ -35,4 +35,18 @@ void TrajectorySafety::trajectoryCallback(const control_msgs::JointTrajectoryCon
     ROS_INFO("error: %f", position_errors[*it]);
     counter++;
   }
+  toleranceCheck();
+}
+
+void TrajectorySafety::toleranceCheck()
+{
+  for (auto & trajectory_tolerance : this->trajectory_tolerances)
+  {
+    std::string joint_name = trajectory_tolerance.first;
+
+    if (trajectory_tolerance.second < position_errors.find(joint_name)->second)
+    {
+        ROS_WARN("tolerances have been passed!");
+    }
+  }
 }
