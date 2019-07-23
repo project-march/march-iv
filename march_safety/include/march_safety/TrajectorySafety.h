@@ -19,8 +19,7 @@ class TrajectorySafety : public SafetyType
     std::map< std::string, double>  position_errors ;
     ros::Subscriber trajectory_subscriber;
 
-    void trajectoryCallback(const control_msgs::JointTrajectoryControllerState);
-
+    void trajectoryCallback(const control_msgs::JointTrajectoryControllerStateConstPtr& msg);
 
 public:
     TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_handler, std::vector<std::string> joint_names);
