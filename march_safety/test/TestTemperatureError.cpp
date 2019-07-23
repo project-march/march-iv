@@ -108,6 +108,7 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "march_safety_test");
   testing::InitGoogleTest(&argc, argv);
+  testing::FLAGS_gtest_filter = "TestTemperatureError.*";
   auto res = RUN_ALL_TESTS();
 
   ros::shutdown();
