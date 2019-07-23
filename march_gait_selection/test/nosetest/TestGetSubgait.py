@@ -37,6 +37,7 @@ class TestGetSubgait(unittest.TestCase):
     def test_get_subgait_wrong(self):
         gait_selection = GaitSelection('march_gait_selection', "test/correct_walking_gait")
         del gait_selection.gait_version_map["walking"]["right_close"]
+        gait_selection.load_subgait_files()
         subgait = gait_selection.get_subgait('walking', 'right_close')
         self.assertEquals(None, subgait)
 

@@ -29,7 +29,7 @@ class GaitSelection(object):
         self.gait_directory = os.path.join(rospkg.RosPack().get_path(package), directory)
 
         self.gait_version_map = default_config["gaits"]
-
+        self.loaded_subgaits = None
         self.joint_names = []
         self.robot = None
 
@@ -49,13 +49,35 @@ class GaitSelection(object):
         rospy.loginfo("GaitSelection initialized with gait_directory %s/%s.", package, directory)
         rospy.logdebug("GaitSelection initialized with gait_version_map %s.", str(self.gait_version_map))
 
+        self.load_subgait_files()
+
+    def set_gait_version_map(self, gait_version_map):
+        self.gait_version_map = gait_version_map
+        self.load_subgait_files()
+
     def set_subgait_version(self, gait_name, subgait_name, version):
         if self.validate_version_name(gait_name, subgait_name, version):
             self.gait_version_map[gait_name][subgait_name] = version
+            self.load_subgait_files()
             return True
         return False
 
+    def load_subgait_files(self):
+        rospy.logdebug("Loading subgait files")
+        self.loaded_subgaits = {}
+
+        for gait in self.gait_version_map:
+            self.loaded_subgaits[gait] = {}
+            for subgait in self.gait_version_map[gait]:
+                self.loaded_subgaits[gait][subgait] = self.load_subgait(gait, subgait)
+
     def get_subgait(self, gait_name, subgait_name):
+        try:
+            return self.loaded_subgaits[gait_name][subgait_name]
+        except KeyError:
+            return None
+
+    def load_subgait(self, gait_name, subgait_name):
         try:
             subgait_path = self.get_subgait_path(gait_name, subgait_name)
         except KeyError as e:

@@ -66,7 +66,7 @@ class TestValidateTrajectoryTransition(unittest.TestCase):
         self.assertFalse(self.gait_selection.validate_gait(self.gait))
 
     def test_gait_wrong_transition(self):
-        self.gait_selection.gait_version_map["walking"]["left_swing"] = "incompatible_with_right_open_test_a_bit_higher"
+        self.gait_selection.set_subgait_version("walking", "left_swing", "incompatible_with_right_open_test_a_bit_higher")
         self.assertFalse(self.gait_selection.validate_gait(self.gait))
 
     def test_gait_by_name_wrong(self):

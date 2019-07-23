@@ -1,6 +1,6 @@
 <launch>
 
-    <node name="march_safety_node" pkg="march_safety" type="march_safety_node" output="screen">
+    <node name="march_safety_node" pkg="march_safety" type="march_safety_node" output="screen" required="true">
         <rosparam>
             default_temperature_threshold: 40
             input_device_connection_timeout: 1000
