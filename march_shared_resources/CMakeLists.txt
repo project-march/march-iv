@@ -33,6 +33,7 @@ add_message_files(
         Sound.msg
         Subgait.msg
         ImcErrorState.msg
+        AfterLimitJointCommand.msg
 )
 
 add_service_files(
