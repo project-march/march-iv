@@ -19,6 +19,7 @@ TEST_F(TestConnectionLostError, connectionNeverStarted)
   ros::Time::init();
   ros::NodeHandle nh;
   ErrorCounter errorCounter;
+  errorCounter.count = 0;
   ros::Subscriber sub = nh.subscribe("march/error", 0, &ErrorCounter::cb, &errorCounter);
 
   while (0 == sub.getNumPublishers())
@@ -41,6 +42,7 @@ TEST_F(TestConnectionLostError, connectionNotLost)
   nh.getParam("/march_safety_node/send_errors_interval", send_errors_interval);
   ros::Publisher pub_alive = nh.advertise<std_msgs::Time>("march/input_device/alive", 0);
   ErrorCounter errorCounter;
+  errorCounter.count = 0;
   ros::Subscriber sub = nh.subscribe("march/error", 0, &ErrorCounter::cb, &errorCounter);
 
   while (0 == pub_alive.getNumSubscribers() || 0 == sub.getNumPublishers())
@@ -71,6 +73,7 @@ TEST_F(TestConnectionLostError, connectionLost)
 
   ros::Publisher pub_alive = nh.advertise<std_msgs::Time>("march/input_device/alive", 0);
   ErrorCounter errorCounter;
+  errorCounter.count = 0;
   ros::Subscriber sub = nh.subscribe("march/error", 0, &ErrorCounter::cb, &errorCounter);
 
   while (0 == pub_alive.getNumSubscribers() || 0 == sub.getNumPublishers())
