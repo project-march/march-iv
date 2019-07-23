@@ -9,12 +9,12 @@
 #include <march_safety/TemperatureSafety.h>
 #include "ErrorCounter.cpp"
 
-class TestConnectionLostError : public ::testing::Test
+class ConnectionLostErrorDeathTest : public ::testing::Test
 {
 protected:
 };
 
-TEST_F(TestConnectionLostError, connectionNeverStarted)
+TEST_F(ConnectionLostErrorDeathTest, connectionNeverStarted)
 {
   ros::Time::init();
   ros::NodeHandle nh;
@@ -34,7 +34,7 @@ TEST_F(TestConnectionLostError, connectionNeverStarted)
   EXPECT_EQ(0, errorCounter.count);
 }
 
-TEST_F(TestConnectionLostError, connectionNotLost)
+TEST_F(ConnectionLostErrorDeathTest, connectionNotLost)
 {
   ros::Time::init();
   ros::NodeHandle nh;
@@ -61,7 +61,7 @@ TEST_F(TestConnectionLostError, connectionNotLost)
   EXPECT_EQ(0, errorCounter.count);
 }
 
-TEST_F(TestConnectionLostError, connectionLost)
+TEST_F(ConnectionLostErrorDeathTest, connectionLost)
 {
   ros::Time::init();
   ros::NodeHandle nh;
@@ -100,6 +100,7 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "march_safety_test");
   testing::InitGoogleTest(&argc, argv);
+  testing::FLAGS_gtest_death_test_style = "threadsafe";
   auto res = RUN_ALL_TESTS();
 
   ros::shutdown();

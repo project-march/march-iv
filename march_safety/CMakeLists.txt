@@ -67,7 +67,7 @@ if (CATKIN_ENABLE_TESTING)
 
     add_rostest_gtest(${PROJECT_NAME}-test-connection
             test/march_safety_connection.test
-            test/TestConnectionLostError.cpp
+            test/ConnectionLostErrorDeathTest.cpp
             )
     target_link_libraries(${PROJECT_NAME}-test-connection ${catkin_LIBRARIES} march_safety gtest gmock)
 
