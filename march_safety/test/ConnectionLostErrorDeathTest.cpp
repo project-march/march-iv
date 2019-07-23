@@ -87,7 +87,10 @@ TEST_F(ConnectionLostErrorDeathTest, connectionLost)
   timeMessage.data = ros::Time::now();
   pub_alive.publish(timeMessage);
   ros::spinOnce();
-  ros::Duration((send_errors_interval / 2.0 + input_device_connection_timeout) / 1000.0).sleep();
+  ROS_FATAL("send_errors_interval: %d", send_errors_interval);
+  ROS_FATAL("input_device_connection_timeout: %d", input_device_connection_timeout);
+  ROS_FATAL("result: %f", (send_errors_interval / 2.0 + input_device_connection_timeout) / 1000.0);
+  ros::Duration(input_device_connection_timeout / 1000.0).sleep();
   ros::spinOnce();
 
   EXPECT_EQ(1, errorCounter.count);
