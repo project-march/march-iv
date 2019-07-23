@@ -6,6 +6,7 @@
 #include "ros/ros.h"
 #include "SafetyType.h"
 #include "SafetyHandler.h"
+#include "control_msgs/JointTrajectoryControllerState.h"
 
 #include <march_shared_resources/TopicNames.h>
 
@@ -14,7 +15,8 @@ class TrajectorySafety : public SafetyType
     ros::NodeHandle n;
     SafetyHandler* safety_handler;
     std::vector<std::string> joint_names;
-    std::vector<double> position_errors ;
+    std::map< std::string, double> trajectory_tolerances;
+    std::map< std::string, double>  position_errors ;
     ros::Subscriber trajectory_subscriber;
 
     void trajectoryCallback(const control_msgs::JointTrajectoryControllerState);
