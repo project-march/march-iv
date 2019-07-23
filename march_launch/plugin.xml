@@ -1,0 +1,12 @@
+<library path="src">
+    <class name="SoftwareCheckPlugin" type="march_launch.software_check.SoftwareCheckPlugin" base_class_type="rqt_gui_py::Plugin">
+        <description>
+            RQT plugin to perform all software checks.
+        </description>
+        <qtgui>
+            <label>March Software Check</label>
+            <icon>resource/img/march-walking.png</icon>
+            <statustip>March IV Software Check</statustip>
+        </qtgui>
+    </class>
+</library>

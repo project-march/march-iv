@@ -7,11 +7,33 @@ find_package(catkin REQUIRED COMPONENTS
         march_simulation
         march_state_machine
         march_state_machine_service
+        roslint
         rosserial_python
         rostest
         )
 
 catkin_package()
+
+catkin_python_setup()
+
+install(FILES plugin.xml
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+        )
+
+install(DIRECTORY resource
+        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+        )
+
+install(PROGRAMS scripts/rqt_software_check
+        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+        )
+
+file(GLOB_RECURSE lintfiles
+        "src/*.py"
+        )
+
+roslint_python(${lintfiles})
+
 include_directories(
         # include
         ${catkin_INCLUDE_DIRS}
