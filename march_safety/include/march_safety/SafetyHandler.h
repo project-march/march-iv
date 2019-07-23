@@ -18,7 +18,8 @@ class SafetyHandler
   trajectory_msgs::JointTrajectory empty_trajectory;
 
 public:
-  SafetyHandler(ros::NodeHandle* n, ros::Publisher* error_publisher, ros::Publisher* sound_publisher);
+  SafetyHandler(ros::NodeHandle* n, ros::Publisher* error_publisher, ros::Publisher* sound_publisher,
+                ros::Publisher* stop_trajectory_publisher);
 
   void publishFatal(std::string message);
 
