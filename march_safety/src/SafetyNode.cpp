@@ -30,7 +30,7 @@ int main(int argc, char** argv)
     ros::Publisher stop_trajectory_publisher =
             n.advertise<trajectory_msgs::JointTrajectory>("/march/controller/trajectory/command", 1000);
 
-  SafetyHandler safetyHandler = SafetyHandler(&n, &error_publisher, &sound_publisher);
+  SafetyHandler safetyHandler = SafetyHandler(&n, &error_publisher, &sound_publisher, &stop_trajectory_publisher);
 
   std::vector<SafetyType> safety_list;
 
