@@ -27,8 +27,8 @@ int main(int argc, char** argv)
   // Create an error publisher to notify the system (state machine) if something is wrong
   ros::Publisher error_publisher = n.advertise<march_shared_resources::Error>("/march/error", 1000);
   ros::Publisher sound_publisher = n.advertise<march_shared_resources::Sound>("/march/sound/schedule", 1000);
-    ros::Publisher stop_trajectory_publisher =
-            n.advertise<trajectory_msgs::JointTrajectory>("/march/controller/trajectory/command", 1000);
+  ros::Publisher stop_trajectory_publisher =
+      n.advertise<trajectory_msgs::JointTrajectory>("/march/controller/trajectory/command", 1000);
 
   SafetyHandler safetyHandler = SafetyHandler(&n, &error_publisher, &sound_publisher, &stop_trajectory_publisher);
 
@@ -54,6 +54,9 @@ int main(int argc, char** argv)
 
   InputDeviceSafety inputDeviceSafety = InputDeviceSafety(&n, &safetyHandler);
   safety_list.push_back(inputDeviceSafety);
+
+  TrajectorySafety trajectorySafety = TrajectorySafety(&n, &safetyHandler, joint_names);
+  safety_list.push_back(trajectorySafety);
 
   while (ros::ok())
   {
