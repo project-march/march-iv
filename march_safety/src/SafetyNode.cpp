@@ -4,6 +4,7 @@
 #include "std_msgs/Float64.h"
 #include "std_msgs/Empty.h"
 #include "sensor_msgs/Temperature.h"
+#include "trajectory_msgs/JointTrajectory.h"
 #include <sstream>
 #include <vector>
 
@@ -13,6 +14,7 @@
 
 #include <march_safety/InputDeviceSafety.h>
 #include <march_safety/TemperatureSafety.h>
+#include <march_safety/TrajectorySafety.h>
 #include <march_safety/SafetyHandler.h>
 #include <urdf/model.h>
 
@@ -25,6 +27,8 @@ int main(int argc, char** argv)
   // Create an error publisher to notify the system (state machine) if something is wrong
   ros::Publisher error_publisher = n.advertise<march_shared_resources::Error>("/march/error", 1000);
   ros::Publisher sound_publisher = n.advertise<march_shared_resources::Sound>("/march/sound/schedule", 1000);
+    ros::Publisher stop_trajectory_publisher =
+            n.advertise<trajectory_msgs::JointTrajectory>("/march/controller/trajectory/command", 1000);
 
   SafetyHandler safetyHandler = SafetyHandler(&n, &error_publisher, &sound_publisher);
 
