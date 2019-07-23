@@ -54,7 +54,7 @@ void SafetyHandler::publishNonFatal(std::string message)
 
 void SafetyHandler::publishStopTrajectory()
 {
-    empty_trajectory.points.clear();
-    empty_trajectory.joint_names.clear();
-    stop_trajectory_publisher->publish(empty_trajectory);
+  empty_trajectory.points.clear();
+  empty_trajectory.joint_names.clear();
+  stop_trajectory_publisher->publish(empty_trajectory);
 }

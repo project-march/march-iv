@@ -48,6 +48,7 @@ const char* const gait_denied = "march/gait/denied";
 const char* const follow_joint_trajectory_execution = "/march/trajectory_controller/follow_joint_trajectory/goal";
 const char* const follow_joint_trajectory_execution_states = "/march/trajectory_controller/follow_joint_trajectory/"
                                                              "feedback";
+const char* const trajectory_controller_states = "/march/trajectory_controller/state";
 
 // TODO(Tim): remove the old controller command topics
 const char* const right_ankle_position = "march/right_ankle_position_controller/command";
@@ -61,7 +62,6 @@ const char* const error = "march/error";
 
 // The temperature base topic. All temperature sensors will publish on march/temperature/{sensor_name}
 const char* const temperature = "march/temperature";
-
 
 };  // namespace TopicNames
 
@@ -77,7 +77,6 @@ const char* const request_gait_file = "march/request_gait_file";
 namespace ActionNames
 {
 const char* const schedule_gait = "march/gait/schedule";
-
 };
 
 #endif  // MARCH_SHARED_RESOURCES_TOPICNAMES_H
