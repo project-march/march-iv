@@ -36,10 +36,12 @@ set(sourcefiles
         src/SafetyNode.cpp
         include/march_safety/TemperatureSafety.h
         include/march_safety/InputDeviceSafety.h
+        include/march_safety/TrajectorySafety.h
         include/march_safety/SafetyHandler.h
         include/march_safety/SafetyType.h
         src/TemperatureSafety.cpp
         src/InputDeviceSafety.cpp
+        src/TrajectorySafety.cpp
         src/SafetyHandler.cpp
         )
 
