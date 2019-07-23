@@ -14,6 +14,39 @@ class ConnectionLostErrorDeathTest : public ::testing::Test
 protected:
 };
 
+
+TEST_F(ConnectionLostErrorDeathTest, connectionLost)
+{
+  ros::Time::init();
+  ros::NodeHandle nh;
+
+  int input_device_connection_timeout;
+  nh.getParam("/march_safety_node/input_device_connection_timeout", input_device_connection_timeout);
+  int send_errors_interval;
+  nh.getParam("/march_safety_node/send_errors_interval", send_errors_interval);
+
+  ros::Publisher pub_alive = nh.advertise<std_msgs::Time>("march/input_device/alive", 10);
+  ErrorCounter errorCounter;
+  errorCounter.count = 0;
+  ros::Subscriber sub = nh.subscribe("march/error", 10, &ErrorCounter::cb, &errorCounter);
+
+  while (0 == pub_alive.getNumSubscribers() || 0 == sub.getNumPublishers())
+  {
+    ros::Duration(0.1).sleep();
+  }
+  EXPECT_EQ(1, pub_alive.getNumSubscribers());
+  EXPECT_EQ(1, sub.getNumPublishers());
+
+  std_msgs::Time timeMessage;
+  timeMessage.data = ros::Time::now();
+  pub_alive.publish(timeMessage);
+  ros::spinOnce();
+  ros::Duration(input_device_connection_timeout * 1.1 / 1000.0).sleep();
+  ros::spinOnce();
+
+  EXPECT_EQ(1, errorCounter.count);
+}
+
 TEST_F(ConnectionLostErrorDeathTest, connectionNeverStarted)
 {
   ros::Time::init();
@@ -61,37 +94,6 @@ TEST_F(ConnectionLostErrorDeathTest, connectionNotLost)
   EXPECT_EQ(0, errorCounter.count);
 }
 
-TEST_F(ConnectionLostErrorDeathTest, connectionLost)
-{
-  ros::Time::init();
-  ros::NodeHandle nh;
-
-  int input_device_connection_timeout;
-  nh.getParam("/march_safety_node/input_device_connection_timeout", input_device_connection_timeout);
-  int send_errors_interval;
-  nh.getParam("/march_safety_node/send_errors_interval", send_errors_interval);
-
-  ros::Publisher pub_alive = nh.advertise<std_msgs::Time>("march/input_device/alive", 10);
-  ErrorCounter errorCounter;
-  errorCounter.count = 0;
-  ros::Subscriber sub = nh.subscribe("march/error", 10, &ErrorCounter::cb, &errorCounter);
-
-  while (0 == pub_alive.getNumSubscribers() || 0 == sub.getNumPublishers())
-  {
-    ros::Duration(0.1).sleep();
-  }
-  EXPECT_EQ(1, pub_alive.getNumSubscribers());
-  EXPECT_EQ(1, sub.getNumPublishers());
-
-  std_msgs::Time timeMessage;
-  timeMessage.data = ros::Time::now();
-  pub_alive.publish(timeMessage);
-  ros::spinOnce();
-  ros::Duration(input_device_connection_timeout * 1.1 / 1000.0).sleep();
-  ros::spinOnce();
-
-  EXPECT_EQ(1, errorCounter.count);
-}
 
 /**
  * The main method which runs all the tests
