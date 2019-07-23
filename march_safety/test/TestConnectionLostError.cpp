@@ -71,10 +71,10 @@ TEST_F(TestConnectionLostError, connectionLost)
   int send_errors_interval;
   nh.getParam("/march_safety_node/send_errors_interval", send_errors_interval);
 
-  ros::Publisher pub_alive = nh.advertise<std_msgs::Time>("march/input_device/alive", 0);
+  ros::Publisher pub_alive = nh.advertise<std_msgs::Time>("march/input_device/alive", 10);
   ErrorCounter errorCounter;
   errorCounter.count = 0;
-  ros::Subscriber sub = nh.subscribe("march/error", 0, &ErrorCounter::cb, &errorCounter);
+  ros::Subscriber sub = nh.subscribe("march/error", 10, &ErrorCounter::cb, &errorCounter);
 
   while (0 == pub_alive.getNumSubscribers() || 0 == sub.getNumPublishers())
   {
