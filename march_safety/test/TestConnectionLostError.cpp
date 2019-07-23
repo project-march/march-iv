@@ -85,7 +85,7 @@ TEST_F(TestConnectionLostError, connectionLost)
   pub_alive.publish(timeMessage);
   ros::spinOnce();
   int sleep_ms = send_errors_interval * 0.9 + input_device_connection_timeout;
-  ros::Duration(sleep_ms / 1000).sleep();
+  ros::Duration(sleep_ms / 1000.0).sleep();
   ros::spinOnce();
 
   EXPECT_EQ(1, errorCounter.count);
