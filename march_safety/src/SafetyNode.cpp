@@ -28,7 +28,7 @@ int main(int argc, char** argv)
   ros::Publisher error_publisher = n.advertise<march_shared_resources::Error>("/march/error", 1000);
   ros::Publisher sound_publisher = n.advertise<march_shared_resources::Sound>("/march/sound/schedule", 1000);
   ros::Publisher stop_trajectory_publisher =
-      n.advertise<trajectory_msgs::JointTrajectory>("/march/controller/trajectory/command", 1000);
+      n.advertise<trajectory_msgs::JointTrajectory>(std::string(TopicNames::trajectory_controller) + "/command", 1000);
 
   SafetyHandler safetyHandler = SafetyHandler(&n, &error_publisher, &sound_publisher, &stop_trajectory_publisher);
 
