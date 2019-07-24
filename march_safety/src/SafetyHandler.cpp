@@ -71,7 +71,6 @@ void SafetyHandler::stopController(const std::string& stop_controller)
   ctr.request.start_controllers.clear();
   ctr.request.stop_controllers.push_back(stop_controller);
   ctr.request.strictness = controller_manager_msgs::SwitchController::Request::STRICT;
-
   while (!client.exists())
   {
     ROS_INFO("waiting for controller manager service");

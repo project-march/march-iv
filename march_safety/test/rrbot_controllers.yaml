@@ -6,10 +6,13 @@ march:
       publish_rate: 50
 
     trajectory:
-      type: "position_controllers/JointTrajectoryController"
+      type: "effort_controllers/JointTrajectoryController"
       joints:
         - joint1
         - joint2
+      gains:
+        joint1: {p: 80, i: 30, d: 5, i_clamp: 100, publish_state: true, antiwindup: true}
+        joint2: {p: 80, i: 30, d: 5, i_clamp: 100, publish_state: true, antiwindup: true}
 
       constraints:
         goal_time: 0.5
