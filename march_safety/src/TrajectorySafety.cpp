@@ -7,13 +7,16 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
                                    std::vector<std::string> joint_names)
   : safety_handler(safety_handler), joint_names(std::move(joint_names))
 {
+    n->getParam(ros::this_node::getName() + std::string("/controller_name"), controller_name);
+    controller_path = "/" + controller_name;
+
   this->trajectory_subscriber = n->subscribe<control_msgs::JointTrajectoryControllerState>(
-      std::string(TopicNames::trajectory_controller) + "/state", 1000, &TrajectorySafety::trajectoryCallback, this);
+      controller_path + "/state", 1000, &TrajectorySafety::trajectoryCallback, this);
 
   for (auto it = this->joint_names.begin(); it != this->joint_names.end(); it++)
   {
     double joint_tolerance;
-    if (n->getParam(std::string(TopicNames::trajectory_controller) + "/constraints/" + *it + "/trajectory",
+    if (n->getParam(controller_path + "/constraints/" + *it + "/trajectory",
                     joint_tolerance))
     {
       this->trajectory_tolerances[*it] = joint_tolerance;
@@ -45,7 +48,7 @@ void TrajectorySafety::toleranceCheck()
     if (trajectory_tolerance.second < position_errors.find(joint_name)->second)
     {
       ROS_WARN("tolerances of joint %s have been passed. Stopping movement", trajectory_tolerance.first.c_str());
-      safety_handler->stopController("trajectory_controller");
+      safety_handler->stopController(controller_name);
     }
   }
 }

@@ -15,6 +15,8 @@ class TrajectorySafety : public SafetyType
     ros::NodeHandle n;
     SafetyHandler* safety_handler;
     std::vector<std::string> joint_names;
+    std::string controller_name;
+    std::string controller_path;
     std::map< std::string, double> trajectory_tolerances;
     std::map< std::string, double>  position_errors ;
     ros::Subscriber trajectory_subscriber;

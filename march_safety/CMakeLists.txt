@@ -53,6 +53,13 @@ target_link_libraries(march_safety_node ${catkin_LIBRARIES})
 # Add gtest based cpp test target and link libraries
 if (CATKIN_ENABLE_TESTING)
 
+    find_package(catkin
+            REQUIRED COMPONENTS
+            actionlib
+            controller_manager
+            xacro
+            )
+
     if(ENABLE_COVERAGE_TESTING)
         include(CodeCoverage)
         APPEND_COVERAGE_COMPILER_FLAGS()
@@ -72,6 +79,18 @@ if (CATKIN_ENABLE_TESTING)
             test/TestConnectionLostError.cpp
             )
     target_link_libraries(${PROJECT_NAME}-test-connection ${catkin_LIBRARIES} march_safety gtest gmock)
+
+    add_executable(rrbot test/rrbot.cpp)
+    target_link_libraries(rrbot ${catkin_LIBRARIES})
+
+    add_dependencies(tests rrbot)
+    add_dependencies(tests ${PROJECT_NAME})
+
+    add_rostest_gtest(${PROJECT_NAME}-trajectory-test
+            test/trajectory_controller_safety.test
+            test/joint_trajectory_controller_test.cpp
+            )
+    target_link_libraries(${PROJECT_NAME}-trajectory-test ${catkin_LIBRARIES} march_safety gtest gmock)
 
     if(ENABLE_COVERAGE_TESTING)
         set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*")

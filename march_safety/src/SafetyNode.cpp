@@ -23,12 +23,15 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "march_safety_node");
   ros::NodeHandle n;
   ros::Rate rate(200);
+  std::string controller_name;
 
   // Create an error publisher to notify the system (state machine) if something is wrong
   ros::Publisher error_publisher = n.advertise<march_shared_resources::Error>("/march/error", 1000);
   ros::Publisher sound_publisher = n.advertise<march_shared_resources::Sound>("/march/sound/schedule", 1000);
+
+    n.getParam(ros::this_node::getName() + std::string("/controller_name"), controller_name);
   ros::Publisher stop_trajectory_publisher =
-      n.advertise<trajectory_msgs::JointTrajectory>(std::string(TopicNames::trajectory_controller) + "/command", 1000);
+      n.advertise<trajectory_msgs::JointTrajectory>("/" + controller_name + "/command", 1000);
 
   SafetyHandler safetyHandler = SafetyHandler(&n, &error_publisher, &sound_publisher, &stop_trajectory_publisher);
 

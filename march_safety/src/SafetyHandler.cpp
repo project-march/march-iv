@@ -61,8 +61,10 @@ void SafetyHandler::publishStopTrajectory()
 
 void SafetyHandler::stopController(const std::string& stop_controller)
 {
+  // stopping the controller will execute one last update() call once. Depending on the interface either the position
+  // command or the effort command will afterwards stay constant
   ros::ServiceClient client =
-      this->n->serviceClient<controller_manager_msgs::SwitchController>("/march/controller_manager/switch_controller");
+      this->n->serviceClient<controller_manager_msgs::SwitchController>(ros::this_node::getNamespace() + "/controller_manager/switch_controller");
   controller_manager_msgs::SwitchController ctr = controller_manager_msgs::SwitchController();
   ROS_INFO("service name: %s", client.getService().c_str());
   ctr.request.stop_controllers.clear();
