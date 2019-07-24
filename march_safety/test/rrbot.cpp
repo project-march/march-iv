@@ -82,7 +82,7 @@ public:
 
         registerInterface(&jnt_vel_interface_);
 
-        // Connect and register the joint velocity interface
+        // Connect and register the joint effort interface
         hardware_interface::JointHandle eff_handle_1(jnt_state_interface_.getHandle("joint1"), &eff_cmd_[0]);
         jnt_eff_interface_.registerHandle(eff_handle_1);
 
@@ -122,11 +122,13 @@ public:
             {
                 std::swap(pos_cmd_[i], pos_lastcmd_[i]);
                 std::swap(vel_cmd_[i], vel_lastcmd_[i]);
+                std::swap(eff_cmd_[i], eff_lastcmd_[i]);
             }
             else
             {
                 pos_lastcmd_[i] = pos_cmd_[i];
                 vel_lastcmd_[i] = vel_cmd_[i];
+                eff_lastcmd_[i] = eff_cmd_[i];
             }
 
             if(active_interface_[i] == "hardware_interface::PositionJointInterface")
@@ -141,11 +143,19 @@ public:
                 pos_[i] = pos_[i] + vel_[i] * getPeriod().toSec();
             }
 
+            else if(active_interface_[i] == "hardware_interface::EffortJointInterface")
+            {
+                eff_[i] = (1.0 - smoothing) * eff_cmd_[i];
+                vel_[i] = vel_[i] + eff_[i] * getPeriod().toSec();
+                pos_[i] = pos_[i] + vel_[i] * getPeriod().toSec();
+            }
+
             // clip position at upper bound
             if(pos_[i] > upper_bound)
             {
                 pos_[i] = upper_bound;
                 vel_[i] = 0.0;
+                eff_[i] = 0.0;
             }
         }
     }
