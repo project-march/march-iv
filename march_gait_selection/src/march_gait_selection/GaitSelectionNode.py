@@ -30,12 +30,16 @@ class PerformGaitAction(object):
         rospy.loginfo("Trying to schedule subgait %s/%s", goal.name, goal.subgait_name)
         if not self.gait_selection.validate_gait_by_name(goal.name):
             rospy.logerr("Gait %s is invalid", goal.name)
-            self.action_server.set_succeeded(False)
+            self.action_server.set_aborted("Gait " + str(goal.name) + "is invalid")
             return False
         subgait = self.gait_selection.get_subgait(goal.name, goal.subgait_name)
         trajectory_result = self.schedule_gait(goal.name, subgait)
-        # @TODO(Isha, Tim) monitor the scheduled gait and pass feedback to the state machine.
-        self.action_server.set_succeeded(True)
+        if trajectory_result:
+            self.action_server.set_succeeded(trajectory_result)
+            return True
+        else:
+            self.action_server.set_aborted(trajectory_result)
+            return False
 
     def schedule_gait(self, gait_name, subgait):
         gait_action_goal = GaitGoal()
