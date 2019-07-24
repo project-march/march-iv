@@ -81,7 +81,7 @@
         <origin xyz="0 0 ${lower_leg_height+upper_leg_height+hover_height}" rpy="0 0 0"/>
     </joint>
 
-    <joint name="left_hip_aa" type="revolute">
+    <joint name="left_hip_aa" type="fixed">
         <parent link="hip_base"/>
         <child link="hip_aa_frame_left_side"/>
         <origin xyz="0 ${-hip_base_height/2} 0" rpy="0 0 0"/>
