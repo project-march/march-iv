@@ -10,6 +10,7 @@
 #include <march_shared_resources/TopicNames.h>
 #include <march_shared_resources/Error.h>
 #include <march_shared_resources/Sound.h>
+#include <march_shared_resources/GaitInstruction.h>
 
 #include <march_safety/InputDeviceSafety.h>
 #include <march_safety/TemperatureSafety.h>
@@ -25,8 +26,10 @@ int main(int argc, char** argv)
   // Create an error publisher to notify the system (state machine) if something is wrong
   ros::Publisher error_publisher = n.advertise<march_shared_resources::Error>("/march/error", 1000);
   ros::Publisher sound_publisher = n.advertise<march_shared_resources::Sound>("/march/sound/schedule", 1000);
+  ros::Publisher gait_instruction_publisher =
+      n.advertise<march_shared_resources::GaitInstruction>("/march/input_device/instruction", 1000);
 
-  SafetyHandler safetyHandler = SafetyHandler(&n, &error_publisher, &sound_publisher);
+  SafetyHandler safetyHandler = SafetyHandler(&n, &error_publisher, &sound_publisher, &gait_instruction_publisher);
 
   std::vector<std::unique_ptr<SafetyType>> safety_list;
   int count = 0;
