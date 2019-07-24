@@ -1,0 +1,23 @@
+march:
+  controller:
+    # Publish all joint states -----------------------------------
+    joint_states:
+      type: joint_state_controller/JointStateController
+      publish_rate: 50
+
+    trajectory:
+      type: "position_controllers/JointTrajectoryController"
+      joints:
+        - joint1
+        - joint2
+
+      constraints:
+        goal_time: 0.5
+        joint1:
+          goal:       0.01
+          trajectory: 0.005
+        joint2:
+          goal:       0.01
+          trajectory: 0.005
+      stop_trajectory_duration: 0.0
+      state_publish_rate: 100

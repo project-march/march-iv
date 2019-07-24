@@ -88,7 +88,7 @@ if (CATKIN_ENABLE_TESTING)
 
     add_rostest_gtest(${PROJECT_NAME}-trajectory-test
             test/trajectory_controller_safety.test
-            test/joint_trajectory_controller_test.cpp
+            test/TestTrajControlrPathTolerance.cpp
             )
     target_link_libraries(${PROJECT_NAME}-trajectory-test ${catkin_LIBRARIES} march_safety gtest gmock)
 
