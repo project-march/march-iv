@@ -4,7 +4,7 @@
             name="record"
             type="record"
             output="screen"
-            args="-o /home/march/Documents/log_files/default/.bag -a"
+            args="-a"
     />
 
     <include file="$(find march_state_machine)/launch/march_state_machine.launch"/>
