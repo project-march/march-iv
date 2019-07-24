@@ -19,7 +19,8 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
       this->trajectory_tolerances[*it] = joint_tolerance;
     }
     else
-      ROS_WARN("tolerance of joint %c cannot be found", *it->c_str());
+      ROS_WARN("tolerance of joint %s cannot be found. Make sure it is indicated in the controller yaml",
+               getJointName(it).c_str());
   }
 }
 
@@ -37,13 +38,14 @@ void TrajectorySafety::trajectoryCallback(const control_msgs::JointTrajectoryCon
 
 void TrajectorySafety::toleranceCheck()
 {
-  for (auto & trajectory_tolerance : this->trajectory_tolerances)
+  for (auto& trajectory_tolerance : this->trajectory_tolerances)
   {
     std::string joint_name = trajectory_tolerance.first;
 
     if (trajectory_tolerance.second < position_errors.find(joint_name)->second)
     {
-        ROS_WARN("tolerances have been passed!");
+      ROS_WARN("tolerances of joint %s have been passed. Stopping movement", trajectory_tolerance.first.c_str());
+      safety_handler->stopController("trajectory_controller");
     }
   }
 }
