@@ -8,7 +8,7 @@
 
     <!-- Load RRbot model -->
     <param name="robot_description"
-           command="$(find xacro)/xacro --inorder'$(find march_safety)/test/rrbot.xacro'" />
+           command="$(find xacro)/xacro --inorder '$(find march_safety)/test/rrbot.xacro'" />
 
     <!-- Start RRbot -->
     <node name="rrbot"
@@ -22,6 +22,10 @@
     <node name="controller_spawner"
           pkg="controller_manager" type="spawner" output="screen"
           args="march/controller/trajectory march/controller/joint_states" />
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+          output="screen" >
+    </node>
 
     <node name="march_safety_node" pkg="march_safety" type="march_safety_node" output="screen">
         <rosparam>
