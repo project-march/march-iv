@@ -1,0 +1,53 @@
+<launch>
+    <arg name="display_plots" default="false"/>
+    <arg name="gtest_filter" default="*"/>
+
+    <rosparam>
+        /march/joint_names: [joint1, joint2]
+    </rosparam>
+
+    <!-- Load RRbot model -->
+    <param name="robot_description"
+           command="$(find xacro)/xacro --inorder'$(find march_safety)/test/rrbot.xacro'" />
+
+    <!-- Start RRbot -->
+    <node name="rrbot"
+          pkg="march_safety"
+          type="rrbot"/>
+
+    <!-- Load controller config -->
+    <rosparam command="load" file="$(find march_safety)/test/rrbot_controllers.yaml" />
+
+    <!-- Spawn controller -->
+    <node name="controller_spawner"
+          pkg="controller_manager" type="spawner" output="screen"
+          args="march/controller/trajectory march/controller/joint_states" />
+
+    <node name="march_safety_node" pkg="march_safety" type="march_safety_node" output="screen">
+        <rosparam>
+            input_device_connection_timeout: 100
+            send_errors_interval: 1000
+            controller_name: "march/controller/trajectory"
+        </rosparam>
+    </node>
+
+<!--    <group if="$(arg display_plots)">-->
+<!--        &lt;!&ndash; rqt_plot monitoring &ndash;&gt;-->
+<!--        <node name="rrbot_pos_monitor"-->
+<!--              pkg="rqt_plot"-->
+<!--              type="rqt_plot"-->
+<!--              args="/rrbot_controller/state/desired/positions[0]:positions[1],/rrbot_controller/state/actual/positions[0]:positions[1]" />-->
+
+<!--        <node name="rrbot_vel_monitor"-->
+<!--              pkg="rqt_plot"-->
+<!--              type="rqt_plot"-->
+<!--              args="/rrbot_controller/state/desired/velocities[0]:velocities[1],/rrbot_controller/state/actual/velocities[0]:velocities[1]" />-->
+<!--    </group>-->
+
+    <!-- Controller test -->
+<!--    <test test-name="joint_trajectory_controller_test"-->
+<!--          pkg="march_safety"-->
+<!--          type="joint_trajectory_controller_test"-->
+<!--          args='&#45;&#45;gtest_filter="$(arg gtest_filter)"'-->
+<!--          time-limit="85.0"/>-->
+</launch>
