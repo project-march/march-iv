@@ -21,6 +21,7 @@ class TrajectorySafety : public SafetyType
 
     void trajectoryCallback(const control_msgs::JointTrajectoryControllerStateConstPtr& msg);
     void toleranceCheck();
+    static std::string getJointName(std::vector<std::string>::iterator it);
 
 public:
     TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_handler, std::vector<std::string> joint_names);
