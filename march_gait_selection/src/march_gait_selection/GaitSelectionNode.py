@@ -37,10 +37,6 @@ class PerformGaitAction(object):
 
         if trajectory_state == actionlib.GoalStatus.SUCCEEDED:
             self.action_server.set_succeeded(trajectory_state)
-        trajectory_result = self.schedule_gait(goal.name, subgait)
-
-        if trajectory_result == GoalStatus.SUCCEEDED:
-            self.action_server.set_succeeded(trajectory_result)
         else:
             self.action_server.set_aborted(trajectory_state)
 
