@@ -58,3 +58,28 @@ void SafetyHandler::publishStopTrajectory()
   empty_trajectory.joint_names.clear();
   stop_trajectory_publisher->publish(empty_trajectory);
 }
+
+void SafetyHandler::stopController(const std::string& stop_controller)
+{
+  ros::ServiceClient client =
+      this->n->serviceClient<controller_manager_msgs::SwitchController>("/march/controller_manager/switch_controller");
+  controller_manager_msgs::SwitchController ctr = controller_manager_msgs::SwitchController();
+  ROS_INFO("service name: %s", client.getService().c_str());
+  ctr.request.stop_controllers.clear();
+  ctr.request.start_controllers.clear();
+  ctr.request.stop_controllers.push_back(stop_controller);
+  ctr.request.strictness = controller_manager_msgs::SwitchController::Request::STRICT;
+
+  while (!client.exists())
+  {
+    ROS_INFO("waiting for controller manager service");
+    sleep(1);
+  }
+
+  while (!client.call(ctr))
+  {
+    publishStopTrajectory();
+  }
+  ROS_INFO("the %s controller has been stopped", stop_controller.c_str());
+  ;
+}

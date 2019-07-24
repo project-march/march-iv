@@ -7,6 +7,7 @@
 #include <march_shared_resources/Error.h>
 #include <march_shared_resources/Sound.h>
 #include "trajectory_msgs/JointTrajectory.h"
+#include <controller_manager_msgs/SwitchController.h>
 
 class SafetyHandler
 {
@@ -30,6 +31,8 @@ public:
   void publishErrorSound(int8_t error_type) const;
 
   void publishStopTrajectory();
+
+  void stopController(const std::string& stop_controller);
 };
 
 #endif  // MARCH_WS_SAFETYHANDLER_H
