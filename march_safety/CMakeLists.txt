@@ -11,6 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
         sensor_msgs
         std_msgs
         urdf
+        actionlib
+        controller_manager
+        xacro
         )
 
 catkin_package(
@@ -52,13 +55,6 @@ target_link_libraries(march_safety_node ${catkin_LIBRARIES})
 
 # Add gtest based cpp test target and link libraries
 if (CATKIN_ENABLE_TESTING)
-
-    find_package(catkin
-            REQUIRED COMPONENTS
-            actionlib
-            controller_manager
-            xacro
-            )
 
     if(ENABLE_COVERAGE_TESTING)
         include(CodeCoverage)

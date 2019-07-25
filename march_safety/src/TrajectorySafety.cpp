@@ -58,7 +58,7 @@ void TrajectorySafety::toleranceCheck()
     if (trajectory_tolerance.second < position_errors.find(joint_name)->second)
     {
       ROS_WARN("tolerances of joint %s have been passed. Stopping movement", trajectory_tolerance.first.c_str());
-      safety_handler->stopController(controller_name);
+      safety_handler->stopController(controller_name, stop_trajectory_duration);
     }
   }
 }

@@ -77,14 +77,14 @@ bool SafetyHandler::stopController(const std::string& stop_controller, float sto
   // sleep to give trajectory controller time to register ABORT message to any client server connected
   ros::Duration(0.05).sleep();
 
-    //publish empty trajectory to induce position hold mode and wait for the time specified needed to enter the mode
+  // publish empty trajectory to induce position hold mode and wait for the time specified needed to enter the mode
   publishStopTrajectory();
   ros::Duration(stop_trajectory_duration).sleep();
 
   while (!client.exists())
   {
     ROS_INFO("waiting for controller manager service");
-      ros::Duration(0.1).sleep();;
+    ros::Duration(0.1).sleep();
   }
 
   while (!client.call(ctr))
