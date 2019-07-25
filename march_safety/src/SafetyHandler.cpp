@@ -62,7 +62,7 @@ void SafetyHandler::publishStopTrajectory()
 bool SafetyHandler::stopController(const std::string& stop_controller, float stop_trajectory_duration)
 {
   // stopping the controller will execute one last update() call once. Depending on the interface either the position
-  // command or the effort command will afterwards stay constant
+  // command or the effort command will afterwards stay constant.
   ros::ServiceClient client = this->n->serviceClient<controller_manager_msgs::SwitchController>(
       ros::this_node::getNamespace() + "/controller_manager/switch_controller");
   controller_manager_msgs::SwitchController ctr = controller_manager_msgs::SwitchController();
@@ -77,7 +77,7 @@ bool SafetyHandler::stopController(const std::string& stop_controller, float sto
   // sleep to give trajectory controller time to register ABORT message to any client server connected
   ros::Duration(0.05).sleep();
 
-    //publish empty trajectory to induce position hold mode and wait for the time specified need to enter the mode
+    //publish empty trajectory to induce position hold mode and wait for the time specified needed to enter the mode
   publishStopTrajectory();
   ros::Duration(stop_trajectory_duration).sleep();
 
