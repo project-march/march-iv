@@ -18,8 +18,7 @@ class URDFCheck(LaunchCheck):
             robot = urdf.Robot.from_parameter_server()
         except KeyError:
             self.stop_launch_process()
-            self.passed = False
-            self.done = True
+            self.fail_check()
 
         count = 0
         for joint in robot.joints:

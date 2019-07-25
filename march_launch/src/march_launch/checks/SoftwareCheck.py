@@ -27,14 +27,21 @@ class SoftwareCheck(QObject):
     def perform(self):
         raise NotImplementedError("Please implement method 'perform()' on the subclass")
 
+    def pass_check(self):
+        self.passed = True
+        self.done = True
+
+    def fail_check(self):
+        self.passed = False
+        self.done = True
+
     def get_key_from_parameter_server(self, key, fail_on_exception=True):
         try:
             value = rospy.get_param(key)
         except KeyError:
             self.log("Could not find key " + str(key), Color.Error)
             if fail_on_exception:
-                self.passed = False
-                self.done = True
+                self.fail_check()
             return
         return value
 
