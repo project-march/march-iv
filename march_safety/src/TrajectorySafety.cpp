@@ -18,7 +18,7 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
 
   if (stop_trajectory_duration < 0)
   {
-    ROS_FATAL("stop_trajectory_duration has been set below zero ");
+    ROS_WARN("stop_trajectory_duration has been set below zero ");
   }
   if (!stop_trajectory_duration_status)
   {
@@ -54,7 +54,7 @@ void TrajectorySafety::toleranceCheck()
   {
     std::string joint_name = trajectory_tolerance.first;
 
-    if (trajectory_tolerance.second < position_errors.find(joint_name)->second)
+    if (trajectory_tolerance.second < std::abs(position_errors.find(joint_name)->second))
     {
       ROS_WARN("tolerances of joint %s have been passed. Stopping movement", trajectory_tolerance.first.c_str());
       safety_handler->stopController(controller_name, stop_trajectory_duration);
