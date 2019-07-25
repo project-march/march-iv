@@ -6,6 +6,7 @@
                 run_configuration: exoskeleton
     </rosparam>
 
+
     <node
             pkg="rosbag"
             name="record"
