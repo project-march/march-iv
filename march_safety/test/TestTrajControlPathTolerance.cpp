@@ -25,11 +25,8 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////
 
-/// \author Adolfo Rodriguez Tsouroukdissian
-
 #include <algorithm>
 #include <cmath>
-#include <limits>
 #include <memory>
 #include <mutex>
 
@@ -39,17 +36,10 @@
 #include <actionlib/client/simple_action_client.h>
 
 #include <std_msgs/Float64.h>
-#include <std_msgs/Bool.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
-#include <control_msgs/JointTrajectoryControllerState.h>
-#include <control_msgs/QueryTrajectoryState.h>
-
-#include <controller_manager_msgs/LoadController.h>
-#include <controller_manager_msgs/UnloadController.h>
-#include <controller_manager_msgs/SwitchController.h>
 #include <controller_manager_msgs/ListControllers.h>
-#include <controller_manager_msgs/ControllerState.h>
 #include <sensor_msgs/JointState.h>
+#include <trajectory_msgs/JointTrajectory.h>
 
 // Floating-point value comparison threshold
 const double EPS = 0.01;
@@ -102,22 +92,13 @@ public:
     smoothing_pub = ros::NodeHandle().advertise<std_msgs::Float64>("smoothing", 1);
 
     // Trajectory publisher
-    traj_pub = nh.advertise<trajectory_msgs::JointTrajectory>("/march/controller/trajectory/command", 1);
+    traj_sub = nh.subscribe<trajectory_msgs::JointTrajectory>("/march/controller/trajectory/command", 1,
+                                                              &JointTrajectoryControllerTest::trajCommandCb, this);
 
     // State subscriber
     state_sub =
-        nh.subscribe<sensor_msgs::JointState>("/joint_states", 1, &JointTrajectoryControllerTest::stateCB, this);
-
-    // Query state service client
-    query_state_service = nh.serviceClient<control_msgs::QueryTrajectoryState>("query_state");
-
-    // Controller management services
-    load_controller_service =
-        nh.serviceClient<controller_manager_msgs::LoadController>("/controller_manager/load_controller");
-    unload_controller_service =
-        nh.serviceClient<controller_manager_msgs::UnloadController>("/controller_manager/unload_controller");
-    switch_controller_service =
-        nh.serviceClient<controller_manager_msgs::SwitchController>("/controller_manager/switch_controller");
+        nh.subscribe<sensor_msgs::JointState>("/joint_states", 1,
+                &JointTrajectoryControllerTest::jointStateCb, this);
 
     // Action client
     const std::string action_server_name = "/march/controller/trajectory/follow_joint_trajectory";
@@ -152,49 +133,38 @@ protected:
   ros::Duration long_timeout;
 
   ros::Publisher smoothing_pub;
-  ros::Publisher delay_pub;
-  ros::Publisher upper_bound_pub;
-  ros::Publisher traj_pub;
+  ros::Subscriber traj_sub;
   ros::Subscriber state_sub;
   ActionClientPtr action_client;
 
-  sensor_msgs::JointState controller_state;
-  std::vector<double> controller_min_actual_velocity;
-  std::vector<double> controller_max_actual_velocity;
+  sensor_msgs::JointState joint_states;
+  trajectory_msgs::JointTrajectory controller_command;
+  trajectory_msgs::JointTrajectory empty_trajectory;
 
   double stop_trajectory_duration;
 
-  void stateCB(const sensor_msgs::JointStateConstPtr& state)
+  void jointStateCb(const sensor_msgs::JointStateConstPtr& state)
   {
     std::lock_guard<std::mutex> lock(mutex);
-    controller_state = *state;
-
-    std::transform(controller_min_actual_velocity.begin(), controller_min_actual_velocity.end(),
-                   state->velocity.begin(), controller_min_actual_velocity.begin(),
-                   [](double a, double b) { return std::min(a, b); });
-    std::transform(controller_max_actual_velocity.begin(), controller_max_actual_velocity.end(),
-                   state->velocity.begin(), controller_max_actual_velocity.begin(),
-                   [](double a, double b) { return std::max(a, b); });
+    joint_states = *state;
   }
 
-  sensor_msgs::JointState getState()
+  void trajCommandCb(const trajectory_msgs::JointTrajectoryConstPtr& command)
   {
     std::lock_guard<std::mutex> lock(mutex);
-    return controller_state;
+    controller_command = *command;
   }
 
-  bool waitForNextState(const ros::Duration& timeout)
+  sensor_msgs::JointState getJointState()
   {
-    ros::Time start_time = ros::Time::now();
-    ros::Time state_time = getState().header.stamp;
-    while (getState().header.stamp <= state_time && ros::ok())
-    {
-      if (timeout >= ros::Duration(0.0) && (ros::Time::now() - start_time) > timeout)
-      {
-        return false;
-      }  // Timed-out
-      ros::Duration(0.001).sleep();
-    }
+    std::lock_guard<std::mutex> lock(mutex);
+    return joint_states;
+  }
+
+  trajectory_msgs::JointTrajectory getTrajCommand()
+  {
+    std::lock_guard<std::mutex> lock(mutex);
+    return controller_command;
   }
 
   static bool waitForState(const ActionClientPtr& action_client, const actionlib::SimpleClientGoalState& state,
@@ -241,6 +211,7 @@ TEST_F(JointTrajectoryControllerTest, pathToleranceViolation)
   traj_home_goal.trajectory.header.stamp = ros::Time(0);  // Start immediately
   action_client->sendGoal(traj_home_goal);
   ASSERT_TRUE(waitForState(action_client, SimpleClientGoalState::SUCCEEDED, long_timeout));
+  sensor_msgs::JointState start_state = getJointState();
 
   // Make robot respond with a delay
   {
@@ -255,28 +226,33 @@ TEST_F(JointTrajectoryControllerTest, pathToleranceViolation)
   action_client->sendGoal(traj_goal);
   EXPECT_TRUE(waitForState(action_client, SimpleClientGoalState::ACTIVE, short_timeout));
 
-  // Wait until done
+  // Wait until done and that abort has been registered by client
   EXPECT_TRUE(waitForState(action_client, SimpleClientGoalState::ABORTED, long_timeout));
   EXPECT_EQ(action_client->getResult()->error_code, control_msgs::FollowJointTrajectoryResult::PATH_TOLERANCE_VIOLATED);
 
-  // check that the controller manager has stopped the controller
+  // check that the controller manager has stopped the controller, there is a little bit of time
+  ros::Duration(0.1).sleep();
   EXPECT_EQ("stopped", getControllerStatus("march/controller/trajectory"));
 
-  sensor_msgs::JointState state2 = getState();
-  //
-  EXPECT_EQ(state1.effort[1], state2.effort[1]);
+  sensor_msgs::JointState state1 = getJointState();
 
-  ros::Duration(0.5).sleep();
+  empty_trajectory.joint_names.clear();
+  empty_trajectory.points.clear();
 
-  sensor_msgs::JointState state3 = getState();
-  EXPECT_EQ(state3.effort[1], state2.effort[1]);
+  EXPECT_EQ(empty_trajectory.points.size(), getTrajCommand().points.size());
+  EXPECT_EQ(empty_trajectory.joint_names.size(), getTrajCommand().joint_names.size());
 
-  // Restore perfect control
+  // make sure that a movement has occurred
+  EXPECT_NE(traj.points.front().positions[0], std::abs(start_state.position[0] - state1.position[0]));
+
+  // Check that we're not moving
+  ros::Duration(0.5).sleep();  // Wait
+  sensor_msgs::JointState state2 = getJointState();
+  for (unsigned int i = 0; i < n_joints; ++i)
   {
-    std_msgs::Float64 smoothing;
-    smoothing.data = 0.0;
-    smoothing_pub.publish(smoothing);
-    ros::Duration(0.5).sleep();
+    EXPECT_NEAR(state1.position[i], state2.position[i], EPS);
+    EXPECT_NEAR(state1.velocity[i], state2.velocity[i], EPS);
+    EXPECT_NEAR(state1.effort[i], state2.effort[i], EPS);
   }
 }
 
