@@ -70,11 +70,23 @@ if (CATKIN_ENABLE_TESTING)
     target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES} march_safety gtest gmock)
 
 
-    add_rostest_gtest(${PROJECT_NAME}-test-connection
-            test/march_safety_connection.test
-            test/TestConnectionLostError.cpp
+    add_rostest_gtest(${PROJECT_NAME}-test-connection-lost
+            test/march_safety_connection_lost.test
+            test/TestConnectionLost.cpp
             )
-    target_link_libraries(${PROJECT_NAME}-test-connection ${catkin_LIBRARIES} march_safety gtest gmock)
+
+    add_rostest_gtest(${PROJECT_NAME}-test-connection-never-started
+            test/march_safety_connection_never_started.test
+            test/TestConnectionNeverStarted.cpp
+            )
+
+    add_rostest_gtest(${PROJECT_NAME}-test-connection-not-lost
+            test/march_safety_connection_not_lost.test
+            test/TestConnectionNotLost.cpp
+            )
+    target_link_libraries(${PROJECT_NAME}-test-connection-lost ${catkin_LIBRARIES} march_safety gtest gmock)
+    target_link_libraries(${PROJECT_NAME}-test-connection-never-started ${catkin_LIBRARIES} march_safety gtest gmock)
+    target_link_libraries(${PROJECT_NAME}-test-connection-not-lost ${catkin_LIBRARIES} march_safety gtest gmock)
 
     add_executable(rrbot test/rrbot.cpp)
     target_link_libraries(rrbot ${catkin_LIBRARIES})

@@ -4,9 +4,6 @@
     <version>0.0.0</version>
     <description>Launches the related march packages</description>
 
-    <!-- One maintainer tag required, multiple allowed, one person per tag -->
-    <!-- Example:  -->
-    <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
     <maintainer email="software@projectmarch.nl">Project March</maintainer>
 
     <license>TODO</license>
@@ -15,15 +12,26 @@
     <build_depend>march_description</build_depend>
     <build_depend>march_simulation</build_depend>
     <build_depend>march_state_machine</build_depend>
-    <build_depend>march_state_machine_service</build_depend>
     <build_depend>rosserial_python</build_depend>
     <build_depend>rostest</build_depend>
-
+    <build_depend>roslint</build_depend>
+    <build_depend>rqt_gui</build_depend>
+    <build_depend>rqt_gui_py</build_depend>
+    <build_export_depend>rospy</build_export_depend>
+    <build_export_depend>rqt_gui</build_export_depend>
+    <build_export_depend>rqt_gui_py</build_export_depend>
+    <exec_depend>rospy</exec_depend>
+    <exec_depend>rqt_gui</exec_depend>
+    <exec_depend>rqt_gui_py</exec_depend>
     <build_export_depend>rviz</build_export_depend>
     <build_export_depend>rqt_gui</build_export_depend>
     <build_export_depend>march_description</build_export_depend>
     <build_export_depend>march_simulation</build_export_depend>
     <build_export_depend>march_safety</build_export_depend>
     <build_export_depend>march_state_machine</build_export_depend>
-    <build_export_depend>march_state_machine_service</build_export_depend>
+
+    <export>
+        <rqt_gui plugin="${prefix}/plugin.xml"/>
+    </export>
+
 </package>

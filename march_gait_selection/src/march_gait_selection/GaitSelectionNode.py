@@ -14,6 +14,7 @@ from march_shared_resources.srv import StringTrigger
 from march_shared_resources.msg import GaitNameAction, GaitAction, GaitGoal
 
 from GaitSelection import GaitSelection
+from actionlib_msgs.msg import GoalStatus
 
 
 class PerformGaitAction(object):
@@ -30,12 +31,15 @@ class PerformGaitAction(object):
         rospy.loginfo("Trying to schedule subgait %s/%s", goal.name, goal.subgait_name)
         if not self.gait_selection.validate_gait_by_name(goal.name):
             rospy.logerr("Gait %s is invalid", goal.name)
-            self.action_server.set_succeeded(False)
+            self.action_server.set_aborted("Gait " + str(goal.name) + "is invalid")
             return False
         subgait = self.gait_selection.get_subgait(goal.name, goal.subgait_name)
-        trajectory_result = self.schedule_gait(goal.name, subgait)
-        # @TODO(Isha, Tim) monitor the scheduled gait and pass feedback to the state machine.
-        self.action_server.set_succeeded(True)
+        trajectory_state = self.schedule_gait(goal.name, subgait)
+
+        if trajectory_state == actionlib.GoalStatus.SUCCEEDED:
+            self.action_server.set_succeeded(trajectory_state)
+        else:
+            self.action_server.set_aborted(trajectory_state)
 
     def schedule_gait(self, gait_name, subgait):
         gait_action_goal = GaitGoal()
@@ -45,7 +49,7 @@ class PerformGaitAction(object):
         self.schedule_gait_client.send_goal(gait_action_goal)
 
         self.schedule_gait_client.wait_for_result(timeout=subgait.duration + rospy.Duration(1))
-        return self.schedule_gait_client.get_result()
+        return self.schedule_gait_client.get_state()
 
 
 def set_selected_version_callback(msg, gait_selection):
@@ -66,15 +70,16 @@ def set_gait_version_map(msg, gait_selection):
     except ValueError:
         return [False, "Not a valid dictionary " + str(msg.string)]
 
-    if gait_selection.validate_version_map(map):
-        backup_map = gait_selection.gait_version_map
-        gait_selection.gait_version_map = map
-        for gait in map:
-            if not gait_selection.validate_gait_by_name(gait):
-                gait_selection.gait_version_map = backup_map
-                return [False, "Gait " + gait + " is invalid"]
-        return [True, "Gait version map set to " + str(gait_selection.gait_version_map)]
-    return [False, "Gait version map is not valid " + str(map)]
+    if not gait_selection.validate_version_map(map):
+        return [False, "Gait version map is not valid " + str(map)]
+
+    backup_map = gait_selection.gait_version_map
+    gait_selection.set_gait_version_map(map)
+    for gait in map:
+        if not gait_selection.validate_gait_by_name(gait):
+            gait_selection.set_gait_version_map(backup_map)
+            return [False, "Gait " + gait + " is invalid"]
+    return [True, "Gait version map set to " + str(gait_selection.gait_version_map)]
 
 
 def update_default_versions(gait_package, gait_directory,  gait_version_map):

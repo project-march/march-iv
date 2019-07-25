@@ -5,10 +5,10 @@
 
     <node name="march_safety_node" pkg="march_safety" type="march_safety_node" output="screen">
         <rosparam>
-            input_device_connection_timeout: 100
+            input_device_connection_timeout: 1000
             send_errors_interval: 1000
         </rosparam>
     </node>
 
-    <test test-name="march_safety_test" pkg="march_safety" type="march_safety-test-connection"/>
+    <test test-name="march_safety_test" pkg="march_safety" type="march_safety-test-connection-lost"/>
 </launch>
