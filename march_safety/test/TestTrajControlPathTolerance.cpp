@@ -67,9 +67,6 @@ public:
     joint_names[0] = "joint1";
     joint_names[1] = "joint2";
 
-    controller_min_actual_velocity.resize(n_joints);
-    controller_max_actual_velocity.resize(n_joints);
-
     trajectory_msgs::JointTrajectoryPoint point;
     point.positions.resize(n_joints, 0.0);
     point.velocities.resize(n_joints, 0.0);
@@ -104,12 +101,6 @@ public:
     // Smoothing publisher (determines how well the robot follows a trajectory)
     smoothing_pub = ros::NodeHandle().advertise<std_msgs::Float64>("smoothing", 1);
 
-    // Delay publisher (allows to simulate a delay of one cycle in the hardware interface)
-    delay_pub = ros::NodeHandle().advertise<std_msgs::Bool>("delay", 1);
-
-    // Upper bound publisher (allows to simulate a wall)
-    upper_bound_pub = ros::NodeHandle().advertise<std_msgs::Float64>("upper_bound", 1);
-
     // Trajectory publisher
     traj_pub = nh.advertise<trajectory_msgs::JointTrajectory>("/march/controller/trajectory/command", 1);
 
@@ -131,7 +122,6 @@ public:
     // Action client
     const std::string action_server_name = "/march/controller/trajectory/follow_joint_trajectory";
     action_client.reset(new ActionClient(action_server_name));
-    action_client2.reset(new ActionClient(action_server_name));
 
     nh.getParam("stop_trajectory_duration", stop_trajectory_duration);
   }
@@ -166,12 +156,7 @@ protected:
   ros::Publisher upper_bound_pub;
   ros::Publisher traj_pub;
   ros::Subscriber state_sub;
-  ros::ServiceClient query_state_service;
-  ros::ServiceClient load_controller_service;
-  ros::ServiceClient unload_controller_service;
-  ros::ServiceClient switch_controller_service;
   ActionClientPtr action_client;
-  ActionClientPtr action_client2;
 
   sensor_msgs::JointState controller_state;
   std::vector<double> controller_min_actual_velocity;
@@ -209,28 +194,6 @@ protected:
         return false;
       }  // Timed-out
       ros::Duration(0.001).sleep();
-    }
-  }
-
-  std::vector<double> getMinActualVelocity()
-  {
-    std::lock_guard<std::mutex> lock(mutex);
-    return controller_min_actual_velocity;
-  }
-
-  std::vector<double> getMaxActualVelocity()
-  {
-    std::lock_guard<std::mutex> lock(mutex);
-    return controller_max_actual_velocity;
-  }
-
-  void resetActualVelocityObserver()
-  {
-    std::lock_guard<std::mutex> lock(mutex);
-    for (size_t i = 0; i < controller_min_actual_velocity.size(); ++i)
-    {
-      controller_min_actual_velocity[i] = std::numeric_limits<double>::infinity();
-      controller_max_actual_velocity[i] = -std::numeric_limits<double>::infinity();
     }
   }
 
@@ -288,14 +251,12 @@ TEST_F(JointTrajectoryControllerTest, pathToleranceViolation)
   }
 
   // Send trajectory
-
   traj_goal.trajectory.header.stamp = ros::Time(0);  // Start immediately
   action_client->sendGoal(traj_goal);
   EXPECT_TRUE(waitForState(action_client, SimpleClientGoalState::ACTIVE, short_timeout));
 
   // Wait until done
   EXPECT_TRUE(waitForState(action_client, SimpleClientGoalState::ABORTED, long_timeout));
-  sensor_msgs::JointState state1 = getState();
   EXPECT_EQ(action_client->getResult()->error_code, control_msgs::FollowJointTrajectoryResult::PATH_TOLERANCE_VIOLATED);
 
   // check that the controller manager has stopped the controller
@@ -309,50 +270,6 @@ TEST_F(JointTrajectoryControllerTest, pathToleranceViolation)
 
   sensor_msgs::JointState state3 = getState();
   EXPECT_EQ(state3.effort[1], state2.effort[1]);
-
-  // Restore perfect control
-  {
-    std_msgs::Float64 smoothing;
-    smoothing.data = 0.0;
-    smoothing_pub.publish(smoothing);
-    ros::Duration(0.5).sleep();
-  }
-}
-
-TEST_F(JointTrajectoryControllerTest, goalToleranceViolation)
-{
-  ASSERT_TRUE(action_client->waitForServer(long_timeout));
-
-  // Go to home configuration, we need known initial conditions
-  traj_home_goal.trajectory.header.stamp = ros::Time(0);  // Start immediately
-  action_client->sendGoal(traj_home_goal);
-  ASSERT_TRUE(waitForState(action_client, SimpleClientGoalState::SUCCEEDED, long_timeout));
-
-  // Make robot respond with a delay
-  {
-    std_msgs::Float64 smoothing;
-    smoothing.data = 0.95;
-    smoothing_pub.publish(smoothing);
-    ros::Duration(0.5).sleep();
-  }
-
-  // Disable path constraints
-  traj_goal.path_tolerance.resize(2);
-  traj_goal.path_tolerance[0].name = "joint1";
-  traj_goal.path_tolerance[0].position = -1.0;
-  traj_goal.path_tolerance[0].velocity = -1.0;
-  traj_goal.path_tolerance[1].name = "joint2";
-  traj_goal.path_tolerance[1].position = -1.0;
-  traj_goal.path_tolerance[1].velocity = -1.0;
-
-  // Send trajectory
-  traj_goal.trajectory.header.stamp = ros::Time(0);  // Start immediately
-  action_client->sendGoal(traj_goal);
-  EXPECT_TRUE(waitForState(action_client, SimpleClientGoalState::ACTIVE, short_timeout));
-
-  // Wait until done
-  EXPECT_TRUE(waitForState(action_client, SimpleClientGoalState::ABORTED, long_timeout));
-  EXPECT_EQ(action_client->getResult()->error_code, control_msgs::FollowJointTrajectoryResult::GOAL_TOLERANCE_VIOLATED);
 
   // Restore perfect control
   {
