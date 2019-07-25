@@ -43,7 +43,6 @@ void TrajectorySafety::trajectoryCallback(const control_msgs::JointTrajectoryCon
   for (auto it = msg->joint_names.begin(); it != msg->joint_names.end(); ++it)
   {
     this->position_errors[*it] = msg->error.positions[counter];
-    ROS_INFO("error: %f", position_errors[*it]);
     counter++;
   }
   toleranceCheck();

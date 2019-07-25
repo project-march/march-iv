@@ -8,6 +8,7 @@
 #include <march_shared_resources/Sound.h>
 #include "trajectory_msgs/JointTrajectory.h"
 #include <controller_manager_msgs/SwitchController.h>
+#include <controller_manager_msgs/ListControllers.h>
 #include <march_shared_resources/GaitInstruction.h>
 
 class SafetyHandler
@@ -15,13 +16,14 @@ class SafetyHandler
   ros::NodeHandle* n;
   ros::Publisher* error_publisher;
   ros::Publisher* sound_publisher;
-    ros::Publisher* gait_instruction_publisher;
+  ros::Publisher* gait_instruction_publisher;
   ros::Publisher* stop_trajectory_publisher;
 
   trajectory_msgs::JointTrajectory empty_trajectory;
 
 public:
-  SafetyHandler(ros::NodeHandle* n, ros::Publisher* error_publisher, ros::Publisher* sound_publisher, ros::Publisher* gait_instruction_publisher, ros::Publisher* stop_trajectory_publisher);
+  SafetyHandler(ros::NodeHandle* n, ros::Publisher* error_publisher, ros::Publisher* sound_publisher,
+                ros::Publisher* gait_instruction_publisher, ros::Publisher* stop_trajectory_publisher);
 
   void publishFatal(std::string message);
 
