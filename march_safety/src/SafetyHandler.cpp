@@ -68,19 +68,19 @@ void SafetyHandler::publishStopTrajectory()
 
 std::string SafetyHandler::getControllerStatus(const std::string& controller_name)
 {
-    ros::ServiceClient client = n->serviceClient<controller_manager_msgs::ListControllers>(
-            ros::this_node::getNamespace() + "/controller_manager/list_controllers");
-    auto ctr = controller_manager_msgs::ListControllers();
+  ros::ServiceClient client = n->serviceClient<controller_manager_msgs::ListControllers>(
+      ros::this_node::getNamespace() + "/controller_manager/list_controllers");
+  auto ctr = controller_manager_msgs::ListControllers();
 
-    client.call(ctr);
+  client.call(ctr);
 
-    for (auto& it : ctr.response.controller)
+  for (auto& it : ctr.response.controller)
+  {
+    if (it.name == controller_name)
     {
-        if (it.name == controller_name)
-        {
-            return it.state;
-        }
+      return it.state;
     }
+  }
 }
 
 void SafetyHandler::stopController(const std::string& stop_controller, float stop_trajectory_duration)
@@ -91,9 +91,10 @@ void SafetyHandler::stopController(const std::string& stop_controller, float sto
       ros::this_node::getNamespace() + "/controller_manager/switch_controller");
   controller_manager_msgs::SwitchController ctr = controller_manager_msgs::SwitchController();
 
-    if(getControllerStatus(stop_controller) == "stopped"){
-        return ;
-    }
+  if (getControllerStatus(stop_controller) == "stopped")
+  {
+    return;
+  }
 
   ROS_INFO("service name: %s", client.getService().c_str());
 
