@@ -14,6 +14,7 @@ from march_shared_resources.srv import StringTrigger
 from march_shared_resources.msg import GaitNameAction, GaitAction, GaitGoal
 
 from GaitSelection import GaitSelection
+from actionlib_msgs.msg import GoalStatus
 
 
 class PerformGaitAction(object):
@@ -32,11 +33,12 @@ class PerformGaitAction(object):
             rospy.logerr("Gait %s is invalid", goal.name)
             self.action_server.set_aborted("Gait " + str(goal.name) + "is invalid")
         subgait = self.gait_selection.get_subgait(goal.name, goal.subgait_name)
-        trajectory_result = self.schedule_gait(goal.name, subgait)
-        if trajectory_result:
-            self.action_server.set_succeeded(trajectory_result)
+        trajectory_state = self.schedule_gait(goal.name, subgait)
+
+        if trajectory_state == actionlib.GoalStatus.SUCCEEDED:
+            self.action_server.set_succeeded(trajectory_state)
         else:
-            self.action_server.set_aborted(trajectory_result)
+            self.action_server.set_aborted(trajectory_state)
 
     def schedule_gait(self, gait_name, subgait):
         gait_action_goal = GaitGoal()
@@ -46,7 +48,7 @@ class PerformGaitAction(object):
         self.schedule_gait_client.send_goal(gait_action_goal)
 
         self.schedule_gait_client.wait_for_result(timeout=subgait.duration + rospy.Duration(1))
-        return self.schedule_gait_client.get_result()
+        return self.schedule_gait_client.get_state()
 
 
 def set_selected_version_callback(msg, gait_selection):
