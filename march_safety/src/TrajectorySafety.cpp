@@ -7,17 +7,27 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
                                    std::vector<std::string> joint_names)
   : safety_handler(safety_handler), joint_names(std::move(joint_names))
 {
-    n->getParam(ros::this_node::getName() + std::string("/controller_name"), controller_name);
-    controller_path = "/" + controller_name;
+  n->getParam(ros::this_node::getName() + std::string("/controller_name"), this->controller_name);
+  controller_path = "/" + controller_name;
+
+  bool stop_trajectory_duration_status =
+      n->getParam(controller_path + "/stop_trajectory_duration", this->stop_trajectory_duration);
 
   this->trajectory_subscriber = n->subscribe<control_msgs::JointTrajectoryControllerState>(
       controller_path + "/state", 1000, &TrajectorySafety::trajectoryCallback, this);
 
+  if (stop_trajectory_duration < 0)
+  {
+    ROS_FATAL("stop_trajectory_duration has been set below zero ");
+  }
+  if (!stop_trajectory_duration_status)
+  {
+    ROS_WARN("stop_trajectory_duration has not been explicitly stated in the controller yaml. Using default of 0.0");
+  }
   for (auto it = this->joint_names.begin(); it != this->joint_names.end(); it++)
   {
     double joint_tolerance;
-    if (n->getParam(controller_path + "/constraints/" + *it + "/trajectory",
-                    joint_tolerance))
+    if (n->getParam(controller_path + "/constraints/" + *it + "/trajectory", joint_tolerance))
     {
       this->trajectory_tolerances[*it] = joint_tolerance;
     }
