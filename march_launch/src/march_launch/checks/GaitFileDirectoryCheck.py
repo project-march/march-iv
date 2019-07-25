@@ -1,4 +1,5 @@
 import rospy
+import rospkg
 from march_launch.Color import Color
 from LaunchCheck import LaunchCheck
 
@@ -16,6 +17,12 @@ class GaitFileDirectoryCheck(LaunchCheck):
         self.stop_launch_process()
         package_name = self.get_key_from_parameter_server("/march/gait_file_package")
         file_directory = self.get_key_from_parameter_server("/march/gait_file_directory")
+
+        try:
+            rospkg.RosPack().get_path(package_name)
+        except rospkg.common.ResourceNotFound:
+            self.log("Package " + str(package_name) + " not found on local machine.", Color.Error)
+            self.fail_check()
 
         self.log("Package name: " + str(package_name), Color.Info)
         self.log("Gait file directory: " + str(file_directory), Color.Info)
