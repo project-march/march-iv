@@ -1,6 +1,3 @@
-import os
-import subprocess
-
 import rospy
 from march_launch.Color import Color
 from LaunchCheck import LaunchCheck
@@ -16,13 +13,7 @@ class SlaveCountCheck(LaunchCheck):
 
         rospy.sleep(rospy.Duration.from_sec(5))
         self.stop_launch_process()
-        try:
-            slave_count = rospy.get_param("/check/slave_count")
-        except KeyError:
-            self.log("Could not find key /check/slave_count", Color.Error)
-            self.passed = False
-            self.done = True
-            return
+        slave_count = self.get_key_from_parameter_server("/check/slave_count")
 
         self.log("Ethercat found " + str(slave_count) + " slave(s)", Color.Info)
         self.passed = slave_count > 0

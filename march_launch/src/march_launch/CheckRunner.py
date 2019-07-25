@@ -1,16 +1,17 @@
 import rospy
 
-from checks.DefaultCheck import DefaultCheck
-from checks.URDFCheck import URDFCheck
-from checks.SlaveCountCheck import SlaveCountCheck
 from Color import Color
 from SoftwareCheckThread import SoftwareCheckThread
 from python_qt_binding.QtWidgets import QMessageBox
 
+from checks.GaitFileDirectoryCheck import GaitFileDirectoryCheck
+from checks.URDFCheck import URDFCheck
+from checks.SlaveCountCheck import SlaveCountCheck
+
 
 class CheckRunner:
     def __init__(self, logger=None):
-        self.checks = [DefaultCheck(), URDFCheck(), SlaveCountCheck()]
+        self.checks = [GaitFileDirectoryCheck(), URDFCheck(), SlaveCountCheck()]
         for check in self.checks:
             check.log_signal.connect(lambda msg, color: self.log(msg, color))
         self.logger = logger
