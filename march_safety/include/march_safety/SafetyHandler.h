@@ -32,7 +32,7 @@ public:
 
   void publishStopTrajectory();
 
-  void stopController(const std::string& stop_controller);
+  bool stopController(const std::string& stop_controller,  float stop_trajectory_duration);
 };
 
 #endif  // MARCH_WS_SAFETYHANDLER_H

@@ -59,22 +59,32 @@ void SafetyHandler::publishStopTrajectory()
   stop_trajectory_publisher->publish(empty_trajectory);
 }
 
-void SafetyHandler::stopController(const std::string& stop_controller)
+bool SafetyHandler::stopController(const std::string& stop_controller, float stop_trajectory_duration)
 {
   // stopping the controller will execute one last update() call once. Depending on the interface either the position
   // command or the effort command will afterwards stay constant
-  ros::ServiceClient client =
-      this->n->serviceClient<controller_manager_msgs::SwitchController>(ros::this_node::getNamespace() + "/controller_manager/switch_controller");
+  ros::ServiceClient client = this->n->serviceClient<controller_manager_msgs::SwitchController>(
+      ros::this_node::getNamespace() + "/controller_manager/switch_controller");
   controller_manager_msgs::SwitchController ctr = controller_manager_msgs::SwitchController();
+
   ROS_INFO("service name: %s", client.getService().c_str());
+
   ctr.request.stop_controllers.clear();
   ctr.request.start_controllers.clear();
   ctr.request.stop_controllers.push_back(stop_controller);
   ctr.request.strictness = controller_manager_msgs::SwitchController::Request::STRICT;
+
+  // sleep to give trajectory controller time to register ABORT message to any client server connected
+  ros::Duration(0.05).sleep();
+
+    //publish empty trajectory to induce position hold mode and wait for the time specified need to enter the mode
+  publishStopTrajectory();
+  ros::Duration(stop_trajectory_duration).sleep();
+
   while (!client.exists())
   {
     ROS_INFO("waiting for controller manager service");
-    sleep(1);
+      ros::Duration(0.1).sleep();;
   }
 
   while (!client.call(ctr))
@@ -82,5 +92,5 @@ void SafetyHandler::stopController(const std::string& stop_controller)
     publishStopTrajectory();
   }
   ROS_INFO("the %s controller has been stopped", stop_controller.c_str());
-  ;
+  return true;
 }
