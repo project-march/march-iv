@@ -19,7 +19,7 @@ class TrajectorySafety : public SafetyType
     std::string controller_path;
     float stop_trajectory_duration;
     std::map< std::string, double> trajectory_tolerances;
-    std::map< std::string, double>  position_errors ;
+    std::map< std::string, double>  position_errors;
     ros::Subscriber trajectory_subscriber;
 
     void trajectoryCallback(const control_msgs::JointTrajectoryControllerStateConstPtr& msg);

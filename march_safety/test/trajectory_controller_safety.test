@@ -36,9 +36,7 @@
     </node>
 
     <!-- Controller test -->
-    <test test-name="joint_trajectory_controller_test"
+    <test test-name="march_safety_test"
           pkg="march_safety"
-          type="march_safety-trajectory-test"
-          args='--gtest_filter="$(arg gtest_filter)"'
-          time-limit="85.0"/>
+          type="march_safety-trajectory-test"/>
 </launch>
