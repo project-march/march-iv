@@ -15,6 +15,7 @@ from march_rqt_input_device.LayoutBuilder import LayoutBuilder
 
 from march_rqt_input_device.PublishAliveThread import PublishAliveThread
 
+
 class InputDevicePlugin(Plugin):
 
     def __init__(self, context):
@@ -73,42 +74,52 @@ class InputDevicePlugin(Plugin):
                                        callback=lambda: self.publish_gait(
                                            "gait_walk"))
         gait_single_step_small_button = MarchButton(name="gait_single_step_small",
-                                       text="Single step small",
-                                       callback=lambda: self.publish_gait(
-                                           "gait_single_step_small"))
+                                                    text="Single step small",
+                                                    callback=lambda: self.publish_gait(
+                                                        "gait_single_step_small"))
         gait_single_step_normal_button = MarchButton(name="gait_single_step_normal",
-                                                    text="Single step normal",
-                                                    callback=lambda: self.publish_gait(
-                                                        "gait_single_step_normal"))
+                                                     text="Single step normal",
+                                                     callback=lambda: self.publish_gait(
+                                                         "gait_single_step_normal"))
         gait_side_step_left_button = MarchButton(name="gait_side_step_left",
-                                                    text="Side step left",
-                                                    callback=lambda: self.publish_gait(
-                                                        "gait_side_step_left"))
-        gait_side_step_right_button = MarchButton(name="gait_side_step_right",
-                                                 text="Side step right",
+                                                 text="Side step left",
                                                  callback=lambda: self.publish_gait(
-                                                     "gait_side_step_right"))
+                                                     "gait_side_step_left"))
+        gait_side_step_right_button = MarchButton(name="gait_side_step_right",
+                                                  text="Side step right",
+                                                  callback=lambda: self.publish_gait(
+                                                      "gait_side_step_right"))
         gait_stand_button = MarchButton(name="gait_stand",
                                         image="/gait_stand.png",
                                         callback=lambda: self.publish_gait(
                                             "gait_stand"))
         gait_sofa_stand_button = MarchButton(name="gait_sofa_stand",
                                              text="Sofa stand",
-                                        callback=lambda: self.publish_gait(
-                                            "gait_sofa_stand"))
-        gait_sofa_sit_button = MarchButton(name="gait_sofa_sit",
-                                             text="Sofa sit",
                                              callback=lambda: self.publish_gait(
-                                                 "gait_sofa_sit"))
-
-
+                                                 "gait_sofa_stand"))
+        gait_sofa_sit_button = MarchButton(name="gait_sofa_sit",
+                                           text="Sofa sit",
+                                           callback=lambda: self.publish_gait(
+                                               "gait_sofa_sit"))
+        gait_stairs_up_button = MarchButton(name="gait_stairs_up",
+                                            text="Stairs up",
+                                            callback=lambda: self.publish_gait(
+                                                "gait_stairs_up"))
+        gait_stairs_down_button = MarchButton(name="gait_stairs_down",
+                                              text="Stairs down",
+                                              callback=lambda: self.publish_gait(
+                                                  "gait_stairs_down"))
+        gait_stairs_down_final_step_button = MarchButton(name="gait_stairs_down_final_step",
+                                                         text="Stairs down final step",
+                                                         callback=lambda: self.publish_gait(
+                                                             "gait_stairs_down_final_step"))
 
         stop_button = MarchButton(name="gait_stop", image="/stop.png",
                                   callback=lambda: self.publish_stop())
         pause_button = MarchButton(name="gait_pause", text="Pause",
-                                  callback=lambda: self.publish_pause())
+                                   callback=lambda: self.publish_pause())
         continue_button = MarchButton(name="gait_continue", text="Continue",
-                                  callback=lambda: self.publish_continue())
+                                      callback=lambda: self.publish_continue())
 
         error_button = MarchButton(name="error", image="/error.png",
                                    callback=lambda: self.publish_error())
@@ -118,8 +129,9 @@ class InputDevicePlugin(Plugin):
         march_button_layout = [
             [home_sit_button, home_stand_button, gait_walk_button],
             [gait_sit_button, gait_stand_button, gait_single_step_normal_button],
-            [gait_sofa_sit_button, gait_sofa_stand_button, gait_single_step_small_button,],
-            [gait_side_step_left_button, gait_side_step_right_button, stop_button],
+            [gait_sofa_sit_button, gait_sofa_stand_button, gait_single_step_small_button],
+            [gait_side_step_left_button, gait_side_step_right_button, gait_stairs_up_button],
+            [gait_stairs_down_button, gait_stairs_down_final_step_button, stop_button],
             [pause_button, continue_button, error_button],
         ]
 
