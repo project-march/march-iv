@@ -50,7 +50,7 @@ void InputDeviceSafety::update()
     // Check if the alive msg is not timestamped with a future time.
     // This can happen when one node is using sim_tim and others aren't.
     // Add small margin to take the stamp offset between board and PC into account
-    if (ros::Time::now() + ros::Duration(0.02) < time_last_alive)
+    if (ros::Time::now() + ros::Duration(0.5) < time_last_alive)
     {
       std::ostringstream message_stream;
       message_stream << "Input Device Connection message is from the future. Current time: " << ros::Time::now().toSec()
