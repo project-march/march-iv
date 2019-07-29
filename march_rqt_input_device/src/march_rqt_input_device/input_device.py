@@ -130,7 +130,7 @@ class InputDevicePlugin(Plugin):
             [home_sit_button, home_stand_button, gait_walk_button],
             [gait_sit_button, gait_stand_button, gait_single_step_normal_button],
             [gait_sofa_sit_button, gait_sofa_stand_button, gait_single_step_small_button],
-            [gait_side_step_left_button, gait_side_step_right_button, gait_stairs_up_button]
+            [gait_side_step_left_button, gait_side_step_right_button, gait_stairs_up_button],
             [gait_stairs_down_button, gait_stairs_down_final_step_button, stop_button],
             [pause_button, continue_button, error_button],
         ]
