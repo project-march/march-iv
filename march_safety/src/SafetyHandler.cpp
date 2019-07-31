@@ -66,13 +66,13 @@ void SafetyHandler::publishStopTrajectory()
   stop_trajectory_publisher->publish(empty_trajectory);
 }
 
-void SafetyHandler::publishStopController(const std::string& stop_controller) {
+void SafetyHandler::publishStopController(const std::string& stop_controller)
+{
+  std::ostringstream message_stream;
+  message_stream << stop_controller << " controller has been stopped";
+  std::string error_message = message_stream.str();
 
-    std::ostringstream message_stream;
-    message_stream << stop_controller << " controller has been stopped";
-    std::string error_message = message_stream.str();
-
- publishErrorMessage(error_message,march_shared_resources::Error::NON_FATAL);
+  publishErrorMessage(error_message, march_shared_resources::Error::NON_FATAL);
 }
 
 std::string SafetyHandler::getControllerStatus(const std::string& controller_name)
