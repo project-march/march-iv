@@ -13,6 +13,15 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
   bool stop_trajectory_duration_status =
       n->getParam(controller_path + "/stop_trajectory_duration", this->stop_trajectory_duration);
 
+  //check whether the controller is available, through the use of an action client
+
+  traj_client_ = new TrajClient(controller_path, true);
+
+    // wait for action server to come up
+  if (!traj_client_->waitForServer(ros::Duration(1.0))){
+      ROS_FATAL("either the controller is unavailable, or the controller path is incorrect");
+  }
+
   this->trajectory_subscriber = n->subscribe<control_msgs::JointTrajectoryControllerState>(
       controller_path + "/state", 1000, &TrajectorySafety::trajectoryCallback, this);
 
