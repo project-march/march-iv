@@ -25,13 +25,14 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
   this->trajectory_subscriber = n->subscribe<control_msgs::JointTrajectoryControllerState>(
       controller_path + "/state", 1000, &TrajectorySafety::trajectoryCallback, this);
 
-  if (stop_trajectory_duration < 0)
+  if (this->stop_trajectory_duration < 0)
   {
     ROS_FATAL("stop_trajectory_duration has been set below zero ");
   }
   if (!stop_trajectory_duration_status)
   {
     ROS_WARN("stop_trajectory_duration has not been explicitly stated in the controller yaml. Using default of 0.0");
+    this->stop_trajectory_duration = 0;
   }
   for (auto it = this->joint_names.begin(); it != this->joint_names.end(); it++)
   {
