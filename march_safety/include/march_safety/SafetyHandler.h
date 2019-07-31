@@ -37,6 +37,8 @@ public:
 
   void publishStopTrajectory();
 
+  void publishStopController(const std::string& stop_controller);
+
   std::string getControllerStatus(const std::string& controller_name);
 
   void stopController(const std::string& stop_controller, float stop_trajectory_duration);

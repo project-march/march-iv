@@ -66,6 +66,15 @@ void SafetyHandler::publishStopTrajectory()
   stop_trajectory_publisher->publish(empty_trajectory);
 }
 
+void SafetyHandler::publishStopController(const std::string& stop_controller) {
+
+    std::ostringstream message_stream;
+    message_stream << stop_controller << " controller has been stopped";
+    std::string error_message = message_stream.str();
+
+ publishErrorMessage(error_message,march_shared_resources::Error::NON_FATAL);
+}
+
 std::string SafetyHandler::getControllerStatus(const std::string& controller_name)
 {
   ros::ServiceClient client = n->serviceClient<controller_manager_msgs::ListControllers>(
@@ -117,5 +126,6 @@ void SafetyHandler::stopController(const std::string& stop_controller, float sto
   }
 
   client.call(ctr);
+  publishStopController(stop_controller);
   ROS_INFO("the %s controller has been stopped", stop_controller.c_str());
 }
