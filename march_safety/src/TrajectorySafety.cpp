@@ -27,7 +27,7 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
 
   if (stop_trajectory_duration < 0)
   {
-    ROS_WARN("stop_trajectory_duration has been set below zero ");
+    ROS_FATAL("stop_trajectory_duration has been set below zero ");
   }
   if (!stop_trajectory_duration_status)
   {
@@ -41,7 +41,7 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
       this->trajectory_tolerances[*it] = joint_tolerance;
     }
     else
-      ROS_WARN("tolerance of joint %s cannot be found. Make sure it is indicated in the controller yaml",
+      ROS_FATAL("tolerance of joint %s cannot be found. Make sure it is indicated in the controller yaml",
                getJointName(it).c_str());
   }
 }
