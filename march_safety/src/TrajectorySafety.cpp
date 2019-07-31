@@ -13,12 +13,11 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
   bool stop_trajectory_duration_status =
       n->getParam(controller_path + "/stop_trajectory_duration", this->stop_trajectory_duration);
 
-  // check whether the controller is available, through the use of an action client
-  controller_client = new ControllerClient(controller_path + "/follow_joint_trajectory", true);
+//  // check whether the controller is available, through the use of an action client
+//  controller_client = new ControllerClient(controller_path + "/follow_joint_trajectory", true);
 
   // wait for action server to come up, if so the controller is available
-  ros::Duration(0.5).sleep();
-  if (!controller_client->isServerConnected())
+  if ((this->safety_handler->getControllerStatus(controller_name)) == "unknown")
   {
     ROS_FATAL("either the controller is unavailable, or the controller path is incorrect");
     std::runtime_error("controller safety is unavailable, due to controller unavailable or wrong controller path");
