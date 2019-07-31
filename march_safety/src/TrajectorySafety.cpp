@@ -20,6 +20,7 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
   if (!controller_client->waitForServer(ros::Duration(1.0)))
   {
     ROS_FATAL("either the controller is unavailable, or the controller path is incorrect");
+    std::runtime_error("controller safety is unavailable, due to controller unavailable or wrong controller path");
   }
 
   this->trajectory_subscriber = n->subscribe<control_msgs::JointTrajectoryControllerState>(
