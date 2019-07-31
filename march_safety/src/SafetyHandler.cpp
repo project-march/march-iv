@@ -90,7 +90,7 @@ std::string SafetyHandler::getControllerStatus(const std::string& controller_nam
       return it.state;
     }
   }
-    return "not found";
+    return "unknown";
 }
 
 void SafetyHandler::stopController(const std::string& stop_controller, float stop_trajectory_duration)
