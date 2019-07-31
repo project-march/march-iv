@@ -8,11 +8,11 @@
 #include "SafetyHandler.h"
 #include "control_msgs/JointTrajectoryControllerState.h"
 #include <actionlib/client/simple_action_client.h>
-#include <control_msgs/JointControllerState.h>
+#include <control_msgs/FollowJointTrajectoryAction.h>
 
 #include <march_shared_resources/TopicNames.h>
 
-typedef actionlib::SimpleActionClient<control_msgs::JointControllerState> TrajClient;
+typedef actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> ControllerClient;
 
 class TrajectorySafety : public SafetyType
 {
@@ -25,7 +25,7 @@ class TrajectorySafety : public SafetyType
     std::map< std::string, double> trajectory_tolerances;
     std::map< std::string, double>  position_errors;
     ros::Subscriber trajectory_subscriber;
-    TrajClient *traj_client_;
+    ControllerClient *controller_client;
 
     void trajectoryCallback(const control_msgs::JointTrajectoryControllerStateConstPtr& msg);
     void toleranceCheck();
