@@ -60,7 +60,7 @@ generate_messages(
 )
 
 catkin_package(
-        INCLUDE_DIRS include
+#        INCLUDE_DIRS include
         #LIBRARIES march_shared_resources
         CATKIN_DEPENDS
         actionlib_msgs
