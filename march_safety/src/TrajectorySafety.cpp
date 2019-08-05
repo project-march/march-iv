@@ -48,11 +48,10 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
 
 void TrajectorySafety::trajectoryCallback(const control_msgs::JointTrajectoryControllerStateConstPtr& msg)
 {
-  int counter = 0;
-  for (auto it = msg->joint_names.begin(); it != msg->joint_names.end(); ++it)
+  for (int i = 0; i < joint_names.size(); i++)
   {
-    this->position_errors[*it] = msg->error.positions[counter];
-    counter++;
+    std::string joint_name = joint_names[i];
+    this->position_errors[joint_name] = msg->error.positions[i];
   }
   toleranceCheck();
 }
