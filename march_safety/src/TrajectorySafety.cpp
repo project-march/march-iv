@@ -50,8 +50,8 @@ void TrajectorySafety::trajectoryCallback(const control_msgs::JointTrajectoryCon
 {
   if (joint_names.size() != msg->joint_names.size())
   {
-      ROS_FATAL("the size of joint_names and msg size is not the same");
-      std::runtime_error("joint_names size is not equal to message size");
+    ROS_FATAL("the size of joint_names and msg size is not the same");
+    std::runtime_error("joint_names size is not equal to message size");
   }
 
   for (int i = 0; i < joint_names.size(); i++)
