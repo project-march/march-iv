@@ -33,11 +33,11 @@ int main(int argc, char** argv)
       n.advertise<march_shared_resources::GaitInstruction>("/march/input_device/instruction", 1000);
 
   n.getParam(ros::this_node::getName() + std::string("/controller_name"), controller_name);
-  ros::Publisher stop_trajectory_publisher =
+  ros::Publisher trajectory_publisher =
       n.advertise<trajectory_msgs::JointTrajectory>("/" + controller_name + "/command", 1000);
 
   SafetyHandler safetyHandler =
-      SafetyHandler(&n, &error_publisher, &sound_publisher, &gait_instruction_publisher, &stop_trajectory_publisher);
+      SafetyHandler(&n, &error_publisher, &sound_publisher, &gait_instruction_publisher, &trajectory_publisher);
 
   std::vector<std::unique_ptr<SafetyType>> safety_list;
   int count = 0;

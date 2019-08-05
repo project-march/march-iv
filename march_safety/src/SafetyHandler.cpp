@@ -2,12 +2,12 @@
 #include "march_safety/SafetyHandler.h"
 
 SafetyHandler::SafetyHandler(ros::NodeHandle* n, ros::Publisher* error_publisher, ros::Publisher* sound_publisher,
-                             ros::Publisher* gait_instruction_publisher, ros::Publisher* stop_trajectory_publisher)
+                             ros::Publisher* gait_instruction_publisher, ros::Publisher* trajectory_publisher)
   : n(n)
   , error_publisher(error_publisher)
   , sound_publisher(sound_publisher)
   , gait_instruction_publisher(gait_instruction_publisher)
-  , stop_trajectory_publisher(stop_trajectory_publisher)
+  , trajectory_publisher(trajectory_publisher)
 {
 }
 
@@ -63,7 +63,7 @@ void SafetyHandler::publishStopTrajectory()
 {
   empty_trajectory.points.clear();
   empty_trajectory.joint_names.clear();
-  stop_trajectory_publisher->publish(empty_trajectory);
+  trajectory_publisher->publish(empty_trajectory);
 }
 
 void SafetyHandler::publishStopController(const std::string& stop_controller)
