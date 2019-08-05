@@ -81,13 +81,6 @@ file(GLOB_RECURSE lintfiles
 
 roslint_cpp(${lintfiles})
 
-## Install project namespaced headers
-install(DIRECTORY include/${PROJECT_NAME}/
-        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-        FILES_MATCHING PATTERN "*.h"
-        PATTERN ".svn" EXCLUDE)
-
-
 include_directories(
         #include
         ${catkin_INCLUDE_DIRS}
