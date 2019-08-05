@@ -30,10 +30,15 @@ void doneCallback(const actionlib::SimpleClientGoalState& state,
                   const control_msgs::FollowJointTrajectoryResultConstPtr& result)
 {
   ROS_DEBUG("Gait trajectory execution DONE");
-  if (scheduleGaitActionServer->isActive())
+  if (result->error_code == result->SUCCESSFUL)
   {
     scheduleGaitActionServer->setSucceeded();
-    ROS_WARN("Schedule gait action SUCCEEDED");
+    ROS_INFO("Schedule gait action SUCCEEDED");
+  }
+  else
+  {
+    scheduleGaitActionServer->setAborted();
+    ROS_WARN("Schedule gait action FAILED, FollowJointTrajectory error_code is %d ", result->error_code);
   }
 }
 
