@@ -1,6 +1,5 @@
 // Copyright 2019 Project March.
 
-#include <control_msgs/JointTrajectoryControllerState.h>
 #include "march_safety/TrajectorySafety.h"
 
 TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_handler,
