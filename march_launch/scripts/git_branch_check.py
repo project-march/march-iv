@@ -1,0 +1,22 @@
+#!/usr/bin/env python
+import os
+
+import rospkg
+import rospy
+from pygit2 import Repository, GitError
+
+result = []
+
+march_launch_path = rospkg.RosPack().get_path("march_launch")
+head = os.path.split(march_launch_path)[0]
+source_path = os.path.split(head)[0]
+
+for repository_name in os.listdir(source_path):
+    repository_path = os.path.join(source_path, repository_name)
+    try:
+        branch_name = Repository(repository_path).head.shorthand
+        result.append([repository_name, branch_name])
+    except GitError as e:
+        pass
+
+rospy.set_param("/checks/git_branch", result)

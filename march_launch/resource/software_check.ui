@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>859</width>
-    <height>459</height>
+    <width>1109</width>
+    <height>796</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -114,6 +114,19 @@ URDF Check</string>
            </property>
            <property name="text">
             <string>Slave Count</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="GitBranch">
+           <property name="minimumSize">
+            <size>
+             <width>150</width>
+             <height>150</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>Git Branch</string>
            </property>
           </widget>
          </item>
