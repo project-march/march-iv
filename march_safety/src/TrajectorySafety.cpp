@@ -44,6 +44,8 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
     {
       ROS_FATAL("tolerance of joint %s cannot be found. Make sure it is indicated in the controller yaml",
                 getJointName(it).c_str());
+      std::runtime_error("controller safety is unavailable, due to controller tolerance unavailable for joint:" +
+                         getJointName(it));
     }
   }
 }
