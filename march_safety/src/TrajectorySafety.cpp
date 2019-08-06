@@ -17,7 +17,7 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
   // wait for action server to come up, if so the controller is available
   if ((this->safety_handler->getControllerStatus(controller_name)) == "unknown")
   {
-    ROS_FATAL("either the controller is unavailable, or the controller path is incorrect");
+    ROS_FATAL("either the controller is unavailable, or the controller path is incorrect: %s", controller_path.c_str());
     std::runtime_error("controller safety is unavailable, due to controller unavailable or wrong controller path");
   }
 
