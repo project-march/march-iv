@@ -41,8 +41,10 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
       this->trajectory_tolerances[*it] = joint_tolerance;
     }
     else
+    {
       ROS_FATAL("tolerance of joint %s cannot be found. Make sure it is indicated in the controller yaml",
                 getJointName(it).c_str());
+    }
   }
 }
 
