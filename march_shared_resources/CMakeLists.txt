@@ -71,16 +71,6 @@ catkin_package(
         #DEPENDS system_lib
 )
 
-# Roslinter
-set(ROSLINT_CPP_OPTS "--filter=-build/include,-build/header_guard,-runtime/references" "--linelength=120")
-
-file(GLOB_RECURSE lintfiles
-        "src/*.cpp"
-        "src/*.h"
-        )
-
-roslint_cpp(${lintfiles})
-
 include_directories(
         #include
         ${catkin_INCLUDE_DIRS}
