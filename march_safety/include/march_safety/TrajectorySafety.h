@@ -1,4 +1,4 @@
-// Copyright 2018 Project March.
+// Copyright 2019 Project March.
 
 #ifndef SRC_TRAJECTORYSAFETY_H
 #define SRC_TRAJECTORYSAFETY_H
