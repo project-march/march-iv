@@ -4,7 +4,6 @@
 #include "ros/ros.h"
 #include <iostream>
 #include <std_msgs/Time.h>
-#include <march_shared_resources/TopicNames.h>
 
 #include <march_safety/TemperatureSafety.h>
 #include "ErrorCounter.cpp"
