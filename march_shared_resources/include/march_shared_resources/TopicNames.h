@@ -48,7 +48,6 @@ const char* const gait_denied = "march/gait/denied";
 const char* const follow_joint_trajectory_execution = "/march/trajectory_controller/follow_joint_trajectory/goal";
 const char* const follow_joint_trajectory_execution_states = "/march/trajectory_controller/follow_joint_trajectory/"
                                                              "feedback";
-const char* const trajectory_controller = "/march/trajectory_controller";
 
 // TODO(Tim): remove the old controller command topics
 const char* const right_ankle_position = "march/right_ankle_position_controller/command";
