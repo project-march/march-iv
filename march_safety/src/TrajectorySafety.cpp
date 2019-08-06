@@ -7,7 +7,7 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
   : safety_handler(safety_handler), joint_names(std::move(joint_names))
 {
   n->getParam(ros::this_node::getName() + std::string("/controller_name"), this->controller_name);
-  controller_path = "/" + controller_name;
+  controller_path = ros::this_node::getNamespace() + "/" + controller_name;
 
   bool stop_trajectory_duration_status =
       n->getParam(controller_path + "/stop_trajectory_duration", this->stop_trajectory_duration);
