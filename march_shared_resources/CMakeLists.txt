@@ -60,7 +60,7 @@ generate_messages(
 )
 
 catkin_package(
-        INCLUDE_DIRS include
+#        INCLUDE_DIRS include
         #LIBRARIES march_shared_resources
         CATKIN_DEPENDS
         actionlib_msgs
@@ -70,23 +70,6 @@ catkin_package(
         trajectory_msgs
         #DEPENDS system_lib
 )
-
-# Roslinter
-set(ROSLINT_CPP_OPTS "--filter=-build/include,-build/header_guard,-runtime/references" "--linelength=120")
-
-file(GLOB_RECURSE lintfiles
-        "src/*.cpp"
-        "src/*.h"
-        )
-
-roslint_cpp(${lintfiles})
-
-## Install project namespaced headers
-install(DIRECTORY include/${PROJECT_NAME}/
-        DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-        FILES_MATCHING PATTERN "*.h"
-        PATTERN ".svn" EXCLUDE)
-
 
 include_directories(
         #include
