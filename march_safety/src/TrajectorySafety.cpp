@@ -26,7 +26,7 @@ TrajectorySafety::TrajectorySafety(ros::NodeHandle* n, SafetyHandler* safety_han
 
   if (this->stop_trajectory_duration < 0)
   {
-    ROS_FATAL("stop_trajectory_duration has been set below zero ");
+    ROS_WARN("stop_trajectory_duration has been set below zero, stopping will be immediate ");
   }
   if (!stop_trajectory_duration_status)
   {
