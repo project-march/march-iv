@@ -10,7 +10,6 @@
 #include <actionlib/client/simple_action_client.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
 
-#include <march_shared_resources/TopicNames.h>
 
 class TrajectorySafety : public SafetyType
 {
