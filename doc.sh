@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-packages="march_description march_gait_scheduler march_sound_scheduler march_gait_selection march_launch march_safety march_shared_resources"
+packages="march_description march_gait_scheduler march_sound_scheduler march_gait_selection march_launch march_safety"
 
 mkdir -p docs/html
 for package in $packages; do

@@ -1,6 +1,5 @@
 // Copyright 2019 Project March.
 
-#include <march_shared_resources/TopicNames.h>
 #include "gtest/gtest.h"
 #include "ros/ros.h"
 #include <march_safety/TemperatureSafety.h>
