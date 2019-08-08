@@ -17,7 +17,6 @@
 
 #include <march_shared_resources/GaitAction.h>
 #include <march_shared_resources/GaitGoal.h>
-#include <march_shared_resources/TopicNames.h>
 #include <march_gait_scheduler/Scheduler.h>
 #include <march_gait_scheduler/SchedulerConfig.h>
 
@@ -128,7 +127,7 @@ int main(int argc, char** argv)
   dynamic_reconfigure::Server<march_gait_scheduler::SchedulerConfig> server;
   server.setCallback(boost::bind(&schedulerConfigCallback, _1, _2));
 
-  scheduleGaitActionServer = new ScheduleGaitActionServer(n, ActionNames::schedule_gait, &scheduleGaitCallback, false);
+  scheduleGaitActionServer = new ScheduleGaitActionServer(n, "march/gait/schedule", &scheduleGaitCallback, false);
   scheduleGaitActionServer->start();
 
   ros::spin();

@@ -81,7 +81,7 @@ void TemperatureSafety::createSubscribers()
   {
     // Use boost::bind to pass on the sensor_name as extra parameter to the callback method
     ros::Subscriber subscriber_temperature = n.subscribe<sensor_msgs::Temperature>(
-        std::string(TopicNames::temperature) + "/" + joint_name, 1000,
+        "march/temperature/" + joint_name, 1000,
         boost::bind(&TemperatureSafety::temperatureCallback, this, _1, joint_name));
 
     temperature_subscribers.push_back(subscriber_temperature);
