@@ -15,5 +15,7 @@
             args="-a"
     />
 
-    <include file="$(find march_state_machine)/launch/march_state_machine.launch"/>
+    <include file="$(find march_state_machine)/launch/march_state_machine.launch">
+        <arg name="state_machine_viewer" value="false" />
+    </include>
 </launch>
