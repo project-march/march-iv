@@ -1,3 +1,6 @@
 <launch>
+    <arg name="ping_safety_node" default="true"/>
+
+    <rosparam param="ping_safety_node" subst_value="true">$(arg ping_safety_node)</rosparam>
     <node name="rqt_input_device" pkg="march_rqt_input_device" type="rqt_input_device" output="screen"/>
 </launch>

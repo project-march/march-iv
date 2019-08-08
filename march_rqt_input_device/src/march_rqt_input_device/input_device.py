@@ -152,8 +152,9 @@ class InputDevicePlugin(Plugin):
 
         self.error_pub = rospy.Publisher('march/error', Error, queue_size=10)
 
-        self.alive_thread = PublishAliveThread()
-        self.alive_thread.start()
+        if rospy.get_param("ping_safety_node", "true"):
+            self.alive_thread = PublishAliveThread()
+            self.alive_thread.start()
 
     def shutdown_plugin(self):
         self.alive_thread.stop()
