@@ -29,6 +29,10 @@ Scheduler* scheduler;
 void doneCallback(const actionlib::SimpleClientGoalState& state,
                   const control_msgs::FollowJointTrajectoryResultConstPtr& result)
 {
+  if(!scheduleGaitActionServer->isActive()){
+    return;
+  }
+
   ROS_DEBUG("Gait trajectory execution DONE");
   if (result->error_code == result->SUCCESSFUL)
   {
