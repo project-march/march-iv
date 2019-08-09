@@ -4,6 +4,9 @@
             launch_settings:
                 rqt_launch_menu: false
                 run_configuration: exoskeleton
+                input_device:
+                    real: true
+                    wireless: false
     </rosparam>
 
 
