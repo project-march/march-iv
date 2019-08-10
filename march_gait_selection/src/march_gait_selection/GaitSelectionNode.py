@@ -28,7 +28,7 @@ class PerformGaitAction(object):
         self.schedule_gait_client = actionlib.SimpleActionClient("march/gait/schedule", GaitAction)
 
     def target_gait_callback(self, goal):
-        rospy.loginfo("Trying to schedule subgait %s/%s", goal.name, goal.subgait_name)
+        rospy.logdebug("Trying to schedule subgait %s/%s", goal.name, goal.subgait_name)
         if not self.gait_selection.validate_gait_by_name(goal.name):
             rospy.logerr("Gait %s is invalid", goal.name)
             self.action_server.set_aborted("Gait " + str(goal.name) + "is invalid")
