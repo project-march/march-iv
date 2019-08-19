@@ -36,7 +36,7 @@ void TemperatureSafety::temperatureCallback(const sensor_msgs::TemperatureConstP
 
   std::string error_message = getErrorMessage(temperature, sensor_name);
 
-  // TODO(Olaf) this is a temporary fix, this should be fixed locally on the slaves ask Electro.
+  // TODO(Olav) this is a temporary fix, this should be fixed locally on the slaves ask Electro.
   if (temperature > 2000)
   {
     ROS_WARN("%s", error_message.c_str());
