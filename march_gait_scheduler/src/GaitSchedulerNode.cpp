@@ -2,18 +2,12 @@
 
 #include "ros/ros.h"
 #include <control_msgs/FollowJointTrajectoryAction.h>
-#include <fstream>
-#include <iostream>
 #include <ros/package.h>
-#include <sensor_msgs/JointState.h>
-#include <sensor_msgs/Temperature.h>
 #include <std_msgs/Float64.h>
 
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/server/simple_action_server.h>
-#include <boost/algorithm/string.hpp>
 #include <dynamic_reconfigure/server.h>
-#include <trajectory_msgs/JointTrajectory.h>
 
 #include <march_shared_resources/GaitAction.h>
 #include <march_shared_resources/GaitGoal.h>
@@ -89,7 +83,6 @@ void scheduleGaitCallback(const march_shared_resources::GaitGoalConstPtr& goal)
  */
 void schedulerConfigCallback(march_gait_scheduler::SchedulerConfig& config, uint32_t level)
 {
-  // Make sure there is always a possible interval between min and max temperature.
   scheduler->GAIT_SUCCEEDED_OFFSET = ros::Duration(config.gait_succeeded_offset);
 }
 
@@ -114,7 +107,6 @@ int main(int argc, char** argv)
     ROS_ERROR("Not connected to joint trajectory action server");
   }
 
-  // Make the temperature values dynamic reconfigurable
   dynamic_reconfigure::Server<march_gait_scheduler::SchedulerConfig> server;
   server.setCallback(boost::bind(&schedulerConfigCallback, _1, _2));
 

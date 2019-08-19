@@ -4,6 +4,9 @@
             launch_settings:
                 rqt_launch_menu: false
                 run_configuration: exoskeleton
+                input_device:
+                    real: true
+                    wireless: false
     </rosparam>
 
 
@@ -15,5 +18,7 @@
             args="-a"
     />
 
-    <include file="$(find march_state_machine)/launch/march_state_machine.launch"/>
+    <include file="$(find march_state_machine)/launch/march_state_machine.launch">
+        <arg name="state_machine_viewer" value="false" />
+    </include>
 </launch>

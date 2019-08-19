@@ -70,23 +70,23 @@ class InputDevicePlugin(Plugin):
                                       callback=lambda: self.publish_gait(
                                           "gait_sit"))
         gait_walk_button = MarchButton(name="gait_walk",
-                                       image="/gait_walk.png",
+                                       image="/gait_walk_normal.png",
                                        callback=lambda: self.publish_gait(
                                            "gait_walk"))
         gait_single_step_small_button = MarchButton(name="gait_single_step_small",
-                                                    text="Single step small",
+                                                    image="/gait_single_step_small.png",
                                                     callback=lambda: self.publish_gait(
                                                         "gait_single_step_small"))
         gait_single_step_normal_button = MarchButton(name="gait_single_step_normal",
-                                                     text="Single step normal",
+                                                     image="/gait_single_step_normal.png",
                                                      callback=lambda: self.publish_gait(
                                                          "gait_single_step_normal"))
         gait_side_step_left_button = MarchButton(name="gait_side_step_left",
-                                                 text="Side step left",
+                                                 image="/gait_side_step_left.png",
                                                  callback=lambda: self.publish_gait(
                                                      "gait_side_step_left"))
         gait_side_step_right_button = MarchButton(name="gait_side_step_right",
-                                                  text="Side step right",
+                                                  image="/gait_side_step_right.png",
                                                   callback=lambda: self.publish_gait(
                                                       "gait_side_step_right"))
         gait_stand_button = MarchButton(name="gait_stand",
@@ -94,25 +94,41 @@ class InputDevicePlugin(Plugin):
                                         callback=lambda: self.publish_gait(
                                             "gait_stand"))
         gait_sofa_stand_button = MarchButton(name="gait_sofa_stand",
-                                             text="Sofa stand",
+                                             image="/gait_sofa_stand_up.png",
                                              callback=lambda: self.publish_gait(
                                                  "gait_sofa_stand"))
         gait_sofa_sit_button = MarchButton(name="gait_sofa_sit",
-                                           text="Sofa sit",
+                                           image="/gait_sofa_sit.png",
                                            callback=lambda: self.publish_gait(
                                                "gait_sofa_sit"))
         gait_stairs_up_button = MarchButton(name="gait_stairs_up",
-                                            text="Stairs up",
+                                            image="/gait_stairs_up.png",
                                             callback=lambda: self.publish_gait(
                                                 "gait_stairs_up"))
         gait_stairs_down_button = MarchButton(name="gait_stairs_down",
-                                              text="Stairs down",
+                                              image="/gait_stairs_down.png",
                                               callback=lambda: self.publish_gait(
                                                   "gait_stairs_down"))
         gait_stairs_down_final_step_button = MarchButton(name="gait_stairs_down_final_step",
-                                                         text="Stairs down final step",
+                                                         image="/gait_stairs_down_final_step.png",
                                                          callback=lambda: self.publish_gait(
                                                              "gait_stairs_down_final_step"))
+        gait_slope_up_button = MarchButton(name="gait_slope_up",
+                                           image="/gait_slope_up.png",
+                                           callback=lambda: self.publish_gait(
+                                               "gait_slope_up"))
+        gait_slope_down_button = MarchButton(name="gait_slope_down",
+                                             image="/gait_slope_down.png",
+                                             callback=lambda: self.publish_gait(
+                                                 "gait_slope_down"))
+        gait_slope_down_final_step_button = MarchButton(name="gait_slope_down_final_step",
+                                                        image="/gait_slope_down_final_step.png",
+                                                        callback=lambda: self.publish_gait(
+                                                            "gait_slope_down_final_step"))
+        gait_single_high_step_button = MarchButton(name="gait_single_high_step",
+                                                   text="Single high step",
+                                                   callback=lambda: self.publish_gait(
+                                                       "gait_single_high_step"))
 
         stop_button = MarchButton(name="gait_stop", image="/stop.png",
                                   callback=lambda: self.publish_stop())
@@ -127,11 +143,12 @@ class InputDevicePlugin(Plugin):
         # The button layout.
         # Position in the array determines position on screen.
         march_button_layout = [
-            [home_sit_button, home_stand_button, gait_walk_button],
-            [gait_sit_button, gait_stand_button, gait_single_step_normal_button],
-            [gait_sofa_sit_button, gait_sofa_stand_button, gait_single_step_small_button],
-            [gait_side_step_left_button, gait_side_step_right_button, gait_stairs_up_button],
-            [gait_stairs_down_button, gait_stairs_down_final_step_button, stop_button],
+            [home_sit_button, home_stand_button, gait_walk_button, gait_sit_button],
+            [gait_stand_button, gait_single_step_normal_button, gait_sofa_sit_button, gait_sofa_stand_button],
+            [gait_single_step_small_button, gait_side_step_left_button, gait_side_step_right_button, gait_stairs_up_button],
+            [gait_stairs_down_button, gait_stairs_down_final_step_button, gait_single_high_step_button,
+             gait_slope_up_button],
+            [gait_slope_down_button, gait_slope_down_final_step_button, stop_button],
             [pause_button, continue_button, error_button],
         ]
 
@@ -152,8 +169,9 @@ class InputDevicePlugin(Plugin):
 
         self.error_pub = rospy.Publisher('march/error', Error, queue_size=10)
 
-        self.alive_thread = PublishAliveThread()
-        self.alive_thread.start()
+        if rospy.get_param("ping_safety_node", "true"):
+            self.alive_thread = PublishAliveThread()
+            self.alive_thread.start()
 
     def shutdown_plugin(self):
         self.alive_thread.stop()
