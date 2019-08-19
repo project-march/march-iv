@@ -36,6 +36,12 @@ void TemperatureSafety::temperatureCallback(const sensor_msgs::TemperatureConstP
 
   std::string error_message = getErrorMessage(temperature, sensor_name);
 
+  //TODO(Olaf) this is a temporary fix, this should be fixed locally on the slaves ask Electro.
+  if (temperature > 2000){
+    ROS_WARN("%s", error_message.c_str());
+    return;
+  }
+
   // If the threshold is exceeded raise an error
   if (temperature > getThreshold(sensor_name, fatal_temperature_thresholds_map))
   {
