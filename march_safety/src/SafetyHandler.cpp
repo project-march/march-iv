@@ -47,6 +47,7 @@ void SafetyHandler::publishFatal(std::string message)
 
   publishErrorMessage(message, march_shared_resources::Error::FATAL);
   publishErrorSound(march_shared_resources::Error::FATAL);
+  throw std::runtime_error(message);
 }
 
 void SafetyHandler::publishNonFatal(std::string message)
