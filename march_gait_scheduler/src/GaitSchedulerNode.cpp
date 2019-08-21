@@ -22,11 +22,20 @@ Scheduler* scheduler;
 void doneCallback(const actionlib::SimpleClientGoalState& state,
                   const control_msgs::FollowJointTrajectoryResultConstPtr& result)
 {
-  ROS_DEBUG("Gait trajectory execution DONE");
-  if (scheduleGaitActionServer->isActive())
+  if (!scheduleGaitActionServer->isActive() || scheduler->gaitDone)
+  {
+    ROS_INFO("Gait already done and action already ended");
+  }
+  if (result->error_code == result->SUCCESSFUL)
   {
     scheduleGaitActionServer->setSucceeded();
-    ROS_WARN("Schedule gait action SUCCEEDED");
+    ROS_WARN("Gait trajectory execution DONE, this should only happen when GAIT_SUCCEEDED_OFFSET is 0");
+    ROS_INFO("Schedule gait action SUCCEEDED");
+  }
+  else
+  {
+    scheduleGaitActionServer->setAborted();
+    ROS_WARN("Schedule gait action FAILED, FollowJointTrajectory error_code is %d ", result->error_code);
   }
 }
 
@@ -40,11 +49,18 @@ void feedbackCallback(const control_msgs::FollowJointTrajectoryFeedbackConstPtr&
   if (scheduler->getEndTimeCurrentGait().toSec() - feedback->header.stamp.toSec() <
       scheduler->GAIT_SUCCEEDED_OFFSET.toSec())
   {
-    if (scheduleGaitActionServer->isActive())
+    if (scheduler->getEndTimeCurrentGait().toSec() - feedback->header.stamp.toSec() < 0)
     {
-      scheduleGaitActionServer->setSucceeded();
-      ROS_DEBUG("Schedule gait action SUCCEEDED");
+      ROS_ERROR("Negative difference");
+      return;
     }
+    if (!scheduleGaitActionServer->isActive() || scheduler->gaitDone)
+    {
+      ROS_INFO("Gait already done and action already ended");
+    }
+    scheduler->gaitDone = true;
+    scheduleGaitActionServer->setSucceeded();
+    ROS_DEBUG("Schedule gait action SUCCEEDED");
   }
 }
 
@@ -57,6 +73,7 @@ void scheduleGaitCallback(const march_shared_resources::GaitGoalConstPtr& goal)
     control_msgs::FollowJointTrajectoryGoal trajectoryMsg =
         scheduler->scheduleGait(goal.get(), ros::Duration().fromSec(0));
     followJointTrajectoryAction->sendGoal(trajectoryMsg, &doneCallback, &activeCallback, &feedbackCallback);
+    scheduler->gaitDone = false;
     ROS_DEBUG("follow joint trajectory action called");
   }
   catch (std::runtime_error error)
