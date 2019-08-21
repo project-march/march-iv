@@ -75,12 +75,12 @@ TEST_F(AcceptanceTest, ScheduleOneGait)
   scheduleGaitAction.sendGoal(goal);
 
   ros::Rate rate(100);
-  double time_out_time = ros::Time::now().toSec() + 5;
+  double time_out_time = ros::Time::now().toSec() + 1;
   while (callbackCounter.count == 0)
   {
     if (ros::Time::now().toSec() > time_out_time)
     {
-      FAIL() << "Time out, callback not received in 5 seconds";
+      FAIL() << "Time out, callback not received in 1 second";
     }
     rate.sleep();
     ros::spinOnce();
