@@ -38,11 +38,11 @@ TEST_F(TestConnectionLost, connectionLost)
   timeMessage.data = ros::Time::now();
   pub_alive.publish(timeMessage);
   ros::spinOnce();
-  int sleep_ms = send_errors_interval * 9.5 + input_device_connection_timeout;
+  int sleep_ms = send_errors_interval * 0.9 + input_device_connection_timeout;
   ros::Duration(sleep_ms / 1000).sleep();
   ros::spinOnce();
 
-  EXPECT_EQ(9, errorCounter.count);
+  EXPECT_EQ(1, errorCounter.count);
 }
 
 /**
