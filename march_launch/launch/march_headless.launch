@@ -1,4 +1,15 @@
 <launch>
+    <arg name="hardware_interface" default="true"/>
+
+    <group if="$(arg hardware_interface)">
+        <rosparam>
+            march:
+                launch_settings:
+                    exoskeleton:
+                        hardware_interface: true
+        </rosparam>
+    </group>
+
     <rosparam>
         march:
             launch_settings:

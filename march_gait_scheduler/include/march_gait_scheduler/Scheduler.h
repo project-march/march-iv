@@ -24,6 +24,7 @@ public:
    * A gait is succeeded this duration before its actual completion.
    */
   ros::Duration GAIT_SUCCEEDED_OFFSET = ros::Duration(0.2);
+  bool gaitDone = false;
   ros::Time getEndTimeCurrentGait();
   control_msgs::FollowJointTrajectoryGoal scheduleGait(const march_shared_resources::GaitGoal* gaitGoal,
                                                        ros::Duration offset);

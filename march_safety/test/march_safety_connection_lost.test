@@ -5,8 +5,8 @@
 
     <node name="march_safety_node" pkg="march_safety" type="march_safety_node" output="screen">
         <rosparam>
-            input_device_connection_timeout: 1000
-            send_errors_interval: 1000
+            input_device_connection_timeout: 3000
+            send_errors_interval: 3000
         </rosparam>
     </node>
 

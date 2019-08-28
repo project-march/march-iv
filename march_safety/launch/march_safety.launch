@@ -8,11 +8,11 @@
             controller_name: "controller/trajectory"
         </rosparam>
         <rosparam param="temperature_thresholds_warning">
-            left_hip_aa: 40
+            left_hip_aa: 45
             left_hip_fe: 40
-            left_knee: 40
-            left_ankle: 40
-            right_hip_aa: 40
+            left_knee: 45
+            left_ankle: 45
+            right_hip_aa: 45
             right_hip_fe: 40
             right_knee: 40
             right_ankle: 40
