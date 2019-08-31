@@ -4,7 +4,7 @@
             name="record"
             type="record"
             output="screen"
-            args="-a"
+            args="-o /home/march/Documents/log_files/2019-08-31_training-16/.bag -a"
     />
 
     <include file="$(find march_state_machine)/launch/march_state_machine.launch"/>
