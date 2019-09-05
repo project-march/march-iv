@@ -43,7 +43,7 @@
 
     <xacro:property name="hip_aa_rotation_lower_limit" value="${-18*pi/180}"/> <!-- rad -->
     <xacro:property name="hip_aa_rotation_upper_limit" value="${17*pi/180}"/> <!-- rad -->
-    <xacro:property name="hip_aa_soft_buffer" value="${5*pi/180}"/> <!-- rad -->
+    <xacro:property name="hip_aa_soft_buffer" value="${3.5*pi/180}"/> <!-- rad -->
     <xacro:property name="hip_aa_effort_limit" value="${max_effort_value}"/> <!-- IU = 20 A -->
     <xacro:property name="hip_aa_velocity_limit" value="1.0"/> <!-- rad/s -->
 
