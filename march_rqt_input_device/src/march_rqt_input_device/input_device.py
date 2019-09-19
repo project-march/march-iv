@@ -6,7 +6,7 @@ import threading
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import QSize
-from python_qt_binding.QtWidgets import QWidget, QScrollArea
+from python_qt_binding.QtWidgets import QWidget
 from march_shared_resources.msg import Error
 from march_shared_resources.msg import GaitInstruction
 
