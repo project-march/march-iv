@@ -6,7 +6,7 @@ import threading
 from qt_gui.plugin import Plugin
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import QSize
-from python_qt_binding.QtWidgets import QWidget
+from python_qt_binding.QtWidgets import QWidget, QScrollArea
 from march_shared_resources.msg import Error
 from march_shared_resources.msg import GaitInstruction
 
@@ -205,11 +205,11 @@ class InputDevicePlugin(Plugin):
         layout_builder = LayoutBuilder(march_button_layout)
         qt_layout = layout_builder.build()
         # Apply the qt_layout to the top level widget.
-        self._widget.frame.setLayout(qt_layout)
+        self._widget.frame.findChild(QWidget, "content").setLayout(qt_layout)
 
         # Make the frame as tight as possible with spacing between the buttons.
         qt_layout.setSpacing(15)
-        self._widget.frame.adjustSize()
+        self._widget.frame.findChild(QWidget, "content").adjustSize()
 
         # ROS publishers.
         # It is important that you unregister them in the self.shutdown method.
