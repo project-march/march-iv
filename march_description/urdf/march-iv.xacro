@@ -14,19 +14,18 @@
     <xacro:property name="k_velocity_value" value="$(arg k_velocity_value)" />
 
     <!-- Constants for robot dimensions -->
-    <!-- TODO @Jitske: add accurate masses and inertia for all links -->
-    <xacro:property name="mass" value="1"/> <!-- arbitrary value for mass -->
+    <xacro:property name="mass" value="1"/>
     <xacro:property name="width" value="0.05"/> <!-- Square dimensions (widthxwidth) of beams -->
 
     <xacro:property name="upper_leg_height" value="${0.385}"/>
-    <xacro:property name="upper_leg_mass" value="1.080"/>
+    <xacro:property name="upper_leg_mass" value="6.860"/>
 
     <xacro:property name="lower_leg_height" value="${0.385}"/>
-    <xacro:property name="lower_leg_mass" value="1.133"/>
+    <xacro:property name="lower_leg_mass" value="2.637"/>
 
     <xacro:property name="foot_height_forward" value="${0.184}"/>
     <xacro:property name="foot_height_backward" value="${0.059}"/>
-    <xacro:property name="foot_mass" value="0.393"/>
+    <xacro:property name="foot_mass" value="0.847"/>
 
     <xacro:property name="ankle_plate_height" value="0.07"/>
 
@@ -89,13 +88,9 @@
 
     <joint name="left_hip_aa" type="revolute">
         <parent link="hip_base"/>
-        <child link="hip_aa_frame_left_side"/>
+        <child link="hip_aa_//frame_left_side"/>
         <origin xyz="0 ${-hip_base_height/2} 0" rpy="0 0 0"/>
         <axis xyz="-1 0 0"/>
-<!-- TODO: @JitskedeVries  Improve k values-->
-        <limit velocity="${hip_aa_velocity_limit}" effort="${hip_aa_effort_limit}" lower="${hip_aa_rotation_lower_limit}" upper="${hip_aa_rotation_upper_limit}"/>
-        <safety_controller soft_lower_limit="${hip_aa_rotation_lower_limit + hip_aa_soft_buffer}" soft_upper_limit="${hip_aa_rotation_upper_limit - hip_aa_soft_buffer}" k_position="5" k_velocity="${k_velocity_value}" />
-
     </joint>
 
     <joint name="left_hip_angle" type="fixed">
@@ -331,7 +326,7 @@
         </collision>
     </link>
 
-    <!-- Lower Leg Left -->
+    <!-- Ankle plate Left -->
     <link name="ankle_plate_left">
         <visual>
             <origin xyz="0 0 0" rpy="0 0 ${-pi/2}"/>
