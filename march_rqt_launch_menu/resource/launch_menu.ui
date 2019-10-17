@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>main_widget</class>
+ <widget class="QWidget" name="main_widget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>589</width>
+    <height>612</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>March Launch Menu</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QMarchCheckBox {
+border: 10px solid black;
+}
+
+QGroupBox {
+    border: 1px solid gray;
+    border-radius: 9px;
+    margin-top: 0.5em;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 3px 0 3px;
+}
+
+</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <item>
+    <layout class="QVBoxLayout" name="VerticalLayout">
+     <item>
+      <widget class="QGroupBox" name="RunConfigurationGroup">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>100</width>
+         <height>100</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="statusTip">
+        <string>/run_configuration</string>
+       </property>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <property name="title">
+        <string>Run configuration</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QRadioButton" name="ExoskeletonRadioButton">
+          <property name="toolTip">
+           <string>Run on the physical exoskeleton.</string>
+          </property>
+          <property name="statusTip">
+           <string/>
+          </property>
+          <property name="whatsThis">
+           <string/>
+          </property>
+          <property name="text">
+           <string>Exoskeleton</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="SimulationRadioButton">
+          <property name="toolTip">
+           <string>Run a simulation.</string>
+          </property>
+          <property name="statusTip">
+           <string/>
+          </property>
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
+          <property name="autoFillBackground">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Simulation</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="RunConfigurationLayout">
+       <item>
+        <widget class="QGroupBox" name="ExoskeletonGroup">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="toolTip">
+          <string>Configure what to launch on the exoskeleton.</string>
+         </property>
+         <property name="statusTip">
+          <string>/exoskeleton</string>
+         </property>
+         <property name="title">
+          <string>Exoskeleton</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_4">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="HighVoltageCheckBox">
+            <property name="toolTip">
+             <string>Start the exoskeleton with High Voltage enabled.</string>
+            </property>
+            <property name="statusTip">
+             <string>/exoskeleton/high_voltage</string>
+            </property>
+            <property name="text">
+             <string>High Voltage</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="HardwareInterfaceCheckBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="toolTip">
+             <string>Start the march_hardware_interface_node</string>
+            </property>
+            <property name="statusTip">
+             <string>/exoskeleton/hardware_interface</string>
+            </property>
+            <property name="text">
+             <string>Hardware Interface</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="SimulationGroup">
+         <property name="toolTip">
+          <string>Configure what to launch with the simulation.</string>
+         </property>
+         <property name="statusTip">
+          <string>/simulation</string>
+         </property>
+         <property name="title">
+          <string>Simulation</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_3">
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="GazeboUICheckBox">
+            <property name="toolTip">
+             <string>Launch Gazebo with a UI.</string>
+            </property>
+            <property name="statusTip">
+             <string>/simulation/gazebo_ui</string>
+            </property>
+            <property name="text">
+             <string>Gazebo UI</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="FakeTempSensCheckBox">
+            <property name="toolTip">
+             <string>Launch the fake temperature sensors which can trigger an error when they become too high.</string>
+            </property>
+            <property name="statusTip">
+             <string>/simulation/fake_temperature_sensors</string>
+            </property>
+            <property name="text">
+             <string>Fake Temperature Sensors</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="checkBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="toolTip">
+             <string>Ros time starts counting from 0 on startup</string>
+            </property>
+            <property name="statusTip">
+             <string>~/use_sim_time</string>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="text">
+             <string>Simulation Time</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="UserInterfaceGroup">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string>Settings to control which User Interfaces you want to launch.</string>
+     </property>
+     <property name="statusTip">
+      <string>/ui</string>
+     </property>
+     <property name="title">
+      <string>User Interface</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="RQTStatusMonitorCheckBox">
+        <property name="toolTip">
+         <string>Show a status monitor with the essential rqt plugins.</string>
+        </property>
+        <property name="statusTip">
+         <string>/ui/rqt_status_monitor</string>
+        </property>
+        <property name="text">
+         <string>RQT Status Monitor</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="RvizCheckBox">
+        <property name="toolTip">
+         <string>Enable the RVIZ visualization.</string>
+        </property>
+        <property name="statusTip">
+         <string>/ui/rviz</string>
+        </property>
+        <property name="text">
+         <string>RVIZ Visualization</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="RQTInputDeviceCheckBox">
+        <property name="acceptDrops">
+         <bool>false</bool>
+        </property>
+        <property name="toolTip">
+         <string>Show the RQT Input Device to simulate an input device and control the exoskeleton.</string>
+        </property>
+        <property name="statusTip">
+         <string>/ui/rqt_input_device</string>
+        </property>
+        <property name="whatsThis">
+         <string/>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string>RQT Input Device</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="InputDeviceBox">
+     <property name="statusTip">
+      <string>/input_device</string>
+     </property>
+     <property name="title">
+      <string>Input Device</string>
+     </property>
+     <layout class="QFormLayout" name="formLayout_2">
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="RealInputDeviceCheckBox">
+        <property name="toolTip">
+         <string>Launch serial connection node to connect with the input device</string>
+        </property>
+        <property name="statusTip">
+         <string>/input_device/real</string>
+        </property>
+        <property name="text">
+         <string>Real Input Device</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QCheckBox" name="checkBox_2">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="statusTip">
+         <string>/input_device/wireless</string>
+        </property>
+        <property name="text">
+         <string>Wireless</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="FinalButtons">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

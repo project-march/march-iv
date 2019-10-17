@@ -1,16 +1,12 @@
 - git:
     local-name: gait-generation
     uri: https://github.com/project-march/gait-generation
-    version: develop
+    version: master
 - git:
     local-name: hardware-interface
     uri: https://github.com/project-march/hardware-interface
-    version: develop
-- git:
-    local-name: state-machine
-    uri: https://github.com/project-march/state-machine
-    version: develop
+    version: master
 - git:
     local-name: simulation
     uri: https://github.com/project-march/simulation
-    version: develop
+    version: master

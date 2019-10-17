@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>march_rqt_launch_menu</name>
+  <version>0.0.0</version>
+  <description>rqt plugin to provide a clean launch menu for the march-iv exoskeleton.</description>
+
+  <maintainer email="software@projectmarch.nl">Project March</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roslint</build_depend>
+
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>rqt_gui</exec_depend>
+  <exec_depend>rqt_gui_py</exec_depend>
+
+  <export>
+    <rqt_gui plugin="${prefix}/plugin.xml"/>
+  </export>
+</package>

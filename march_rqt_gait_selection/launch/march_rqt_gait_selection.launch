@@ -1,3 +1,0 @@
-<launch>
-    <node name="march_rqt_gait_selection" pkg="march_rqt_gait_selection" type="march_rqt_gait_selection" output="screen"/>
-</launch>

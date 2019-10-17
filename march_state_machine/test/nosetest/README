@@ -1,0 +1,3 @@
+# Important
+All `.py` files in the nosetest folder need to be NOT executable (`chmod -x <file>.py`).
+This ensures that they can be found by `catkin_add_nosetests()`

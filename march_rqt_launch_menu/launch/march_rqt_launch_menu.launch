@@ -1,0 +1,3 @@
+<launch>
+    <node name="march_rqt_launch_menu" pkg="march_rqt_launch_menu" type="march_rqt_launch_menu" output="screen"/>
+</launch>

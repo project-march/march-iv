@@ -2,12 +2,12 @@ ignore:
 # Ignore packages completely
   - "march_description/.*"
   - "march_launch/.*"
+  - "march_rqt_launch_menu/.*"
   - "march_shared_resources/.*"
-  - "march_rqt_gait_selection/.*"
 
 # Ignore test folders
-  - "march_sound_scheduler/test/.*"
   - "march_gait_scheduler/test/.*"
   - "march_gait_selection/test/.*"
   - "march_safety/test/.*"
-
+  - "march_sound_scheduler/test/.*"
+  - "march_state_machine/test/.*"

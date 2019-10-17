@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>march_state_machine</name>
+  <version>0.0.0</version>
+  <description>The state machine of the March IV exoskeleton</description>
+
+  <maintainer email="software@projectmarch.nl">Project March</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>std_msgs</depend>
+  <depend>controller_manager_msgs</depend>
+  <depend>march_shared_resources</depend>
+
+  <build_depend>roslint</build_depend>
+
+  <build_export_depend>smach_viewer</build_export_depend>
+
+  <exec_depend>rospy</exec_depend>
+  <exec_depend>executive_smach</exec_depend>
+
+  <test_depend>rostest</test_depend>
+  <test_depend>rosunit</test_depend>
+</package>
