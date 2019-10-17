@@ -1,5 +1,5 @@
 <launch>
-    <machine name="march" address="march" user="march" env-loader="/home/march/Documents/march_ws/devel/env.sh"/>
+    <machine name="march" address="march" user="march" env-loader="/home/march/march_ws/devel/env.sh"/>
 
     <node name="git_branch_check" pkg="march_launch" type="march_git_branch_check" machine="march"/>
 </launch>

@@ -1,5 +1,6 @@
 <launch>
     <arg name="hardware_interface" default="true"/>
+    <arg name="bag_prefix" default="log"/>
 
     <group if="$(arg hardware_interface)">
         <rosparam>
@@ -26,7 +27,7 @@
             name="record"
             type="record"
             output="screen"
-            args="-a"
+            args="-a -o $(bag_prefix)"
     />
 
     <include file="$(find march_state_machine)/launch/march_state_machine.launch">

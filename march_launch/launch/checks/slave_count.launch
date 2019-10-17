@@ -1,5 +1,5 @@
 <launch>
-    <machine name="march" address="march" user="march" env-loader="/home/march/Documents/march_ws/devel/env.sh"/>
+    <machine name="march" address="march" user="march" env-loader="/home/march/march_ws/devel/env.sh"/>
 
     <node launch-prefix="ethercat_grant" name="slave_count_check" pkg="march_hardware" type="slave_count_check" machine="march"/>
 </launch>

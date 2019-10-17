@@ -1,10 +1,12 @@
 <launch>
+    <arg name="bag_prefix" default="log"/>
+
     <node
             pkg="rosbag"
             name="record"
             type="record"
             output="screen"
-            args="-a"
+            args="-a -o $(bag_prefix)"
     />
 
     <include file="$(find march_state_machine)/launch/march_state_machine.launch"/>

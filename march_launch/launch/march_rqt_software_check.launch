@@ -1,3 +1,3 @@
 <launch>
-    <node name="march_rqt_software_check" pkg="march_launch" type="rqt_software_check" output="screen"/>
+    <node name="march_rqt_software_check" pkg="march_launch" type="march_rqt_software_check" output="screen"/>
 </launch>
