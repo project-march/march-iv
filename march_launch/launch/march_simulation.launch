@@ -1,0 +1,21 @@
+<launch>
+    <rosparam>
+        march:
+            launch_settings:
+                rqt_launch_menu: false
+                run_configuration: simulation
+                ui:
+                    rviz: false
+                    rqt_input_device: true
+                    rqt_status_monitor: false
+                simulation:
+                    gazebo_ui: true
+                    fake_temperature_sensors: false
+                input_device:
+                    real: false
+    </rosparam>
+
+    <include file="$(find march_state_machine)/launch/march_state_machine.launch">
+        <arg name="state_machine_viewer" value="false" />
+    </include>
+</launch>
