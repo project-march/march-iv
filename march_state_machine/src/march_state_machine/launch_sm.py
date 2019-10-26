@@ -60,7 +60,8 @@ def simulation_sequence():
                                  "march_world.launch",
                                  launch_is_optional_key='',
                                  launch_arguments={
-                                     "gazebo_ui": "/simulation/gazebo_ui"}
+                                     "gazebo_ui": "/simulation/gazebo_ui",
+                                     "paused": "/simulation/paused"}
                                  ))
         Sequence.add('FAKE SENSOR DATA',
                      LaunchState("march_fake_sensor_data",

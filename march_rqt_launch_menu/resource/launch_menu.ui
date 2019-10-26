@@ -148,7 +148,7 @@ QGroupBox::title {
           <item row="1" column="0">
            <widget class="QCheckBox" name="HardwareInterfaceCheckBox">
             <property name="enabled">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="toolTip">
              <string>Start the march_hardware_interface_node</string>
@@ -227,6 +227,19 @@ QGroupBox::title {
             </property>
             <property name="checked">
              <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="PausedStartCheckbox">
+            <property name="toolTip">
+             <string>Starts the simulation paused. Pausing/unpausing can also be done from the command line and in the GUI</string>
+            </property>
+            <property name="statusTip">
+             <string>/simulation/paused</string>
+            </property>
+            <property name="text">
+             <string>Start Simulation Paused</string>
             </property>
            </widget>
           </item>
