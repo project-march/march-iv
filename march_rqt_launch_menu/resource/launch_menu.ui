@@ -148,7 +148,7 @@ QGroupBox::title {
           <item row="1" column="0">
            <widget class="QCheckBox" name="HardwareInterfaceCheckBox">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="toolTip">
              <string>Start the march_hardware_interface_node</string>
