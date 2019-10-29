@@ -12,8 +12,8 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
     FILES
     AfterLimitJointCommand.msg
-    FeetDistances.msg
     Error.msg
+    FeetDistances.msg
     Gait.msg
     GaitInstruction.msg
     GaitStatus.msg
