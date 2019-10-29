@@ -1,0 +1,4 @@
+Header header
+float64 foot_height_right
+float64 foot_height_left
+float64 step_distance
