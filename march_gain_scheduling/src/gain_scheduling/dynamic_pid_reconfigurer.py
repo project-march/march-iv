@@ -27,8 +27,8 @@ class DynamicPIDReconfigurer:
         for i in range(len(self._joint_list)):
             p_value, i_value, d_value = self.look_up_table(i)
             self._clients[i].update_configuration({"p": p_value,
-                                                     "i": i_value,
-                                                     "d": d_value})
+                                                   "i": i_value,
+                                                   "d": d_value})
             rospy.logdebug("Config set to {0}, {1}, {2}".format(p_value, i_value, d_value))
 
     # Method that functions as a lookup table. The implementation now only functions as a test and should be adjusted
