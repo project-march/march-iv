@@ -31,7 +31,7 @@ TEST_F(TestTemperatureError, exceedSpecificThreshold)
   pub_joint1.publish(msg);
 
   // Wait to receive message
-  ros::Duration duration = ros::Duration(0.1);
+  ros::Duration duration = ros::Duration(1);
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint1", duration);
   ros::spinOnce();
 
@@ -59,7 +59,7 @@ TEST_F(TestTemperatureError, exceedDefaultThreshold)
   pub_joint3.publish(msg);
 
   // Wait to receive message
-  ros::Duration duration = ros::Duration(0.1);
+  ros::Duration duration = ros::Duration(1);
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint3", duration);
   ros::spinOnce();
 
@@ -93,7 +93,7 @@ TEST_F(TestTemperatureError, exceedDefaultThresholdMultipleTimes)
   }
 
   // Wait to receive message
-  ros::Duration duration = ros::Duration(0.1);
+  ros::Duration duration = ros::Duration(1);
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint3", duration);
   ros::spinOnce();
 
