@@ -158,7 +158,6 @@
     </plugin>
 
     <!-- Used for fixing robot to Gazebo 'base_link' -->
-    <link name="${parent_name}"/>
 
 
     <!-- Parts -->
