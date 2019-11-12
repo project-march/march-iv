@@ -2,6 +2,7 @@
 #ifndef MARCH_SOUND_SCHEDULER_SCHEDULER_H
 #define MARCH_SOUND_SCHEDULER_SCHEDULER_H
 
+#include <vector>
 #include <queue>
 
 #include <ros/duration.h>
@@ -9,15 +10,13 @@
 
 #include <sound_play/sound_play.h>
 
-#include <march_sound_scheduler/ScheduledSound.h>
 #include <march_shared_resources/Sound.h>
+
+#include "march_sound_scheduler/scheduled_sound.h"
 
 class Scheduler
 {
 public:
-  std::priority_queue<ScheduledSound, std::vector<ScheduledSound>> soundQueue;
-  sound_play::SoundClient sc;
-
   Scheduler();
 
   void schedule(ScheduledSound sound);
@@ -26,6 +25,10 @@ public:
   void spin();
 
   void play(ScheduledSound sound);
+
+private:
+  std::priority_queue<ScheduledSound, std::vector<ScheduledSound>> sound_queue_;
+  sound_play::SoundClient sc_;
 };
 
 #endif  // MARCH_SOUND_SCHEDULER_SCHEDULER_H

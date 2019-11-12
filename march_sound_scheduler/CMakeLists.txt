@@ -18,11 +18,11 @@ catkin_package(
     sound_play
 )
 
-set(ROSLINT_CPP_OPTS "--filter=-build/include,-build/header_guard,-runtime/references" "--linelength=120")
+set(ROSLINT_CPP_OPTS "--linelength=120")
 
 file(GLOB_RECURSE lintfiles
+    "include/*.h"
     "src/*.cpp"
-    "src/*.h"
 )
 
 roslint_cpp(${lintfiles})
@@ -33,15 +33,13 @@ include_directories(
 )
 
 add_library(${PROJECT_NAME}
-    include/${PROJECT_NAME}/ScheduledSound.h
-    include/${PROJECT_NAME}/Scheduler.h
-    src/ScheduledSound.cpp
-    src/Scheduler.cpp
+    src/scheduled_sound.cpp
+    src/scheduler.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(${PROJECT_NAME}_node src/SoundSchedulerNode.cpp)
+add_executable(${PROJECT_NAME}_node src/sound_scheduler_node.cpp)
 target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME})
 add_dependencies(${PROJECT_NAME}_node ${catkin_EXPORTED_TARGETS})
 

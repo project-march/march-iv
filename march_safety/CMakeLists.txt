@@ -24,11 +24,11 @@ catkin_package(
 )
 
 # Roslinter
-set(ROSLINT_CPP_OPTS "--filter=-build/include,-build/header_guard,-runtime/references" "--linelength=120")
+set(ROSLINT_CPP_OPTS "--linelength=120")
 
 file(GLOB_RECURSE lintfiles
+    "include/*.h"
     "src/*.cpp"
-    "src/*.h"
 )
 
 roslint_cpp(${lintfiles})
@@ -37,20 +37,14 @@ include_directories(
     ${catkin_INCLUDE_DIRS}
 )
 
-set(sourcefiles
-    include/${PROJECT_NAME}/InputDeviceSafety.h
-    include/${PROJECT_NAME}/SafetyHandler.h
-    include/${PROJECT_NAME}/SafetyType.h
-    include/${PROJECT_NAME}/TemperatureSafety.h
-    src/InputDeviceSafety.cpp
-    src/SafetyHandler.cpp
-    src/TemperatureSafety.cpp
+add_library(${PROJECT_NAME}
+    src/input_device_safety.cpp
+    src/safety_handler.cpp
+    src/temperature_safety.cpp
 )
-
-add_library(${PROJECT_NAME} ${sourcefiles})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
 
-add_executable(${PROJECT_NAME}_node src/SafetyNode.cpp)
+add_executable(${PROJECT_NAME}_node src/safety_node.cpp)
 add_dependencies(${PROJECT_NAME}_node ${catkin_EXPORTED_TARGETS})
 target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME})
 

@@ -2,7 +2,7 @@
 
 #include "gtest/gtest.h"
 #include "ros/ros.h"
-#include <march_safety/TemperatureSafety.h>
+#include <march_safety/temperature_safety.h>
 #include "ErrorCounter.cpp"
 
 class TestNoTemperatureError : public ::testing::Test

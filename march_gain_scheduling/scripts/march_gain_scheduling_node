@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+import gain_scheduling.gain_scheduling_node
+
+if __name__ == '__main__':
+    gain_scheduling.gain_scheduling_node.main()
+

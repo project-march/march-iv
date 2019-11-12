@@ -1,5 +1,6 @@
 // Copyright 2018 Project March.
 #include <sstream>
+#include <string>
 #include <vector>
 
 #include <ros/ros.h>
@@ -12,9 +13,9 @@
 #include "march_shared_resources/Sound.h"
 #include "march_shared_resources/GaitInstruction.h"
 
-#include "march_safety/InputDeviceSafety.h"
-#include "march_safety/TemperatureSafety.h"
-#include "march_safety/SafetyHandler.h"
+#include "march_safety/input_device_safety.h"
+#include "march_safety/temperature_safety.h"
+#include "march_safety/safety_handler.h"
 
 int main(int argc, char** argv)
 {

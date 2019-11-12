@@ -4,8 +4,7 @@
 #include <actionlib/client/simple_action_client.h>
 #include <actionlib/server/simple_action_server.h>
 
-#include "march_shared_resources/Sound.h"
-#include "march_sound_scheduler/Scheduler.h"
+#include "march_sound_scheduler/scheduler.h"
 
 int main(int argc, char** argv)
 {

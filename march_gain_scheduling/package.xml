@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>march_gain_scheduling</name>
+  <version>0.0.0</version>
+  <description>A feature package that implements gain scheduling control.</description>
+
+  <maintainer email="software@projectmarch.nl">Project March</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>rospy</depend>
+  <depend>std_msgs</depend>
+  <depend>dynamic_reconfigure</depend>
+  <depend>march_shared_resources</depend>
+
+  <build_depend>roslint</build_depend>
+</package>

@@ -1,29 +1,30 @@
 // Copyright 2019 Project March.
-#ifndef PROJECT_TEMPERATURESAFETY_H
-#define PROJECT_TEMPERATURESAFETY_H
-
-#include "ros/ros.h"
-#include "sensor_msgs/Temperature.h"
-#include "SafetyType.h"
-#include "SafetyHandler.h"
+#ifndef MARCH_SAFETY_TEMPERATURE_SAFETY_H
+#define MARCH_SAFETY_TEMPERATURE_SAFETY_H
+#include <map>
 #include <sstream>
+#include <string>
+#include <vector>
+
+#include <ros/ros.h>
+#include <sensor_msgs/Temperature.h>
 
 #include <march_shared_resources/Error.h>
 #include <march_shared_resources/Sound.h>
 
+#include "march_safety/safety_type.h"
+#include "march_safety/safety_handler.h"
+
 class TemperatureSafety : public SafetyType
 {
-  ros::NodeHandle n;
-  SafetyHandler* safety_handler;
-  double default_temperature_threshold;
-  double send_errors_interval;
-  ros::Time time_last_send_error;
-  std::map<std::string, double> fatal_temperature_thresholds_map;
-  std::map<std::string, double> non_fatal_temperature_thresholds_map;
-  std::map<std::string, double> warning_temperature_thresholds_map;
-  std::vector<ros::Subscriber> temperature_subscribers = {};
-  std::vector<std::string> joint_names;
+public:
+  TemperatureSafety(ros::NodeHandle* n, SafetyHandler* safety_handler, std::vector<std::string> joint_names);
 
+  void update() override
+  {
+  }
+
+private:
   /**
    * This callback checks if the temperature values do not exceed the defined threshold
    * @param msg the temperature message
@@ -46,12 +47,16 @@ class TemperatureSafety : public SafetyType
    */
   double getThreshold(const std::string& sensor_name, std::map<std::string, double> temperature_thresholds_map);
 
-public:
-  TemperatureSafety(ros::NodeHandle* n, SafetyHandler* safety_handler, std::vector<std::string> joint_names);
-
-  void update() override
-  {
-  }
+  ros::NodeHandle* n_;
+  SafetyHandler* safety_handler_;
+  double default_temperature_threshold_;
+  double send_errors_interval_;
+  ros::Time time_last_send_error_;
+  std::map<std::string, double> fatal_temperature_thresholds_map_;
+  std::map<std::string, double> non_fatal_temperature_thresholds_map_;
+  std::map<std::string, double> warning_temperature_thresholds_map_;
+  std::vector<ros::Subscriber> temperature_subscribers_ = {};
+  std::vector<std::string> joint_names_;
 };
 
-#endif  // PROJECT_TEMPERATURESAFETY_H
+#endif  // MARCH_SAFETY_TEMPERATURE_SAFETY_H

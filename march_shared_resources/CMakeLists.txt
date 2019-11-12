@@ -13,27 +13,19 @@ add_message_files(
     FILES
     AfterLimitJointCommand.msg
     Error.msg
-    Gait.msg
     GaitInstruction.msg
-    GaitStatus.msg
     Graph.msg
     HighVoltageNet.msg
     ImcErrorState.msg
     LowVoltageNet.msg
-    PerformGait.msg
-    PlayInputMaster.msg
     PowerDistributionBoardState.msg
     Setpoint.msg
     Sound.msg
-    StepSize.msg
     Subgait.msg
 )
 
 add_service_files(
     FILES
-    GaitInput.srv
-    GaitRequest.srv
-    PlayInput.srv
     StringTrigger.srv
     Trigger.srv
 )
@@ -43,7 +35,6 @@ add_action_files(
     FILES
     Gait.action
     GaitName.action
-    MoveToGait.action
 )
 
 generate_messages(

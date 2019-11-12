@@ -2,9 +2,8 @@
 
 #include "gtest/gtest.h"
 #include "ros/ros.h"
-#include <march_safety/TemperatureSafety.h>
+#include <march_safety/temperature_safety.h>
 #include "ErrorCounter.cpp"
-
 
 /**
  * The input for the test cases we want to run.
@@ -15,7 +14,8 @@ static const std::vector<std::tuple<float, float>> testCases = {
   std::make_tuple(71, 1),  std::make_tuple(72, 1), std::make_tuple(120, 1)
 };
 
-class TestTemperatureParameterized : public ::testing::Test, public ::testing::WithParamInterface<std::tuple<float, float>>
+class TestTemperatureParameterized : public ::testing::Test,
+                                     public ::testing::WithParamInterface<std::tuple<float, float>>
 {
 protected:
   float temperature;

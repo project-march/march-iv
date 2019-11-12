@@ -1,21 +1,28 @@
 // Copyright 2019 Project March.
-#include <march_safety/TemperatureSafety.h>
+#include "march_safety/temperature_safety.h"
+
+#include <map>
+#include <string>
+#include <vector>
 
 // TODO(@Tim) Throw an exception when no temperatures are published.
 
 TemperatureSafety::TemperatureSafety(ros::NodeHandle* n, SafetyHandler* safety_handler,
                                      std::vector<std::string> joint_names)
-  : joint_names(joint_names)
+  : n_(n), safety_handler_(safety_handler), joint_names_(joint_names)
 {
-  n->getParam(ros::this_node::getName() + std::string("/default_temperature_threshold"), default_temperature_threshold);
-  n->getParam(ros::this_node::getName() + "/temperature_thresholds_warning", warning_temperature_thresholds_map);
-  n->getParam(ros::this_node::getName() + "/temperature_thresholds_non_fatal", non_fatal_temperature_thresholds_map);
-  n->getParam(ros::this_node::getName() + "/temperature_thresholds_fatal", fatal_temperature_thresholds_map);
+  this->n_->getParam(ros::this_node::getName() + std::string("/default_temperature_threshold"),
+                     this->default_temperature_threshold_);
+  this->n_->getParam(ros::this_node::getName() + "/temperature_thresholds_warning",
+                     this->warning_temperature_thresholds_map_);
+  this->n_->getParam(ros::this_node::getName() + "/temperature_thresholds_non_fatal",
+                     this->non_fatal_temperature_thresholds_map_);
+  this->n_->getParam(ros::this_node::getName() + "/temperature_thresholds_fatal",
+                     this->fatal_temperature_thresholds_map_);
   double send_errors_interval_param;
-  n->getParam(ros::this_node::getName() + std::string("/send_errors_interval"), send_errors_interval_param);
-  this->send_errors_interval = send_errors_interval_param;
-  this->time_last_send_error = ros::Time(0);
-  this->safety_handler = safety_handler;
+  this->n_->getParam(ros::this_node::getName() + std::string("/send_errors_interval"), send_errors_interval_param);
+  this->send_errors_interval_ = send_errors_interval_param;
+  this->time_last_send_error_ = ros::Time(0);
 
   this->createSubscribers();
 }
@@ -23,18 +30,18 @@ TemperatureSafety::TemperatureSafety(ros::NodeHandle* n, SafetyHandler* safety_h
 void TemperatureSafety::temperatureCallback(const sensor_msgs::TemperatureConstPtr& msg, const std::string& sensor_name)
 {
   // send at most an error every second
-  if (ros::Time::now() <= (time_last_send_error + ros::Duration(this->send_errors_interval / 1000)))
+  if (ros::Time::now() <= (this->time_last_send_error_ + ros::Duration(this->send_errors_interval_ / 1000)))
   {
     return;
   }
 
   double temperature = msg->temperature;
-  if (temperature <= getThreshold(sensor_name, warning_temperature_thresholds_map))
+  if (temperature <= getThreshold(sensor_name, this->warning_temperature_thresholds_map_))
   {
     return;
   }
 
-  std::string error_message = getErrorMessage(temperature, sensor_name);
+  std::string error_message = this->getErrorMessage(temperature, sensor_name);
 
   // TODO(Olav) this is a temporary fix, this should be fixed locally on the slaves ask Electro.
   if (temperature > 2000)
@@ -44,15 +51,15 @@ void TemperatureSafety::temperatureCallback(const sensor_msgs::TemperatureConstP
   }
 
   // If the threshold is exceeded raise an error
-  if (temperature > getThreshold(sensor_name, fatal_temperature_thresholds_map))
+  if (temperature > this->getThreshold(sensor_name, this->fatal_temperature_thresholds_map_))
   {
-    safety_handler->publishFatal(error_message);
+    this->safety_handler_->publishFatal(error_message);
   }
-  else if (temperature > getThreshold(sensor_name, non_fatal_temperature_thresholds_map))
+  else if (temperature > this->getThreshold(sensor_name, this->non_fatal_temperature_thresholds_map_))
   {
-    safety_handler->publishNonFatal(error_message);
+    this->safety_handler_->publishNonFatal(error_message);
   }
-  else if (temperature > getThreshold(sensor_name, warning_temperature_thresholds_map))
+  else if (temperature > this->getThreshold(sensor_name, this->warning_temperature_thresholds_map_))
   {
     ROS_WARN("%s", error_message.c_str());
   }
@@ -78,19 +85,19 @@ double TemperatureSafety::getThreshold(const std::string& sensor_name,
   {
     // Fall back to default if there is no defined threshold
     ROS_WARN_ONCE("There is a specific temperature threshold missing for %s sensor", sensor_name.c_str());
-    return default_temperature_threshold;
+    return this->default_temperature_threshold_;
   }
 }
 
 void TemperatureSafety::createSubscribers()
 {
-  for (const std::string& joint_name : joint_names)
+  for (const std::string& joint_name : this->joint_names_)
   {
     // Use boost::bind to pass on the sensor_name as extra parameter to the callback method
-    ros::Subscriber subscriber_temperature = n.subscribe<sensor_msgs::Temperature>(
+    ros::Subscriber subscriber_temperature = this->n_->subscribe<sensor_msgs::Temperature>(
         "march/temperature/" + joint_name, 1000,
         boost::bind(&TemperatureSafety::temperatureCallback, this, _1, joint_name));
 
-    temperature_subscribers.push_back(subscriber_temperature);
+    this->temperature_subscribers_.push_back(subscriber_temperature);
   }
 }

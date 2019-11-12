@@ -1,6 +1,6 @@
 // Copyright 2019 Project March.
-#ifndef MARCH_WS_SAFETYHANDLER_H
-#define MARCH_WS_SAFETYHANDLER_H
+#ifndef MARCH_SAFETY_SAFETY_HANDLER_H
+#define MARCH_SAFETY_SAFETY_HANDLER_H
 
 #include <string>
 #include <ros/ros.h>
@@ -10,13 +10,9 @@
 
 class SafetyHandler
 {
-  ros::NodeHandle* n;
-  ros::Publisher* error_publisher;
-  ros::Publisher* sound_publisher;
-  ros::Publisher* gait_instruction_publisher;
-
 public:
-  SafetyHandler(ros::NodeHandle* n, ros::Publisher* error_publisher, ros::Publisher* sound_publisher, ros::Publisher* gait_instruction_publisher);
+  SafetyHandler(ros::NodeHandle* n, ros::Publisher* error_publisher, ros::Publisher* sound_publisher,
+                ros::Publisher* gait_instruction_publisher);
 
   void publishFatal(std::string message);
 
@@ -27,6 +23,12 @@ public:
   void publishStopMessage() const;
 
   void publishErrorSound(int8_t error_type) const;
+
+private:
+  ros::NodeHandle* n_;
+  ros::Publisher* error_publisher_;
+  ros::Publisher* sound_publisher_;
+  ros::Publisher* gait_instruction_publisher_;
 };
 
-#endif  // MARCH_WS_SAFETYHANDLER_H
+#endif  // MARCH_SAFETY_SAFETY_HANDLER_H

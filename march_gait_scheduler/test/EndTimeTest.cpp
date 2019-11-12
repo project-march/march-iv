@@ -1,9 +1,10 @@
 // Copyright 2019 Project March.
-#include "ros/ros.h"
-#include "gtest/gtest.h"
-#include <march_gait_scheduler/Scheduler.h>
+#include <ros/ros.h>
+#include <gtest/gtest.h>
 #include <trajectory_msgs/JointTrajectory.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
+
+#include <march_gait_scheduler/scheduler.h>
 
 class EndTimeTest : public ::testing::Test
 {

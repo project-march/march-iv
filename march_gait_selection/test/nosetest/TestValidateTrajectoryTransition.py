@@ -26,8 +26,8 @@ class TestValidateTrajectoryTransition(unittest.TestCase):
         to_subgait.trajectory.points.append(JointTrajectoryPoint(
             positions=[0, 0], velocities=[0, 0], time_from_start=rospy.Duration.from_sec(2)))
 
-        self.assertTrue(GaitSelection.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory))
-        self.assertTrue(GaitSelection.validate_trajectory_transition(to_subgait.trajectory, from_subgait.trajectory))
+        self.assertTrue(GaitSelection.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory) == "")
+        self.assertTrue(GaitSelection.validate_trajectory_transition(to_subgait.trajectory, from_subgait.trajectory) == "")
 
     def test_transition_correct_3_points(self):
         from_subgait = Subgait()
@@ -48,8 +48,8 @@ class TestValidateTrajectoryTransition(unittest.TestCase):
         to_subgait.trajectory.points.append(JointTrajectoryPoint(
             positions=[0.5, 0], velocities=[0, 1], time_from_start=rospy.Duration.from_sec(3)))
 
-        self.assertTrue(GaitSelection.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory))
-        self.assertFalse(GaitSelection.validate_trajectory_transition(to_subgait.trajectory, to_subgait.trajectory))
+        self.assertTrue(GaitSelection.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory) == "")
+        self.assertFalse(GaitSelection.validate_trajectory_transition(to_subgait.trajectory, to_subgait.trajectory) == "")
 
     def test_transition_position_mismatch(self):
         from_subgait = Subgait()
@@ -66,7 +66,7 @@ class TestValidateTrajectoryTransition(unittest.TestCase):
         to_subgait.trajectory.points.append(JointTrajectoryPoint(
             positions=[0, 0], velocities=[0, 0], time_from_start=rospy.Duration.from_sec(2)))
 
-        self.assertFalse(GaitSelection.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory))
+        self.assertFalse(GaitSelection.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory) == "")
 
     def test_transition_joint_mismatch(self):
         from_subgait = Subgait()
@@ -83,7 +83,8 @@ class TestValidateTrajectoryTransition(unittest.TestCase):
         to_subgait.trajectory.points.append(JointTrajectoryPoint(
             positions=[0, 0], velocities=[0, 0], time_from_start=rospy.Duration.from_sec(2)))
 
-        self.assertFalse(GaitSelection.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory))
+        self.assertFalse(GaitSelection.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory)
+                         == "")
 
     def test_transition_velocity_mismatch(self):
         from_subgait = Subgait()
@@ -100,4 +101,5 @@ class TestValidateTrajectoryTransition(unittest.TestCase):
         to_subgait.trajectory.points.append(JointTrajectoryPoint(
             positions=[0, 0], velocities=[0, 0], time_from_start=rospy.Duration.from_sec(2)))
 
-        self.assertFalse(GaitSelection.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory))
+        self.assertFalse(GaitSelection.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory)
+                         == "")

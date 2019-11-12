@@ -3,9 +3,8 @@
 #include "gtest/gtest.h"
 #include <trajectory_msgs/JointTrajectory.h>
 #include <trajectory_msgs/JointTrajectoryPoint.h>
-// TODO(Tim) Make this a normal import
-//#include <march_gait_scheduler/Scheduler.h>
-#include "../src/Scheduler.cpp"
+
+#include <march_gait_scheduler/scheduler.h>
 
 class ScheduleMultipleGaitsTest : public ::testing::Test
 {
@@ -91,8 +90,7 @@ TEST_F(ScheduleMultipleGaitsTest, ScheduleTwoWithOffset)
       scheduler.scheduleGait(&gaitSitGoalConst, ros::Duration().fromSec(0));
 
   ros::Duration offset = ros::Duration().fromSec(3);
-  control_msgs::FollowJointTrajectoryGoal trajectoryMsgStand =
-      scheduler.scheduleGait(&gaitStandGoalConst, offset);
+  control_msgs::FollowJointTrajectoryGoal trajectoryMsgStand = scheduler.scheduleGait(&gaitStandGoalConst, offset);
 
   ros::Time secondStartTime = current_time + gaitDuration + offset;
 
@@ -136,8 +134,7 @@ TEST_F(ScheduleMultipleGaitsTest, ScheduleSecondGaitInThePast)
       scheduler.scheduleGait(&gaitSitGoalConst, ros::Duration().fromSec(0));
 
   ros::Duration offset = ros::Duration().fromSec(-6);
-  control_msgs::FollowJointTrajectoryGoal trajectoryMsgStand =
-      scheduler.scheduleGait(&gaitStandGoalConst, offset);
+  control_msgs::FollowJointTrajectoryGoal trajectoryMsgStand = scheduler.scheduleGait(&gaitStandGoalConst, offset);
 
   ASSERT_NEAR(current_time.toSec(), trajectoryMsgSit.trajectory.header.stamp.toSec(), 0.1);
   ASSERT_NEAR(current_time.toSec(), trajectoryMsgStand.trajectory.header.stamp.toSec(), 0.1);

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <std_msgs/Time.h>
 
-#include <march_safety/TemperatureSafety.h>
+#include <march_safety/temperature_safety.h>
 #include "ErrorCounter.cpp"
 
 class TestConnectionNotLost : public ::testing::Test

@@ -25,14 +25,21 @@ git:
 env:
   global:
     - ROS_REPO=ros
+    - ADDITIONAL_DEBS=python-lxml
     - CCACHE_DIR=$HOME/.ccache # enables C/C++ caching in industrial_ci
     - BUILDER=colcon
     - CATKIN_LINT=pedantic
     - DOWNSTREAM_WORKSPACE=dependencies.rosinstall
-    - AFTER_SCRIPT='builder_run_build "$target_ws/install" "$target_ws" --cmake-target-skip-unavailable --cmake-target roslint'
-  matrix:
-    - ROS_DISTRO=kinetic
-    - ROS_DISTRO=melodic
+    - AFTER_BUILD_TARGET_WORKSPACE='builder_run_build "$target_ws/install" "$target_ws" --cmake-target-skip-unavailable --cmake-target roslint'
+
+jobs:
+  include:
+    - name: "Kinetic"
+      env: ROS_DISTRO=kinetic
+    - name: "Melodic"
+      env: ROS_DISTRO=melodic
+    - name: "clang-format"
+      env: ROS_DISTRO=melodic CLANG_FORMAT_CHECK=file
 
 # clone and run industrial_ci
 install:
