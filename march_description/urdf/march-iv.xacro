@@ -6,6 +6,7 @@
     <!--Value set to: 'base_link' makes the robot stand on the ground-->
     <!--Important note: when changing value make sure rviz fixed frame is set to the same value (moveit.rviz)-->
     <xacro:property name="parent_name" value="world"/>
+    <xacro:property name="PI" value="3.14159265359"/>
 
     <xacro:arg name="max_effort_rotary" default="20475" /> <!-- = 25 A -->
     <xacro:arg name="max_effort_linear" default="22932.0" />  <!-- = 28 A -->
@@ -158,7 +159,7 @@
     </plugin>
 
     <!-- Used for fixing robot to Gazebo 'base_link' -->
-
+    <link name="${parent_name}"/>
 
     <!-- Parts -->
     <!-- Hip-->
@@ -189,6 +190,10 @@
                 <box size="${width} ${hip_base_height} ${width}"/>
             </geometry>
         </collision>
+    </link>
+
+    <!-- IMU-->
+    <link name="imu_link">
     </link>
 
     <!-- Left Moving Hip-->
@@ -471,10 +476,15 @@
 
 
     <!-- Joints -->
-    <joint name="hip" type="fixed">
+    <joint name="imu_joint" type="fixed">
         <parent link="${parent_name}"/>
+        <child link="imu_link"/>
+    </joint>
+
+    <joint name="hip" type="fixed">
+        <parent link="imu_link"/>
         <child link="hip_base"/>
-        <origin xyz="0 0 ${lower_leg_height+upper_leg_height+hover_height}" rpy="0 0 0"/>
+        <origin xyz="0 0 ${lower_leg_height+upper_leg_height+ankle_plate_height+width/2.0+hover_height}" rpy="0 ${PI/2} 0"/>
     </joint>
 
     <joint name="left_hip_aa" type="revolute">
@@ -673,5 +683,7 @@
             <mechanicalReduction>200</mechanicalReduction>
         </actuator>
     </transmission>
+
+
 
 </robot>
