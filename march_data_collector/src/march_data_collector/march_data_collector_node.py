@@ -5,6 +5,8 @@ from sensor_msgs.msg import Imu
 from control_msgs.msg import JointTrajectoryControllerState
 from march_shared_resources.msg import ImcErrorState
 from geometry_msgs.msg import TransformStamped
+from tf.transformations import *
+from math import pi
 import tf2_ros
 
 
@@ -25,14 +27,16 @@ def IMUCallback(data, IMUbroadcaster):
 
     transform.header.stamp = rospy.Time.now()
     transform.header.frame_id = "world"
-    transform.child_frame_id = "hip_base"
+    transform.child_frame_id = "imu_link"
     transform.transform.translation.x = 0.0
     transform.transform.translation.y = 0.0
     transform.transform.translation.z = 0.0
-    transform.transform.rotation.x = data.orientation.z
-    transform.transform.rotation.y = data.orientation.y
-    transform.transform.rotation.z = data.orientation.x
-    transform.transform.rotation.w = data.orientation.w
+    imu_rotation = quaternion_multiply([-data.orientation.x, -data.orientation.y, data.orientation.z, data.orientation.w], quaternion_from_euler(0, -0.5*pi, 0))
+
+    transform.transform.rotation.x = imu_rotation[0]
+    transform.transform.rotation.y = imu_rotation[1]
+    transform.transform.rotation.z = imu_rotation[2]
+    transform.transform.rotation.w = imu_rotation[3]
 
     IMUbroadcaster.sendTransform(transform)
 
@@ -50,6 +54,6 @@ def main():
 
     IMCStateSubscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, ImcStateCallback)
 
-    IMUSubscriber = rospy.Subscriber('/march/imu/00B447AD', Imu, IMUCallback, (IMUbroadcaster))
+    IMUSubscriber = rospy.Subscriber('/march/imu/00B4479E', Imu, IMUCallback, (IMUbroadcaster))
 
     rospy.spin()
