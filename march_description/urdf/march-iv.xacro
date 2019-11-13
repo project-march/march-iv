@@ -160,6 +160,7 @@
     <!-- Used for fixing robot to Gazebo 'base_link' -->
     <link name="${parent_name}"/>
 
+
     <!-- Parts -->
     <!-- Hip-->
     <link name="hip_base">
@@ -483,7 +484,7 @@
     <joint name="hip" type="fixed">
         <parent link="imu_link"/>
         <child link="hip_base"/>
-        <origin xyz="0 0 ${lower_leg_height+upper_leg_height+ankle_plate_height+width/2.0+hover_height}" rpy="0 0 0"/>
+        <origin xyz="0 0 ${lower_leg_height+upper_leg_height+hover_height}" rpy="0 0 0"/>
     </joint>
 
     <joint name="left_hip_aa" type="revolute">
