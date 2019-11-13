@@ -9,25 +9,25 @@ from math import pi
 import tf2_ros
 
 
-def TemperatureCallback(data, joint):
+def temperature_callback(data, joint):
     rospy.logdebug('Temperature' + joint + ' is ' + str(data.temperature))
 
 
-def TrajectoryStateCallback(data):
+def trajectory_callback(data):
     rospy.logdebug('received trajectory state' + str(data.desired))
 
 
-def ImcStateCallback(data):
+def imc_state_callback(data):
     rospy.logdebug('received IMC message current is ' + str(data.current))
 
 
-def IMUCallback(data, IMUbroadcaster):
-    if data.header.frame_id == "imu_link":
+def imu_callback(data, imu_broadcaster):
+    if data.header.frame_id == 'imu_link':
         transform = TransformStamped()
 
         transform.header.stamp = rospy.Time.now()
-        transform.header.frame_id = "world"
-        transform.child_frame_id = "imu_link"
+        transform.header.frame_id = 'world'
+        transform.child_frame_id = 'imu_link'
         transform.transform.translation.x = 0.0
         transform.transform.translation.y = 0.0
         transform.transform.translation.z = 0.0
@@ -39,23 +39,23 @@ def IMUCallback(data, IMUbroadcaster):
         transform.transform.rotation.z = imu_rotation[2]
         transform.transform.rotation.w = imu_rotation[3]
 
-        IMUbroadcaster.sendTransform(transform)
+        imu_broadcaster.sendTransform(transform)
 
 
 def main():
     rospy.init_node('data_collector', anonymous=True)
     joint_names = rospy.get_param('/march/joint_names')
 
-    IMUbroadcaster = tf2_ros.TransformBroadcaster()
+    imu_broadcaster = tf2_ros.TransformBroadcaster()
 
-    TemperatureSubscriber = [rospy.Subscriber('/march/temperature/'+joint, Temperature, TemperatureCallback,
-                                              (joint)) for joint in joint_names]
+    temperature_subscriber = [rospy.Subscriber('/march/temperature/'+joint, Temperature, temperature_callback,
+                                               joint) for joint in joint_names]
 
-    TrajectoryStateSubscriber = rospy.Subscriber('/march/controller/trajectory/state', JointTrajectoryControllerState,
-                                                 TrajectoryStateCallback)
+    trajectory_state_subscriber = rospy.Subscriber('/march/controller/trajectory/state', JointTrajectoryControllerState,
+                                                   trajectory_callback)
 
-    IMCStateSubscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, ImcStateCallback)
+    imc_state_subscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, imc_state_callback)
 
-    IMUSubscriber = rospy.Subscriber('/march/imu', Imu, IMUCallback, (IMUbroadcaster))
+    imu_subscriber = rospy.Subscriber('/march/imu', Imu, imu_callback, (imu_broadcaster))
 
     rospy.spin()
