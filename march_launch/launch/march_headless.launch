@@ -1,36 +1,9 @@
 <launch>
-    <arg name="hardware_interface" default="true"/>
-    <arg name="bag_prefix" default="log"/>
+    <arg name="hardware_interface" default="true" doc="Launches the hardware_interface."/>
+    <arg name="wireless" default="false" doc="Enables wireless connection to the input device."/>
 
-    <group if="$(arg hardware_interface)">
-        <rosparam>
-            march:
-                launch_settings:
-                    exoskeleton:
-                        hardware_interface: true
-        </rosparam>
-    </group>
-
-    <rosparam>
-        march:
-            launch_settings:
-                rqt_launch_menu: false
-                run_configuration: exoskeleton
-                input_device:
-                    real: true
-                    wireless: false
-    </rosparam>
-
-
-    <node
-            pkg="rosbag"
-            name="record"
-            type="record"
-            output="log"
-            args="-a -q -o $(arg bag_prefix)"
-    />
-
-    <include file="$(find march_state_machine)/launch/march_state_machine.launch">
-        <arg name="state_machine_viewer" value="false" />
+    <include file="$(find march_launch)/launch/march.launch" pass_all_args="true">
+        <arg name="configuration" value="exoskeleton"/>
+        <arg name="headless" value="true"/>
     </include>
 </launch>

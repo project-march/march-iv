@@ -1,21 +1,10 @@
 <launch>
-    <rosparam>
-        march:
-            launch_settings:
-                rqt_launch_menu: false
-                run_configuration: simulation
-                ui:
-                    rviz: false
-                    rqt_input_device: true
-                    rqt_status_monitor: false
-                simulation:
-                    gazebo_ui: true
-                    fake_temperature_sensors: false
-                input_device:
-                    real: false
-    </rosparam>
+    <arg name="rviz" default="true" doc="Launches RViz."/>
+    <arg name="rqt_input" default="true" doc="Launches the rqt input device."/>
+    <arg name="gazebo_ui" default="false" doc="Launches the Gazebo UI."/>
+    <arg name="rosbag" default="false" doc="Enables rosbag record node."/>
 
-    <include file="$(find march_state_machine)/launch/march_state_machine.launch">
-        <arg name="state_machine_viewer" value="false" />
+    <include file="$(find march_launch)/launch/march.launch" pass_all_args="true">
+        <arg name="configuration" value="simulation"/>
     </include>
 </launch>

@@ -1,18 +1,23 @@
 <launch>
 
     <arg
-            name="gait_file_package"
+            name="gait_package"
             default="march_gait_files"
             doc="The package where the gait files are located"
     />
     <arg
-            name="gait_file_directory"
-            default="test_versions-v"
+            name="gait_directory"
+            default="training"
             doc="The directory where the gait files are located, relative to the above package"
     />
 
-    <rosparam param="/march/gait_file_package" subst_value="true">$(arg gait_file_package)</rosparam>
-    <rosparam param="/march/gait_file_directory" subst_value="true">$(arg gait_file_directory)</rosparam>
-    <node name="march_gait_selection" pkg="march_gait_selection" type="march_gait_selection_node" output="screen"/>
-
+    <node
+            name="gait_selection_node"
+            pkg="march_gait_selection"
+            type="march_gait_selection_node"
+            output="screen"
+            required="true">
+        <param name="gait_package" value="$(arg gait_package)"/>
+        <param name="gait_directory" value="$(arg gait_directory)"/>
+    </node>
 </launch>
