@@ -34,7 +34,7 @@ class GaitSelection(object):
         self.robot = None
 
         try:
-            self.robot = urdf.Robot.from_parameter_server()
+            self.robot = urdf.Robot.from_parameter_server('/robot_description')
 
             for joint in self.robot.joints:
                 if joint.type != "fixed":
@@ -96,6 +96,8 @@ class GaitSelection(object):
 
         subgait.name = subgait_name
         subgait.version = self.gait_version_map[gait_name][subgait_name]
+        if subgait.gait_type == '':
+            subgait.gait_type = 'walk_like'
 
         if self.robot is not None:
             subgait = self.filter_subgait(subgait, self.joint_names)
@@ -255,9 +257,11 @@ class GaitSelection(object):
             rospy.logerr("Could not find 'to' subgait %s/%s", gait_name, to_name)
             return False
 
-        if not self.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory):
-            rospy.logerr("Wrong transition from %s/%s/%s.subgait to %s/%s/%s.subgait",
-                         gait_name, from_name, from_subgait.version, gait_name, to_name, to_subgait.version)
+        transition_msg = self.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory)
+        if transition_msg != "":
+            rospy.logerr("Wrong transition from %s/%s/%s.subgait to %s/%s/%s.subgait, transition wrong at: %s",
+                         gait_name, from_name, from_subgait.version, gait_name, to_name, to_subgait.version,
+                         transition_msg)
             return False
         return True
 
@@ -278,7 +282,19 @@ class GaitSelection(object):
         first_new_point_accelerations = set(zip(new_trajectory.joint_names, new_trajectory.points[0].accelerations))
         first_new_point_effort = set(zip(new_trajectory.joint_names, new_trajectory.points[0].effort))
 
-        return last_old_point_positions == first_new_point_positions and \
-            last_old_point_velocities == first_new_point_velocities and \
-            last_old_point_accelerations == first_new_point_accelerations and \
-            last_old_point_effort == first_new_point_effort
+        def match(old_points, new_points, type_str):
+            if old_points != new_points:
+                msg = "\n" + type_str + " end old subgait does not match start new subgait: \n"
+                msg = msg + type_str + " for old subgait \n"
+                for joint in sorted(old_points.difference(new_points)):
+                    msg = msg + str(joint) + '\n'
+                msg = msg + type_str + " for new subgait"
+                for joint in sorted(new_points.difference(old_points)):
+                    msg = msg + '\n' + str(joint)
+                return msg
+            return ""
+
+        return (match(last_old_point_positions, first_new_point_positions, "Positions") +
+                match(last_old_point_velocities, first_new_point_velocities, "Velocities") +
+                match(last_old_point_accelerations, first_new_point_accelerations, "Accelerations") +
+                match(last_old_point_effort, first_new_point_effort, "Efforts"))

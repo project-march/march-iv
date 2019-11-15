@@ -1,9 +1,0 @@
-<launch>
-    <arg name="state_machine_viewer" default="true"/>
-
-    <group if="$(arg state_machine_viewer)">
-        <node name="state_machine_viewer" pkg="smach_viewer" type="smach_viewer.py" output="screen"/>
-    </group>
-
-    <node name="state_machine" pkg="march_state_machine" type="march_state_machine" output="screen"/>
-</launch>

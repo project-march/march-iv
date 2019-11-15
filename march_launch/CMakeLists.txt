@@ -12,7 +12,7 @@ install(FILES plugin.xml
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
-install(DIRECTORY launch resource rqt_config rqt_multiplot 
+install(DIRECTORY launch resource
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 

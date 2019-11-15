@@ -18,7 +18,7 @@ public:
   bool gaitDone = false;
   ros::Time getEndTimeCurrentGait();
   control_msgs::FollowJointTrajectoryGoal scheduleGait(const march_shared_resources::GaitGoal* gait_goal,
-                                                       ros::Duration offset);
+                                                       ros::Duration offset = ros::Duration(0, 0));
 
 private:
   ros::Time getStartTime(ros::Duration offset);

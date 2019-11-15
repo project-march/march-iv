@@ -2,6 +2,7 @@
 string name
 string version
 string description
+string gait_type
 
 # Filter the interpolated setpoints from the trajectory with the list of user-defined setpoints.
 Setpoint[] setpoints

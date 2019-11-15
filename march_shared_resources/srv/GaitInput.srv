@@ -1,5 +1,0 @@
-string gait_name
-float64 time
----
-bool is_successful
-string message

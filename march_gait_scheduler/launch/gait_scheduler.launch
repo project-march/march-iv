@@ -1,3 +1,0 @@
-<launch>
-    <node name="gait_scheduler_node" pkg="march_gait_scheduler" type="march_gait_scheduler_node" output="screen"/>
-</launch>

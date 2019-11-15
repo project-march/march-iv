@@ -9,10 +9,11 @@ class ControlFlow:
         self._stopped = False
         self._paused = False
         self._gait = None
-        self._input_device_instruction_subscriber = rospy.Subscriber("march/input_device/instruction", GaitInstruction,
+        self._input_device_instruction_subscriber = rospy.Subscriber('/march/input_device/instruction', GaitInstruction,
                                                                      self.callback_input_device_instruction)
-        self._input_device_instruction_respone_publisher = rospy.Publisher("march/input_device/instruction_response",
-                                                                           Bool)
+        self._input_device_instruction_response_publisher = rospy.Publisher('/march/input_device/instruction_response',
+                                                                            Bool,
+                                                                            queue_size=20)
 
     def stop_pressed(self):
         return self._stopped
@@ -33,11 +34,11 @@ class ControlFlow:
         self._stopped = False
 
     def gait_accepted(self):
-        self._input_device_instruction_respone_publisher.publish(True)
+        self._input_device_instruction_response_publisher.publish(True)
         self.reset_gait()
 
     def gait_rejected(self):
-        self._input_device_instruction_respone_publisher.publish(False)
+        self._input_device_instruction_response_publisher.publish(False)
         self.reset_gait()
 
     def callback_input_device_instruction(self, msg):

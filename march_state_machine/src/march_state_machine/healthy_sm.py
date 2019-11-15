@@ -33,10 +33,10 @@ def create():
                                })
 
         # Movement states
-        smach.StateMachine.add('HOME SIT', GaitState("home", "home_sit"),
+        smach.StateMachine.add('HOME SIT', GaitState('home', 'home_sit'),
                                transitions={'succeeded': 'SITTING', 'preempted': 'failed', 'aborted': 'UNKNOWN'})
 
-        smach.StateMachine.add('HOME STAND', GaitState("home", "home_stand"),
+        smach.StateMachine.add('HOME STAND', GaitState('home', 'home_stand'),
                                transitions={'succeeded': 'STANDING', 'preempted': 'failed', 'aborted': 'UNKNOWN'})
 
         smach.StateMachine.add('GAIT WALK', walk_sm.create(),

@@ -1,4 +1,0 @@
-string gait_file # name of the gait file requested to play
----
-bool success   # indicate a successful run of triggered service
-string message # possible error messages

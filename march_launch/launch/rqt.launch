@@ -1,5 +1,0 @@
-<launch>
-    <node name="rqt_gui_ros_status" pkg="rqt_gui" type="rqt_gui" args = "--perspective-file $(find march_launch)/rqt_config/ros_status.perspective"/>
-
-    <node name="rqt_gui_ros_input" pkg="rqt_gui" type="rqt_gui" args = "--perspective-file $(find march_launch)/rqt_config/ros_input.perspective"/>
-</launch>

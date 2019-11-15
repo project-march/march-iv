@@ -21,6 +21,10 @@ catkin_package(
 file(GLOB_RECURSE lintfiles "src/*.py")
 roslint_python(${lintfiles})
 
+install(DIRECTORY config launch
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+    )
+
 catkin_install_python(PROGRAMS scripts/${PROJECT_NAME}_node
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
