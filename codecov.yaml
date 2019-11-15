@@ -2,7 +2,6 @@ ignore:
 # Ignore packages completely
   - "march_description/.*"
   - "march_launch/.*"
-  - "march_rqt_launch_menu/.*"
   - "march_shared_resources/.*"
 
 # Ignore test folders

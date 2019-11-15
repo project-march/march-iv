@@ -68,7 +68,7 @@ TEST_F(ScheduleMultipleGaitsTest, ScheduleTwoNoOffset)
 
   ros::Time secondStartTime = (current_time + gaitDuration);
 
-  ASSERT_NEAR(current_time.toSec(), trajectoryMsgSit.trajectory.header.stamp.toSec(), 0.1);
+  ASSERT_TRUE(trajectoryMsgSit.trajectory.header.stamp.isZero());
   ASSERT_NEAR(secondStartTime.toSec(), trajectoryMsgStand.trajectory.header.stamp.toSec(), 0.1);
 }
 
@@ -92,10 +92,10 @@ TEST_F(ScheduleMultipleGaitsTest, ScheduleTwoWithOffset)
   ros::Duration offset = ros::Duration().fromSec(3);
   control_msgs::FollowJointTrajectoryGoal trajectoryMsgStand = scheduler.scheduleGait(&gaitStandGoalConst, offset);
 
-  ros::Time secondStartTime = current_time + gaitDuration + offset;
+  ros::Time start_time = current_time + gaitDuration + offset;
 
-  ASSERT_NEAR(current_time.toSec(), trajectoryMsgSit.trajectory.header.stamp.toSec(), 0.1);
-  ASSERT_NEAR(secondStartTime.toSec(), trajectoryMsgStand.trajectory.header.stamp.toSec(), 0.1);
+  ASSERT_TRUE(trajectoryMsgSit.trajectory.header.stamp.isZero());
+  ASSERT_NEAR(start_time.toSec(), trajectoryMsgStand.trajectory.header.stamp.toSec(), 0.1);
 }
 
 TEST_F(ScheduleMultipleGaitsTest, ScheduleThreeNoOffset)
@@ -136,6 +136,6 @@ TEST_F(ScheduleMultipleGaitsTest, ScheduleSecondGaitInThePast)
   ros::Duration offset = ros::Duration().fromSec(-6);
   control_msgs::FollowJointTrajectoryGoal trajectoryMsgStand = scheduler.scheduleGait(&gaitStandGoalConst, offset);
 
-  ASSERT_NEAR(current_time.toSec(), trajectoryMsgSit.trajectory.header.stamp.toSec(), 0.1);
+  ASSERT_TRUE(trajectoryMsgSit.trajectory.header.stamp.isZero());
   ASSERT_NEAR(current_time.toSec(), trajectoryMsgStand.trajectory.header.stamp.toSec(), 0.1);
 }

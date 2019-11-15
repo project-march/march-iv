@@ -34,7 +34,7 @@ class GaitSelection(object):
         self.robot = None
 
         try:
-            self.robot = urdf.Robot.from_parameter_server()
+            self.robot = urdf.Robot.from_parameter_server('/robot_description')
 
             for joint in self.robot.joints:
                 if joint.type != "fixed":

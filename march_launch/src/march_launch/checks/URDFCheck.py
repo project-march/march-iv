@@ -8,7 +8,7 @@ class URDFCheck(LaunchCheck):
 
     def __init__(self):
         LaunchCheck.__init__(self, "URDF", "Please check if the loaded joints are correct", "march_launch",
-                             "upload_march_iv_urdf.launch", 10, True)
+                             "upload_march_urdf.launch", 10, True)
 
     def perform(self):
         self.launch()

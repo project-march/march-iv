@@ -25,7 +25,6 @@ protected:
 TEST_F(ScheduleOneGaitTest, ScheduleNow)
 {
   ros::Time::init();
-  ros::Time current_time = ros::Time::now();
   march_shared_resources::GaitGoal gaitGoal;
   gaitGoal.current_subgait.trajectory = fake_sit_trajectory();
   gaitGoal.current_subgait.name = "sit";
@@ -36,7 +35,7 @@ TEST_F(ScheduleOneGaitTest, ScheduleNow)
   control_msgs::FollowJointTrajectoryGoal trajectoryMsg =
       scheduler.scheduleGait(&gaitGoalConst, ros::Duration().fromSec(0));
 
-  ASSERT_FLOAT_EQ(current_time.toSec(), trajectoryMsg.trajectory.header.stamp.toSec());
+  ASSERT_TRUE(trajectoryMsg.trajectory.header.stamp.isZero());
 }
 
 TEST_F(ScheduleOneGaitTest, ScheduledTrajectoryTheSameAsRequested)
