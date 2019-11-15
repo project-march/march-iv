@@ -1,0 +1,7 @@
+<!--change march4 to the necessary use of the package i.e. when using the test_joint use the corresponding folder instead.-->
+<launch>
+    <arg name="march_type" default="march4"/>
+    <node name="gain_scheduling_node" pkg="march_gain_scheduling" type="march_gain_scheduling_node" output="screen">
+        <rosparam command="load" file="$(find march_gain_scheduling)/config/$(arg march_type)/gains_per_gait_type.yaml"/>
+    </node>
+</launch>
