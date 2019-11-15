@@ -199,6 +199,10 @@
         </collision>
     </link>
 
+    <!-- IMU-->
+    <link name="imu_link">
+    </link>
+
     <!-- Left Moving Hip-->
     <link name="hip_aa_frame_left_side">
         <visual>
@@ -487,8 +491,13 @@
     </gazebo>
 
     <!-- Joints -->
-    <joint name="hip" type="fixed">
+    <joint name="imu_joint" type="fixed">
         <parent link="${parent_name}"/>
+        <child link="imu_link"/>
+    </joint>
+
+    <joint name="hip" type="fixed">
+        <parent link="imu_link"/>
         <child link="hip_base"/>
         <origin xyz="0 0 ${lower_leg_height+upper_leg_height+ankle_plate_height+width/2.0+hover_height}" rpy="0 0 0"/>
     </joint>
@@ -737,5 +746,7 @@
             <mechanicalReduction>200</mechanicalReduction>
         </actuator>
     </transmission>
+
+
 
 </robot>
