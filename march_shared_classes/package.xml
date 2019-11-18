@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>march_shared_classes</name>
+  <version>0.0.0</version>
+  <description>classes for the march packages</description>
+  <maintainer email="software@projectmarch.nl">Project March</maintainer>
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>march_shared_resources</depend>
+
+  <build_depend>roslint</build_depend>
+
+  <build_export_depend>robot_state_publisher</build_export_depend>
+
+  <exec_depend>rospy</exec_depend>
+</package>
