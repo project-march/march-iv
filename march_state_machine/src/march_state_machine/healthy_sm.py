@@ -91,10 +91,9 @@ def create():
                                transitions={'succeeded': 'STANDING',
                                             'preempted': 'failed', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT RT MIDDLE STEPS', rough_terrain_middle_steps_sm.create(),  # RT stands for Rough Terrain
+        smach.StateMachine.add('GAIT RT MIDDLE STEPS', rough_terrain_middle_steps_sm.create(),
                                transitions={'succeeded': 'STANDING',
                                             'preempted': 'failed', 'failed': 'UNKNOWN'})
-
 
         # Idle states
         smach.StateMachine.add('SITTING', IdleState(outcomes=['gait_stand', 'preempted']),
