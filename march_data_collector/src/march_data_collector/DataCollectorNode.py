@@ -20,13 +20,13 @@ class DataCollectorNode(object):
         joint_names = rospy.get_param('/march/joint_names')
         self.imu_broadcaster = tf2_ros.TransformBroadcaster()
 
-        self.marker_publisher = rospy.Publisher('/march/CoMMarker', Marker, queue_size=1)
+        self.marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
 
         temperature_subscriber = [rospy.Subscriber('/march/temperature/' + joint, Temperature,
                                                    self.temperature_callback, joint) for joint in joint_names]
 
         trajectory_state_subscriber = rospy.Subscriber('/march/controller/trajectory/state',
-                                                       JointTrajectoryControllerState, self.trajectory_callback)
+                                                       JointTrajectoryControllerState, self.trajectory_state_callback)
 
         imc_state_subscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback)
 
@@ -37,7 +37,7 @@ class DataCollectorNode(object):
 
     def trajectory_state_callback(self, data):
         rospy.logdebug('received trajectory state' + str(data.desired))
-        self.marker_publisher.publish(self.com_calculator.calculateCoM())
+        self.marker_publisher.publish(self.com_calculator.calculate_com())
 
     def imc_state_callback(self, data):
         rospy.logdebug('received IMC message current is ' + str(data.current))

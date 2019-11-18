@@ -11,7 +11,7 @@ class CoMCalculator(object):
     def __init__(self, robot, tf_listener, tf_buffer):
         self.mass = 0
         self.links = robot.link_map
-        self.tfBuffer = tf_buffer
+        self.tf_buffer = tf_buffer
 
         unnecessary_links = []
         for link in self.links:
@@ -22,7 +22,7 @@ class CoMCalculator(object):
             del self.links[link]
 
         for link in self.links:
-            self.Mass += self.links[link].inertial.mass
+            self.mass += self.links[link].inertial.mass
 
         self.marker = Marker()
         self.marker.header.frame_id = "world"
@@ -58,9 +58,9 @@ class CoMCalculator(object):
             except tf2_ros.TransformException as err:
                 rospy.logwarn("error in CoM calculation")
 
-        x = x/self.Mass
-        y = y/self.Mass
-        z = z/self.Mass
+        x = x/self.mass
+        y = y/self.mass
+        z = z/self.mass
 
         # send CoM position to RViZ
         self.marker.header.stamp = rospy.Time()
