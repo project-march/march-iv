@@ -52,7 +52,6 @@
     <group if="$(eval configuration == 'simulation')">
         <include file="$(find march_simulation)/launch/march_world.launch">
             <arg name="gazebo_ui" value="$(eval not headless and gazebo_ui)"/>
-            <arg name="paused" default="$(eval not headless and gazebo_ui)"/>
         </include>
     </group>
 </launch>
