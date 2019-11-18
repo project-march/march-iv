@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import sys
 import rospy
 import smach
@@ -8,14 +7,6 @@ from multiprocessing.pool import ThreadPool
 from march_state_machine import launch_sm, healthy_sm
 from march_state_machine.SafetyState import SafetyState
 from march_state_machine.states.EmptyState import EmptyState
-
-
-class Start(smach.State):
-    def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'])
-
-    def execute(self, userdata):
-        return 'succeeded'
 
 
 def main():
@@ -45,8 +36,6 @@ def main():
 def create_sm():
     sm = smach.StateMachine(outcomes=['DONE'])
     with sm:
-        smach.StateMachine.add('START', Start(),
-                               transitions={'succeeded': 'LAUNCH'})
         smach.StateMachine.add('LAUNCH', launch_sm.create(),
                                transitions={'succeeded': 'HEALTHY', 'failed': 'SHUTDOWN'})
 

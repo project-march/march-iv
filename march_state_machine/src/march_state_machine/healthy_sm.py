@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+import rospy
 import smach
 
 from march_state_machine import walk_sm
@@ -14,9 +14,20 @@ from march_state_machine import sofa_sit_sm
 from march_state_machine import sofa_stand_sm
 from march_state_machine import tilted_path_sm
 from march_state_machine import walk_small_sm
+from march_state_machine import rough_terrain_high_step_sm
+from march_state_machine import rough_terrain_middle_steps_sm
 from march_state_machine import stairs_sm
 from march_state_machine.states.IdleState import IdleState
 from march_state_machine.states.GaitState import GaitState
+
+
+class HealthyStart(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded'])
+
+    def execute(self, userdata):
+        rospy.loginfo('March is fully operational')
+        return 'succeeded'
 
 
 def create():
@@ -24,7 +35,8 @@ def create():
     # Open the container
     with sm_healthy:
         # Add states to the container
-
+        smach.StateMachine.add('START', HealthyStart(),
+                               transitions={'succeeded': 'UNKNOWN'})
         smach.StateMachine.add('UNKNOWN', IdleState(outcomes=['home_sit', 'home_stand', 'failed', 'preempted']),
                                transitions={
                                    'home_sit': 'HOME SIT',
@@ -85,6 +97,14 @@ def create():
                                transitions={'succeeded': 'STANDING',
                                             'preempted': 'failed', 'failed': 'UNKNOWN'})
 
+        smach.StateMachine.add('GAIT RT HIGH STEP', rough_terrain_high_step_sm.create(),  # RT stands for Rough Terrain
+                               transitions={'succeeded': 'STANDING',
+                                            'preempted': 'failed', 'failed': 'UNKNOWN'})
+
+        smach.StateMachine.add('GAIT RT MIDDLE STEPS', rough_terrain_middle_steps_sm.create(),
+                               transitions={'succeeded': 'STANDING',
+                                            'preempted': 'failed', 'failed': 'UNKNOWN'})
+
         # Idle states
         smach.StateMachine.add('SITTING', IdleState(outcomes=['gait_stand', 'preempted']),
                                transitions={'gait_stand': 'GAIT STAND', 'preempted': 'failed'})
@@ -96,7 +116,8 @@ def create():
                                                                'gait_side_step_right_small', 'gait_sofa_sit',
                                                                'gait_stairs_up', 'gait_stairs_down',
                                                                'gait_set_ankle_from_2_5_to_min5',
-                                                               'gait_walk_small',
+                                                               'gait_walk_small', 'gait_rough_terrain_high_step',
+                                                               'gait_rough_terrain_middle_steps',
                                                                'preempted']),
                                transitions={'gait_sit': 'GAIT SIT', 'gait_walk': 'GAIT WALK',
                                             'gait_single_step_small': 'GAIT SINGLE STEP SMALL',
@@ -110,6 +131,8 @@ def create():
                                             'gait_stairs_down': 'GAIT STAIRS DOWN',
                                             'gait_set_ankle_from_2_5_to_min5': 'GAIT TILTED PATH',
                                             'gait_walk_small': 'GAIT WALK SMALL',
+                                            'gait_rough_terrain_high_step': 'GAIT RT HIGH STEP',
+                                            'gait_rough_terrain_middle_steps': 'GAIT RT MIDDLE STEPS',
                                             'preempted': 'failed'})
 
         return sm_healthy
