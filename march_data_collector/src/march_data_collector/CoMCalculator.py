@@ -5,24 +5,22 @@ import tf2_geometry_msgs as tf_geo
 from urdf_parser_py.urdf import URDF
 from visualization_msgs.msg import Marker
 
+
 class CoMCalculator(object):
 
-    def __init__(self, robot, TFlistener,tfBuffer):
-        self.Mass = 0
-        #get robot description from URDF
+    def __init__(self, robot, tf_listener, tf_buffer):
+        self.mass = 0
         self.links = robot.link_map
-        self.tfBuffer = tfBuffer
+        self.tfBuffer = tf_buffer
 
-        #Delete links, which contain no mass description
         unnecessary_links = []
         for link in self.links:
-            if self.links[link].inertial == None:
+            if self.links[link].inertial is None:
                 unnecessary_links.append(link)
 
         for link in unnecessary_links:
             del self.links[link]
 
-        #Calculate the total mass of the robot
         for link in self.links:
             self.Mass += self.links[link].inertial.mass
 
@@ -37,22 +35,23 @@ class CoMCalculator(object):
         self.marker.scale.y = 0.03
         self.marker.scale.z = 0.03
 
-    def calculateCoM(self):
+    def calculate_com(self):
         x = 0
         y = 0
         z = 0
         for link in self.links:
             try:
-                trans = self.tfBuffer.lookup_transform("world", link, rospy.Time())
+                trans = self.tf_buffer.lookup_transform("world", link, rospy.Time())
 
-                toTransform = geometry_msgs.msg.PointStamped()
-                toTransform.point.x = self.links[link].inertial.origin.xyz[0]
-                toTransform.point.y = self.links[link].inertial.origin.xyz[1]
-                toTransform.point.z = self.links[link].inertial.origin.xyz[2]
-                toTransform.header.frame_id = link
-                toTransform.header.stamp = rospy.get_rostime()
-                transformed = tf_geo.do_transform_point(toTransform, trans)
-                #calculate part of CoM equation depending on link
+                to_transform = geometry_msgs.msg.PointStamped()
+                to_transform.point.x = self.links[link].inertial.origin.xyz[0]
+                to_transform.point.y = self.links[link].inertial.origin.xyz[1]
+                to_transform.point.z = self.links[link].inertial.origin.xyz[2]
+                to_transform.header.frame_id = link
+                to_transform.header.stamp = rospy.get_rostime()
+                transformed = tf_geo.do_transform_point(to_transform, trans)
+
+                # calculate part of CoM equation depending on link
                 x += self.links[link].inertial.mass * transformed.point.x
                 y += self.links[link].inertial.mass * transformed.point.y
                 z += self.links[link].inertial.mass * transformed.point.z
@@ -63,10 +62,10 @@ class CoMCalculator(object):
         y = y/self.Mass
         z = z/self.Mass
 
-        #send CoM position to RViZ
+        # send CoM position to RViZ
         self.marker.header.stamp = rospy.Time()
         self.marker.pose.position.x = x
         self.marker.pose.position.y = y
         self.marker.pose.position.z = z
-        print(self.marker.pose.position)
+        rospy.logdebug("center of mass is at " +str(self.marker.pose.position))
         return self.marker
