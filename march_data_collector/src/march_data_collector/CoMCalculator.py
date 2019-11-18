@@ -68,4 +68,5 @@ class CoMCalculator(object):
         self.marker.pose.position.y = y
         self.marker.pose.position.z = z
         rospy.logdebug("center of mass is at " + str(self.marker.pose.position))
+
         return self.marker
