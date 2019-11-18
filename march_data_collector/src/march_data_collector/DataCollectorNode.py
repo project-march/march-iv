@@ -6,7 +6,6 @@ from march_shared_resources.msg import ImcErrorState
 from geometry_msgs.msg import TransformStamped
 from tf.transformations import *
 from math import pi
-import tf2_ros
 from CoMCalculator import CoMCalculator
 from visualization_msgs.msg import Marker
 from urdf_parser_py.urdf import URDF
