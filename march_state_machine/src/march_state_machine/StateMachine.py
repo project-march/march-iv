@@ -1,8 +1,8 @@
 #!/usr/bin/env python
+import sys
 import rospy
 import smach
 import smach_ros
-import threading
 
 from multiprocessing.pool import ThreadPool
 from march_state_machine import launch_sm, healthy_sm
@@ -19,19 +19,26 @@ class Start(smach.State):
 
 
 def main():
-    rospy.init_node("state_machine")
+    rospy.init_node('state_machine')
 
     sm = create_sm()
-    if rospy.get_param("state_machine_viewer", "true"):
+    try:
+        sm.check_consistency()
+    except smach.InvalidTransitionError as e:
+        rospy.signal_shutdown(e)
+        sys.exit(1)
+
+    sis = None
+    if rospy.get_param('~state_machine_viewer', False):
+        rospy.loginfo('Starting state_machine_viewer')
         sis = smach_ros.IntrospectionServer('smach_server', sm, '/SM_ROOT')
         sis.start()
-    print sm.check_consistency()
 
     pool = ThreadPool(processes=1)
     async_result = pool.apply_async(sm.execute)
 
     rospy.spin()
-    if rospy.get_param("state_machine_viewer", "true"):
+    if sis:
         sis.stop()
 
 
@@ -47,8 +54,8 @@ def create_sm():
                                                default_outcome='failed', child_termination_cb=lambda outcome_map: True)
 
         with safety_concurrence:
-            smach.Concurrence.add("SAFETY", SafetyState(outcomes=['error']))
-            smach.Concurrence.add("STATE MACHINE", healthy_sm.create())
+            smach.Concurrence.add('SAFETY', SafetyState(outcomes=['error']))
+            smach.Concurrence.add('STATE MACHINE', healthy_sm.create())
 
         smach.StateMachine.add('HEALTHY', safety_concurrence,
                                transitions={'succeeded': 'SHUTDOWN', 'failed': 'ERROR'})

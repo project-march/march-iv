@@ -1,0 +1,30 @@
+default_temperature_threshold: 40
+input_device_connection_timeout: 1000
+send_errors_interval: 1000
+temperature_thresholds_warning:
+  left_hip_aa: 45
+  left_hip_fe: 40
+  left_knee: 45
+  left_ankle: 45
+  right_hip_aa: 45
+  right_hip_fe: 40
+  right_knee: 40
+  right_ankle: 40
+temperature_thresholds_non_fatal:
+  left_hip_aa: 50
+  left_hip_fe: 45
+  left_knee: 45
+  left_ankle: 50
+  right_hip_aa: 50
+  right_hip_fe: 45
+  right_knee: 45
+  right_ankle: 50
+temperature_thresholds_fatal:
+  left_hip_aa: 55
+  left_hip_fe: 50
+  left_knee: 50
+  left_ankle: 55
+  right_hip_aa: 55
+  right_hip_fe: 50
+  right_knee: 50
+  right_ankle: 55

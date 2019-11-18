@@ -1,4 +1,4 @@
 <launch>
-    <node name="sound_play" pkg="sound_play" type="soundplay_node.py" output="screen"/>
+    <node name="sound_play" pkg="sound_play" type="soundplay_node.py"/>
     <node name="sound_scheduler_node" pkg="march_sound_scheduler" type="march_sound_scheduler_node" output="screen"/>
 </launch>

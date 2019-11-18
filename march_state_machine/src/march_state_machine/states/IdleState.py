@@ -1,6 +1,5 @@
 import smach
 import rospy
-from march_shared_resources.msg import GaitInstruction
 from march_state_machine.ControlFlow import control_flow
 
 
@@ -19,11 +18,11 @@ class IdleState(smach.State):
         control_flow.reset_gait()
         while not rospy.core.is_shutdown():
             if self.preempt_requested():
-                rospy.logwarn("preempted")
+                rospy.logwarn('preempted')
                 self.service_preempt()
                 return 'preempted'
             if control_flow.stop_pressed():
-                rospy.logwarn("Idle state doesn't respond to stop")
+                rospy.logwarn('Idle state doesn\'t respond to stop')
                 control_flow.reset_stop()
             if control_flow.gait_selected():
                 result_gait = control_flow.gait_name()

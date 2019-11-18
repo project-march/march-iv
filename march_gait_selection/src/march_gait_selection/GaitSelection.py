@@ -34,7 +34,7 @@ class GaitSelection(object):
         self.robot = None
 
         try:
-            self.robot = urdf.Robot.from_parameter_server()
+            self.robot = urdf.Robot.from_parameter_server('/robot_description')
 
             for joint in self.robot.joints:
                 if joint.type != "fixed":
@@ -96,6 +96,8 @@ class GaitSelection(object):
 
         subgait.name = subgait_name
         subgait.version = self.gait_version_map[gait_name][subgait_name]
+        if subgait.gait_type == '':
+            subgait.gait_type = 'walk_like'
 
         if self.robot is not None:
             subgait = self.filter_subgait(subgait, self.joint_names)
