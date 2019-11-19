@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-
-from march_data_collector import DataCollectorNode
+from march_data_collector import data_collector_node
 
 if __name__ == '__main__':
-    DataCollectorNode.main()
+    data_collector_node.main()

@@ -66,6 +66,7 @@ def main():
 
     robot = URDF.from_parameter_server()
     tf_buffer = tf2_ros.Buffer()
+    tf_listener = tf2_ros.TransformListener(tf_buffer)
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
 
     march_data_collector = DataCollectorNode(center_of_mass_calculator)

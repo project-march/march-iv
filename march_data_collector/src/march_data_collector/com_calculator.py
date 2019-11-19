@@ -1,3 +1,22 @@
+# Copyright (c) Hamburg Bit-Bots
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+# of the Software, and to permit persons to whom the Software is furnished to do
+# so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 import rospy
 import geometry_msgs.msg
 import tf2_ros
@@ -8,8 +27,6 @@ from visualization_msgs.msg import Marker
 class CoMCalculator(object):
 
     def __init__(self, robot, tf_buffer):
-        self.mass = 0
-        self.links = robot.link_map
         self.tf_buffer = tf_buffer
 
         self.links = dict(filter(lambda (_, l): l.inertial is not None, robot.link_map.items()))
@@ -46,8 +63,8 @@ class CoMCalculator(object):
                 x += self.links[link].inertial.mass * transformed.point.x
                 y += self.links[link].inertial.mass * transformed.point.y
                 z += self.links[link].inertial.mass * transformed.point.z
-            except tf2_ros.TransformException:
-                rospy.logwarn("error in CoM calculation")
+            except tf2_ros.TransformException as err:
+                rospy.logwarn("error in CoM calculation" + str(err))
 
         x = x/self.mass
         y = y/self.mass
