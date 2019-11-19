@@ -7,7 +7,7 @@ class EmptyState(smach.State):
     Can be used as a placeholder to design the whole statemachine without functionality.
     """
 
-    def __init__(self, sleep_time=5):
+    def __init__(self, sleep_time=0):
         self.sleep_time = sleep_time
         smach.State.__init__(self, outcomes=['succeeded', 'failed'])
 

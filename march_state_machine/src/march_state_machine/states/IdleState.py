@@ -18,7 +18,6 @@ class IdleState(smach.State):
         control_flow.reset_gait()
         while not rospy.core.is_shutdown():
             if self.preempt_requested():
-                rospy.logwarn('preempted')
                 self.service_preempt()
                 return 'preempted'
             if control_flow.stop_pressed():
@@ -30,6 +29,8 @@ class IdleState(smach.State):
                     control_flow.gait_accepted()
                     return result_gait
                 else:
-                    rospy.logwarn('The ' + result_gait + ' is not a possible gait in the current state')
+                    rospy.logwarn('The %s is not a possible gait in the current state', result_gait)
                     control_flow.gait_rejected()
             rate.sleep()
+
+        return 'preempted'
