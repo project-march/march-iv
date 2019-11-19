@@ -4,7 +4,7 @@ from trajectory_msgs.msg import JointTrajectoryPoint
 from march_shared_resources.msg import Setpoint
 
 
-class Gait:
+class Subgait:
     def __init__(self, joints, duration, gait_type='walk_like',
                  name='Walk', subgait='right_open', version='First try', description='Just a simple gait'):
         # Set gait_type to walk_like if an old file with no gait_type is opened
