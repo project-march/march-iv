@@ -20,8 +20,6 @@ def main():
         rospy.signal_shutdown(e)
         sys.exit(1)
 
-    rospy.on_shutdown(lambda: sm.request_preempt())
-
     sis = None
     if rospy.get_param('~state_machine_viewer', False):
         rospy.loginfo('Starting state_machine_viewer')
@@ -49,8 +47,6 @@ def child_term_cb(outcome_map):
     """
     if outcome_map['SAFETY'] == 'invalid' or outcome_map['SAFETY'] == 'preempted':
         return True
-    if outcome_map['STATE_MACHINE'] == 'failed' or outcome_map['STATE_MACHINE'] == 'preempted':
-        return True
 
     return False
 
@@ -69,7 +65,7 @@ def create_sm():
                                                                           'STATE_MACHINE': 'preempted'},
                                                             'succeeded': {'SAFETY': 'valid',
                                                                           'STATE_MACHINE': 'succeeded'}},
-                                               child_termination_cb=child_term_cb)
+                                               child_termination_cb=lambda _: True)
 
         with safety_concurrence:
             smach.Concurrence.add('SAFETY', SafetyState())
@@ -78,7 +74,7 @@ def create_sm():
         smach.StateMachine.add('HEALTHY', safety_concurrence,
                                transitions={'succeeded': 'SHUTDOWN', 'failed': 'ERROR', 'preempted': 'SHUTDOWN'})
         smach.StateMachine.add('ERROR', EmptyState(),
-                               transitions={'succeeded': 'SHUTDOWN', 'failed': 'SHUTDOWN'})
+                               transitions={'succeeded': 'SHUTDOWN'})
         smach.StateMachine.add('SHUTDOWN', ShutdownState(), transitions={'succeeded': 'DONE'})
 
     return sm

@@ -13,7 +13,7 @@ from march_state_machine import tilted_path_second_ending_step_sm
 from march_state_machine import set_ankle_from_min5_to_2_5_sm
 
 from march_state_machine.states.GaitState import GaitState
-from march_state_machine.states.IdleState import IdleState
+from march_state_machine.states.idle_state import IdleState
 
 
 def create():
