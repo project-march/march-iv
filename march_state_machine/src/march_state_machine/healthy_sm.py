@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+import rospy
 import smach
 
 from march_state_machine import walk_sm
@@ -21,12 +21,22 @@ from march_state_machine.states.IdleState import IdleState
 from march_state_machine.states.GaitState import GaitState
 
 
+class HealthyStart(smach.State):
+    def __init__(self):
+        smach.State.__init__(self, outcomes=['succeeded'])
+
+    def execute(self, userdata):
+        rospy.loginfo('March is fully operational')
+        return 'succeeded'
+
+
 def create():
     sm_healthy = smach.StateMachine(outcomes=['succeeded', 'failed'])
     # Open the container
     with sm_healthy:
         # Add states to the container
-
+        smach.StateMachine.add('START', HealthyStart(),
+                               transitions={'succeeded': 'UNKNOWN'})
         smach.StateMachine.add('UNKNOWN', IdleState(outcomes=['home_sit', 'home_stand', 'failed', 'preempted']),
                                transitions={
                                    'home_sit': 'HOME SIT',
