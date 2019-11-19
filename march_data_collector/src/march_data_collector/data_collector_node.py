@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import rospy
 from sensor_msgs.msg import Temperature, Imu
 from control_msgs.msg import JointTrajectoryControllerState
@@ -6,7 +5,7 @@ from march_shared_resources.msg import ImcErrorState
 from geometry_msgs.msg import TransformStamped
 from tf.transformations import *
 from math import pi
-from CoMCalculator import CoMCalculator
+from com_calculator import CoMCalculator
 from visualization_msgs.msg import Marker
 from urdf_parser_py.urdf import URDF
 import tf2_ros
@@ -67,8 +66,7 @@ def main():
 
     robot = URDF.from_parameter_server()
     tf_buffer = tf2_ros.Buffer()
-    tf_listener = tf2_ros.TransformListener(tf_buffer)
-    center_of_mass_calculator = CoMCalculator(robot, tf_listener, tf_buffer)
+    center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
 
     march_data_collector = DataCollectorNode(center_of_mass_calculator)
     rospy.spin()

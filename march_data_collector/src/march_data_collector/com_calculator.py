@@ -2,27 +2,18 @@ import rospy
 import geometry_msgs.msg
 import tf2_ros
 import tf2_geometry_msgs as tf_geo
-from urdf_parser_py.urdf import URDF
 from visualization_msgs.msg import Marker
 
 
 class CoMCalculator(object):
 
-    def __init__(self, robot, tf_listener, tf_buffer):
+    def __init__(self, robot, tf_buffer):
         self.mass = 0
         self.links = robot.link_map
         self.tf_buffer = tf_buffer
 
-        unnecessary_links = []
-        for link in self.links:
-            if self.links[link].inertial is None:
-                unnecessary_links.append(link)
-
-        for link in unnecessary_links:
-            del self.links[link]
-
-        for link in self.links:
-            self.mass += self.links[link].inertial.mass
+        self.links = dict(filter(lambda (_, l): l.inertial is not None, robot.link_map.items()))
+        self.mass = sum(l.inertial.mass for (_, l) in self.links.items())
 
         self.marker = Marker()
         self.marker.header.frame_id = "world"
@@ -55,7 +46,7 @@ class CoMCalculator(object):
                 x += self.links[link].inertial.mass * transformed.point.x
                 y += self.links[link].inertial.mass * transformed.point.y
                 z += self.links[link].inertial.mass * transformed.point.z
-            except tf2_ros.TransformException as err:
+            except tf2_ros.TransformException:
                 rospy.logwarn("error in CoM calculation")
 
         x = x/self.mass
