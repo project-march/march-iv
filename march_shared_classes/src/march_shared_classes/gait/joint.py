@@ -23,5 +23,3 @@ class Joint:
             velocity.append(self.setpoints[i].velocity)
 
         return time, position, velocity
-
-

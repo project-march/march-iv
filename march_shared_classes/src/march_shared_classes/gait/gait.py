@@ -98,4 +98,3 @@ class Gait:
             joint.duration = duration
 
         self.duration = duration
-
