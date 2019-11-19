@@ -3,8 +3,10 @@
     <arg name="rqt_input" default="true" doc="Launches the rqt input device."/>
     <arg name="gazebo_ui" default="false" doc="Launches the Gazebo UI."/>
     <arg name="rosbag" default="false" doc="Enables rosbag record node."/>
+    <arg name="unpause" default="$(eval not gazebo_ui)" doc="Unpause simulation when controller starts."/>
 
     <include file="$(find march_launch)/launch/march.launch" pass_all_args="true">
         <arg name="configuration" value="simulation"/>
+        <arg name="unpause" value="$(arg unpause)"/>
     </include>
 </launch>
