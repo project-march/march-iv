@@ -5,7 +5,8 @@ import smach_ros
 
 from multiprocessing.pool import ThreadPool
 from march_state_machine import launch_sm, healthy_sm
-from march_state_machine.SafetyState import SafetyState
+from march_state_machine.states.safety_state import SafetyState
+from march_state_machine.states.shutdown_state import ShutdownState
 from march_state_machine.states.EmptyState import EmptyState
 
 
@@ -49,8 +50,7 @@ def create_sm():
         smach.StateMachine.add('HEALTHY', safety_concurrence,
                                transitions={'succeeded': 'SHUTDOWN', 'failed': 'ERROR'})
         smach.StateMachine.add('ERROR', EmptyState(),
-                               transitions={'succeeded': 'HEALTHY', 'failed': 'SHUTDOWN'})
-        smach.StateMachine.add('SHUTDOWN', EmptyState(),
-                               transitions={'succeeded': 'DONE', 'failed': 'DONE'})
+                               transitions={'succeeded': 'SHUTDOWN', 'failed': 'SHUTDOWN'})
+        smach.StateMachine.add('SHUTDOWN', ShutdownState(), transitions={'succeeded': 'DONE'})
 
     return sm
