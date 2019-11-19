@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import smach
 
-from march_state_machine.states.WaitForRosControlState import WaitForRosControlState
+from march_state_machine.states.wait_for_ros_control_state import WaitForRosControlState
 
 
 ##
@@ -10,7 +10,7 @@ from march_state_machine.states.WaitForRosControlState import WaitForRosControlS
 # @return The launch state machine object.
 def create():
     sm_launch = smach.Sequence(
-        outcomes=['succeeded', 'failed'],
+        outcomes=['succeeded', 'preempted', 'failed'],
         connector_outcome='succeeded')
 
     # Open the container

@@ -8,18 +8,22 @@ class WaitForRosControlState(smach.State):
 
     def __init__(self, timeout=60):
         self._timeout = rospy.Duration.from_sec(timeout)
-        smach.State.__init__(self, outcomes=['succeeded', 'failed'])
+        smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'failed'])
 
     def execute(self, userdata):
         end = rospy.get_rostime() + self._timeout
         rospy.logdebug('trying to find controller manager')
-        list_controllers = rospy.ServiceProxy(
-            '/march/controller_manager/list_controllers', ListControllers)
-        list_controllers.wait_for_service()
+        list_controllers = rospy.ServiceProxy('/march/controller_manager/list_controllers', ListControllers)
+        try:
+            list_controllers.wait_for_service()
+        except rospy.exceptions.ROSInterruptException:
+            rospy.logdebug('ROS was shutdown while waiting for controller service')
+            return 'preempted'
+
         rospy.logdebug('controller manager found')
 
         req = ListControllersRequest()
-        while True:
+        while not rospy.is_shutdown():
             if rospy.get_rostime() > end:
                 rospy.logwarn('unable to find a JointTrajectoryController')
                 return 'failed'

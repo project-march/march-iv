@@ -37,7 +37,7 @@ def create_sm():
     sm = smach.StateMachine(outcomes=['DONE'])
     with sm:
         smach.StateMachine.add('LAUNCH', launch_sm.create(),
-                               transitions={'succeeded': 'HEALTHY', 'failed': 'SHUTDOWN'})
+                               transitions={'succeeded': 'HEALTHY', 'preempted': 'SHUTDOWN', 'failed': 'SHUTDOWN'})
 
         safety_concurrence = smach.Concurrence(outcomes=['succeeded', 'failed'],
                                                default_outcome='failed', child_termination_cb=lambda outcome_map: True)
