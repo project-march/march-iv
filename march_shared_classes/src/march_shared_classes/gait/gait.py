@@ -5,11 +5,11 @@ from march_shared_resources.msg import Setpoint
 
 
 class Gait:
-    def __init__(self, joints, duration, gait_type="walk_like",
-                 name="Walk", subgait="right_open", version="First try", description="Just a simple gait"):
+    def __init__(self, joints, duration, gait_type='walk_like',
+                 name='Walk', subgait='right_open', version='First try', description='Just a simple gait'):
         # Set gait_type to walk_like if an old file with no gait_type is opened
-        if gait_type == "":
-            gait_type = "walk_like"
+        if gait_type == '':
+            gait_type = 'walk_like'
 
         self.joints = joints
         self.gait_type = gait_type
@@ -34,7 +34,7 @@ class Gait:
                 interpolated_setpoint = joint.get_interpolated_setpoint(timestamp)
 
                 if interpolated_setpoint.time != timestamp:
-                    rospy.logerr("Time mismatch in joint " + joint.name + " at timestamp " + timestamp)
+                    rospy.logerr('Time mismatch in joint ' + joint.name + ' at timestamp ' + timestamp)
                 joint_trajectory_point.positions.append(interpolated_setpoint.position)
                 joint_trajectory_point.velocities.append(interpolated_setpoint.velocity)
             joint_trajectory.points.append(joint_trajectory_point)
@@ -66,7 +66,7 @@ class Gait:
         for i in range(0, len(self.joints)):
             if self.joints[i].name == name:
                 return self.joints[i]
-        rospy.logerr("Joint with name " + name + " does not exist in gait " + self.name + ".")
+        rospy.logerr('Joint with name ' + name + ' does not exist in gait ' + self.name)
         return None
 
     def set_gait_type(self, gait_type):
