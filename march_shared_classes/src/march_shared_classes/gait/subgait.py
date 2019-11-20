@@ -72,8 +72,8 @@ class Subgait:
     def set_gait_type(self, gait_type):
         self.gait_type = str(gait_type)
 
-    def set_name(self, name):
-        self.gait_name = name
+    def set_gait_name(self, gait_name):
+        self.gait_name = gait_name
 
     def set_description(self, description):
         self.description = str(description)
@@ -81,8 +81,8 @@ class Subgait:
     def set_version(self, version):
         self.version = version
 
-    def set_subgait(self, subgait):
-        self.subgait_name = subgait
+    def set_subgait_name(self, subgait_name):
+        self.subgait_name = subgait_name
 
     def set_duration(self, duration, rescale=False):
         for joint in self.joints:
