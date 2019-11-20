@@ -19,6 +19,7 @@ class WaitForRosControlState(smach.State):
         rospy.logdebug('controller manager found')
 
         req = ListControllersRequest()
+        rate = rospy.Rate(2)
         while True:
             if rospy.get_rostime() > end:
                 rospy.logwarn('unable to find a JointTrajectoryController')
@@ -33,3 +34,4 @@ class WaitForRosControlState(smach.State):
             except rospy.ServiceException as e:
                 rospy.logwarn('Service call failed: %s' % e)
                 return 'failed'
+            rate.sleep()

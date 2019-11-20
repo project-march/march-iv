@@ -12,15 +12,15 @@ class Subgait:
     joint_class = JointTrajectory
 
     def __init__(self, joints, duration, gait_type='walk_like',
-                 name='Walk', subgait='right_open', version='First try', description='Just a simple gait'):
+                 gait_name='Walk', subgait_name='right_open', version='First try', description='Just a simple gait'):
         # Set gait_type to walk_like if an old file with no gait_type is opened
         if gait_type == '':
             gait_type = 'walk_like'
 
         self.joints = joints
         self.gait_type = gait_type
-        self.name = name
-        self.subgait = subgait
+        self.gait_name = gait_name
+        self.subgait_name = subgait_name
         self.version = version
         self.description = str(description)
         self.duration = duration
@@ -119,14 +119,14 @@ class Subgait:
         for i in range(0, len(self.joints)):
             if self.joints[i].name == name:
                 return self.joints[i]
-        rospy.logerr('Joint with name ' + name + ' does not exist in gait ' + self.name)
+        rospy.logerr('Joint with name ' + name + ' does not exist in gait ' + self.gait_name)
         return None
 
     def set_gait_type(self, gait_type):
         self.gait_type = str(gait_type)
 
-    def set_name(self, name):
-        self.name = name
+    def set_gait_name(self, gait_name):
+        self.gait_name = gait_name
 
     def set_description(self, description):
         self.description = str(description)
@@ -134,8 +134,8 @@ class Subgait:
     def set_version(self, version):
         self.version = version
 
-    def set_subgait(self, subgait):
-        self.subgait = subgait
+    def set_subgait_name(self, subgait_name):
+        self.subgait_name = subgait_name
 
     def set_duration(self, duration, rescale=False):
         for joint in self.joints:
