@@ -1,9 +1,11 @@
 <launch>
     <arg name="state_machine_viewer" default="false" doc="Launches the SMACH state machine viewer."/>
+    <arg name="unpause" default="true" doc="Unpauses simulation."/>
 
     <node name="state_machine_viewer" pkg="smach_viewer" type="smach_viewer.py" if="$(arg state_machine_viewer)"/>
 
     <node name="state_machine" pkg="march_state_machine" type="march_state_machine" output="screen" required="true">
         <param name="state_machine_viewer" value="$(arg state_machine_viewer)"/>
+        <param name="unpause" value="$(arg unpause)"/>
     </node>
 </launch>

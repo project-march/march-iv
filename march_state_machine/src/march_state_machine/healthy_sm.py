@@ -19,6 +19,7 @@ from march_state_machine import rough_terrain_middle_steps_sm
 from march_state_machine import stairs_sm
 from march_state_machine.states.IdleState import IdleState
 from march_state_machine.states.GaitState import GaitState
+from std_srvs.srv import Empty, EmptyRequest
 
 
 class HealthyStart(smach.State):
@@ -26,6 +27,9 @@ class HealthyStart(smach.State):
         smach.State.__init__(self, outcomes=['succeeded'])
 
     def execute(self, userdata):
+        if rospy.get_param('~unpause', False):
+            unpause = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
+            unpause(EmptyRequest())
         rospy.loginfo('March is fully operational')
         return 'succeeded'
 

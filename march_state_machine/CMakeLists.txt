@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
     march_shared_resources
     roslint
     std_msgs
+    std_srvs
 )
 
 catkin_python_setup()

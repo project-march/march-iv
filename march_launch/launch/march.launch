@@ -7,6 +7,7 @@
     <arg name="rqt_input" default="true" doc="Launches the march rqt input device."/>
     <arg name="gazebo_ui" default="false" doc="Launches the Gazebo UI."/>
     <arg name="wireless" default="false" doc="Enables wireless connection to the input device."/>
+    <arg name="unpause" default="true" doc="Unpause simulation when controller starts."/>
 
     <arg name="rosbag" default="true" doc="Enables rosbag record node."/>
     <arg name="bag_prefix" default="log" doc="Prefix of the bag file. Only used if rosbag is true."/>
@@ -25,6 +26,7 @@
     <group ns="march">
         <include file="$(find march_state_machine)/launch/state_machine.launch">
             <arg name="state_machine_viewer" value="$(eval not headless and state_machine_viewer)"/>
+            <arg name="unpause" value="$(eval configuration == 'simulation' and unpause)"/>
         </include>
 
         <include file="$(find march_safety)/launch/march_safety.launch"/>
