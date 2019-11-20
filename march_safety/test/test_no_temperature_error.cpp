@@ -1,16 +1,11 @@
 // Copyright 2019 Project March.
 
-#include "gtest/gtest.h"
-#include "ros/ros.h"
-#include <march_safety/temperature_safety.h>
-#include "ErrorCounter.cpp"
+#include <gtest/gtest.h>
+#include <ros/ros.h>
+#include <sensor_msgs/Temperature.h>
+#include "error_counter.h"
 
-class TestNoTemperatureError : public ::testing::Test
-{
-protected:
-};
-
-TEST_F(TestNoTemperatureError, belowSpecificThreshold)
+TEST(TestNoTemperatureError, belowSpecificThreshold)
 {
   ros::NodeHandle nh;
   ros::Publisher pub_joint1 = nh.advertise<sensor_msgs::Temperature>("march/temperature/test_joint1", 0);
@@ -42,7 +37,7 @@ TEST_F(TestNoTemperatureError, belowSpecificThreshold)
  * Below specific threshold, but above the default threshold.
  * This tests if the specific threshold overrides the default threshold.
  */
-TEST_F(TestNoTemperatureError, belowSpecificThreshold2)
+TEST(TestNoTemperatureError, belowSpecificThreshold2)
 {
   ros::NodeHandle nh;
   ros::Publisher pub_joint2 = nh.advertise<sensor_msgs::Temperature>("march/temperature/test_joint2", 0);
@@ -70,7 +65,7 @@ TEST_F(TestNoTemperatureError, belowSpecificThreshold2)
   EXPECT_EQ(0, errorCounter.count);
 }
 
-TEST_F(TestNoTemperatureError, belowDefaultThreshold)
+TEST(TestNoTemperatureError, belowDefaultThreshold)
 {
   ros::NodeHandle nh;
   ros::Publisher pub_joint3 = nh.advertise<sensor_msgs::Temperature>("march/temperature/test_joint3", 0);
