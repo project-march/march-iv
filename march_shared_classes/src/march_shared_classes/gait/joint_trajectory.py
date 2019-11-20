@@ -1,4 +1,4 @@
-class Joint:
+class JointTrajectory:
 
     def __init__(self, name, limits, setpoints, duration):
         self.name = name
