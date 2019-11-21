@@ -11,10 +11,10 @@ def create():
     sm_ramp_door_slope_up.userdata.stop_pressed = False
     with sm_ramp_door_slope_up:
         # Movement states
-        smach.StateMachine.add('RIGHT_OPEN', GaitState("ramp_door_slope_up", "right_open"),
+        smach.StateMachine.add('RIGHT OPEN', GaitState("ramp_door_slope_up", "right_open"),
                                transitions={'succeeded': 'LEFT OPEN', 'preempted': 'preempted', 'aborted': 'failed'})
 
-        smach.StateMachine.add('LEFT_OPEN', GaitState("ramp_door_slope_up", "left_open"),
+        smach.StateMachine.add('LEFT OPEN', GaitState("ramp_door_slope_up", "left_open"),
                                transitions={'succeeded': 'RIGHT SWING', 'preempted': 'preempted', 'aborted': 'failed'})
 
         smach.StateMachine.add('RIGHT SWING', StoppableState("ramp_door_slope_up", "right_swing"),
