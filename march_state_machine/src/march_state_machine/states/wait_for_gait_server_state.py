@@ -6,7 +6,7 @@ from march_shared_resources.msg import GaitNameAction
 
 
 class WaitForGaitServerState(smach.State):
-    """State which waits for the ros controller manager to load the controllers."""
+    """State which waits for the gait server to be available."""
 
     def __init__(self, timeout=rospy.Duration.from_sec(60)):
         self._timeout = timeout
