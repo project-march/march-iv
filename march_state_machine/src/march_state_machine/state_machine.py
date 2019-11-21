@@ -37,20 +37,6 @@ def main():
         sis.stop()
 
 
-def child_term_cb(outcome_map):
-    """This callback is called when one of the concurrent states exits.
-
-    When True is returned the state machine preempts the other state. False will do nothing.
-    :param outcome_map: map of states to outcomes
-    :return: True when the safety state was preempted or returned invalid, or when the state machine failed,
-             returns False otherwise
-    """
-    if outcome_map['SAFETY'] == 'invalid' or outcome_map['SAFETY'] == 'preempted':
-        return True
-
-    return False
-
-
 def create_sm():
     sm = smach.StateMachine(outcomes=['DONE'])
     with sm:
