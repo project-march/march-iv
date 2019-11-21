@@ -143,7 +143,7 @@ def create():
                                             'gait_walk_small': 'GAIT WALK SMALL',
                                             'gait_rough_terrain_high_step': 'GAIT RT HIGH STEP',
                                             'gait_rough_terrain_middle_steps': 'GAIT RT MIDDLE STEPS',
-                                            'gait_ramp_door_slope_up': 'GAIT RD SLOPE UP'
+                                            'gait_ramp_door_slope_up': 'GAIT RD SLOPE UP',
                                             'preempted': 'failed'})
 
         return sm_healthy
