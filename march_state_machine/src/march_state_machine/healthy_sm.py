@@ -29,6 +29,7 @@ class HealthyStart(smach.State):
     def execute(self, userdata):
         if rospy.get_param('~unpause', False):
             unpause = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
+            unpause.wait_for_service()
             unpause(EmptyRequest())
         rospy.loginfo('March is fully operational')
         return 'succeeded'
