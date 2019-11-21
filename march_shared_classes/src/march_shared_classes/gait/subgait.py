@@ -30,7 +30,7 @@ class Subgait:
             if 'gait_type' not in subgait_dict:
                 subgait_dict['gait_type'] = 'walk_like'
         except Exception as e:
-            rospy.logerr(str(e))
+            rospy.logerr("Error occured in subgait: {}, {} ".format(type(e), e))
             return None
         return cls.from_dict(robot, subgait_dict, gait_name, subgait_name, version)
 
