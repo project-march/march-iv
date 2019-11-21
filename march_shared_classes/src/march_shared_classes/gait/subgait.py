@@ -3,6 +3,7 @@ from limits import Limits
 from joint_trajectory import JointTrajectory
 import yaml
 
+
 class Subgait:
     joint_class = JointTrajectory
 
@@ -26,7 +27,7 @@ class Subgait:
             subgait_name = file_name.split("/")[-2]
             version = file_name.split("/")[-1].replace(".subgait", "")
             subgait_dict = yaml.load(open(file_name), Loader=yaml.SafeLoader)
-            if not subgait_dict.has_key('gait_type'):
+            if not 'gait_type' in subgait_dict:
                 subgait_dict['gait_type'] = 'walk_like'
         except Exception as e:
             rospy.logerr(str(e))
