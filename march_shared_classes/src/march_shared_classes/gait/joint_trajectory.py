@@ -12,15 +12,15 @@ class JointTrajectory:
         self.duration = duration
 
     @classmethod
-    def from_msg(cls, subgait_msg, joint_name, limits, duration):
-        joint_trajectory = subgait_msg.trajectory
-        joint_index = joint_trajectory.joint_names.index(joint_name)
+    def from_dict(cls, subgait_dict, joint_name, limits, duration):
+        joint_trajectory = subgait_dict['trajectory']
+        joint_index = joint_trajectory['joint_names'].index(joint_name)
 
         setpoints = []
-        for point in joint_trajectory.points:
-            time = rospy.Duration(point.time_from_start.secs, point.time_from_start.nsecs).to_sec()
-            setpoints.append(cls.setpoint_class(time, point.positions[joint_index],
-                                                point.velocities[joint_index]))
+        for point in joint_trajectory['points']:
+            time = rospy.Duration(point['time_from_start']['secs'], point['time_from_start']['nsecs']).to_sec()
+            setpoints.append(cls.setpoint_class(time, point['positions'][joint_index],
+                                                point['velocities'][joint_index]))
 
         return cls(joint_name,
                    limits,
