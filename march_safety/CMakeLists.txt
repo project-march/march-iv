@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(march_safety)
 
-add_compile_options(-std=c++11 -Wall -g)
+add_compile_options(-std=c++11 -Wall -Wextra)
 
 find_package(catkin REQUIRED COMPONENTS
     march_shared_resources
@@ -62,7 +62,7 @@ install(DIRECTORY launch
 )
 
 # Add gtest based cpp test target and link libraries
-if (CATKIN_ENABLE_TESTING)
+if(CATKIN_ENABLE_TESTING)
     find_package(code_coverage REQUIRED)
     find_package(rostest REQUIRED)
 
@@ -71,31 +71,30 @@ if (CATKIN_ENABLE_TESTING)
         append_coverage_compiler_flags()
     endif()
 
-    add_rostest_gtest(${PROJECT_NAME}-test
-        test/${PROJECT_NAME}.test
-        test/TestTemperatureError.cpp
-        test/TestNoTemperatureError.cpp
-        test/TestTemperatureParameterized.cpp
+    add_rostest_gtest(${PROJECT_NAME}_temperature_test
+        test/${PROJECT_NAME}_temperature.test
+        test/temperature_error_test.cpp
+        test/no_temperature_error_test.cpp
+        test/temperature_parameterized_test.cpp
     )
-    target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES} ${PROJECT_NAME} gtest gmock)
-
-    add_rostest_gtest(${PROJECT_NAME}-test-connection-lost
+    add_rostest_gtest(${PROJECT_NAME}_connection_lost_test
         test/${PROJECT_NAME}_connection_lost.test
-        test/TestConnectionLost.cpp
+        test/connection_lost_test.cpp
     )
 
-    add_rostest_gtest(${PROJECT_NAME}-test-connection-never-started
+    add_rostest_gtest(${PROJECT_NAME}_connection_never_started_test
         test/${PROJECT_NAME}_connection_never_started.test
-        test/TestConnectionNeverStarted.cpp
+        test/connection_never_started_test.cpp
     )
 
-    add_rostest_gtest(${PROJECT_NAME}-test-connection-not-lost
+    add_rostest_gtest(${PROJECT_NAME}_connection_not_lost_test
         test/${PROJECT_NAME}_connection_not_lost.test
-        test/TestConnectionNotLost.cpp
+        test/connection_not_lost_test.cpp
     )
-    target_link_libraries(${PROJECT_NAME}-test-connection-lost ${catkin_LIBRARIES} ${PROJECT_NAME} gtest gmock)
-    target_link_libraries(${PROJECT_NAME}-test-connection-never-started ${catkin_LIBRARIES} ${PROJECT_NAME} gtest gmock)
-    target_link_libraries(${PROJECT_NAME}-test-connection-not-lost ${catkin_LIBRARIES} ${PROJECT_NAME} gtest gmock)
+    target_link_libraries(${PROJECT_NAME}_temperature_test ${catkin_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME}_connection_lost_test ${catkin_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME}_connection_never_started_test ${catkin_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME}_connection_not_lost_test ${catkin_LIBRARIES})
 
     if(ENABLE_COVERAGE_TESTING)
         set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*")
@@ -104,4 +103,4 @@ if (CATKIN_ENABLE_TESTING)
             DEPENDS tests
         )
     endif()
-endif ()
+endif()

@@ -6,19 +6,23 @@
 #include <std_msgs/Time.h>
 
 #include <march_safety/temperature_safety.h>
-#include "ErrorCounter.cpp"
+#include "error_counter.h"
 
-class TestConnectionNotLost : public ::testing::Test
+class TestConnectionLost : public ::testing::Test
 {
 protected:
 };
 
-TEST_F(TestConnectionNotLost, connectionNotLost)
+TEST_F(TestConnectionLost, connectionLost)
 {
   ros::Time::init();
   ros::NodeHandle nh;
+
+  int input_device_connection_timeout;
+  nh.getParam("/march_safety_node/input_device_connection_timeout", input_device_connection_timeout);
   int send_errors_interval;
   nh.getParam("/march_safety_node/send_errors_interval", send_errors_interval);
+
   ros::Publisher pub_alive = nh.advertise<std_msgs::Time>("march/input_device/alive", 0);
   ErrorCounter errorCounter;
   ros::Subscriber sub = nh.subscribe("march/error", 0, &ErrorCounter::cb, &errorCounter);
@@ -34,9 +38,11 @@ TEST_F(TestConnectionNotLost, connectionNotLost)
   timeMessage.data = ros::Time::now();
   pub_alive.publish(timeMessage);
   ros::spinOnce();
-  ros::Duration(send_errors_interval / 2 / 1000).sleep();
+  int sleep_ms = send_errors_interval * 0.9 + input_device_connection_timeout;
+  ros::Duration(sleep_ms / 1000).sleep();
   ros::spinOnce();
-  EXPECT_EQ(0, errorCounter.count);
+
+  EXPECT_EQ(1, errorCounter.count);
 }
 
 /**

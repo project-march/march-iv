@@ -1,44 +1,11 @@
 // Copyright 2019 Project March.
 
-#include "gtest/gtest.h"
-#include "ros/ros.h"
-#include <march_safety/temperature_safety.h>
-#include "ErrorCounter.cpp"
+#include <gtest/gtest.h>
+#include <ros/ros.h>
+#include <sensor_msgs/Temperature.h>
+#include "error_counter.h"
 
-class TestTemperatureError : public ::testing::Test
-{
-protected:
-};
-
-TEST_F(TestTemperatureError, exceedSpecificThreshold)
-{
-  ros::NodeHandle nh;
-  ros::Publisher pub_joint1 = nh.advertise<sensor_msgs::Temperature>("march/temperature/test_joint1", 0);
-  ErrorCounter errorCounter;
-  ros::Subscriber sub = nh.subscribe("march/error", 0, &ErrorCounter::cb, &errorCounter);
-
-  while (0 == pub_joint1.getNumSubscribers() || 0 == sub.getNumPublishers())
-  {
-    ros::Duration(0.01).sleep();
-  }
-  EXPECT_EQ(1, pub_joint1.getNumSubscribers());
-  EXPECT_EQ(1, sub.getNumPublishers());
-
-  sensor_msgs::Temperature msg;
-  int temperature;
-  nh.getParam("/march_safety_node/temperature_thresholds_non_fatal/test_joint1", temperature);
-  msg.temperature = temperature + 1;
-  pub_joint1.publish(msg);
-
-  // Wait to receive message
-  ros::Duration duration = ros::Duration(1);
-  ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint1", duration);
-  ros::spinOnce();
-
-  EXPECT_EQ(1, errorCounter.count);
-}
-
-TEST_F(TestTemperatureError, exceedDefaultThreshold)
+TEST(TestTemperatureError, exceedDefaultThreshold)
 {
   ros::NodeHandle nh;
   ErrorCounter errorCounter;
@@ -66,7 +33,7 @@ TEST_F(TestTemperatureError, exceedDefaultThreshold)
   EXPECT_EQ(1, errorCounter.count);
 }
 
-TEST_F(TestTemperatureError, exceedDefaultThresholdMultipleTimes)
+TEST(TestTemperatureError, exceedDefaultThresholdMultipleTimes)
 {
   ros::NodeHandle nh;
   ros::Publisher pub_joint3 = nh.advertise<sensor_msgs::Temperature>("march/temperature/test_joint3", 0);
