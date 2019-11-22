@@ -79,33 +79,3 @@ class Subgait:
                 return self.joints[i]
         rospy.logerr('Joint with name ' + name + ' does not exist in gait ' + self.gait_name)
         return None
-
-    def set_gait_type(self, gait_type):
-        self.gait_type = str(gait_type)
-
-    def set_gait_name(self, gait_name):
-        self.gait_name = gait_name
-
-    def set_description(self, description):
-        self.description = str(description)
-
-    def set_version(self, version):
-        self.version = version
-
-    def set_subgait_name(self, subgait_name):
-        self.subgait_name = subgait_name
-
-    def set_duration(self, duration, rescale=False):
-        for joint in self.joints:
-            # Loop in reverse to avoid out of bounds errors while deleting.
-            for setpoint in reversed(joint.setpoints):
-                if rescale:
-                    setpoint.set_time(duration * setpoint.time / self.duration)
-                else:
-                    if setpoint.time > duration:
-                        joint.setpoints.remove(setpoint)
-            joint.interpolated_setpoints = joint.interpolate_setpoints()
-
-            joint.duration = duration
-
-        self.duration = duration

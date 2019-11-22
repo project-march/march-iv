@@ -31,9 +31,6 @@ class JointTrajectory:
     def get_setpoint(self, index):
         return self.setpoints[index]
 
-    def set_setpoints(self, setpoints):
-        self.setpoints = setpoints
-
     def get_setpoints_unzipped(self):
         time = []
         position = []
