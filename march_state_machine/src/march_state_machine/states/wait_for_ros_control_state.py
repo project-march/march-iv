@@ -9,7 +9,7 @@ class WaitForRosControlState(smach.State):
     """State which waits for the ros controller manager to load the controllers."""
 
     def __init__(self, timeout=rospy.Duration(secs=DEFAULT_TIMEOUT_SECS)):
-        self._timeout = rospy.Duration.from_sec(timeout)
+        self._timeout = timeout
         smach.State.__init__(self, outcomes=['succeeded', 'failed'])
 
     def execute(self, userdata):
