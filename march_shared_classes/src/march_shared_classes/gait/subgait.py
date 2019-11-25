@@ -79,7 +79,6 @@ class Subgait(object):
         subgait_msg.duration = rospy.Duration.from_sec(self.duration)
         return subgait_msg
 
-
     def _to_joint_trajectory_msg(self):
         joint_trajectory_msg = trajectory_msg.JointTrajectory()
 
