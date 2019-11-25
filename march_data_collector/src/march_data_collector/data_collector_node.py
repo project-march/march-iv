@@ -6,6 +6,7 @@ from geometry_msgs.msg import TransformStamped
 from tf.transformations import *
 from math import pi
 from com_calculator import CoMCalculator
+from cp_calculator import CPCalculator
 from visualization_msgs.msg import Marker
 from urdf_parser_py.urdf import URDF
 import tf2_ros
@@ -13,12 +14,14 @@ import tf2_ros
 
 class DataCollectorNode(object):
 
-    def __init__(self, com_calculator):
+    def __init__(self, com_calculator, cp_calculator):
         self.com_calculator = com_calculator
+        self.cp_calculator = cp_calculator
         joint_names = rospy.get_param('/march/joint_names')
         self.imu_broadcaster = tf2_ros.TransformBroadcaster()
 
-        self.marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
+        self.com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
+        self.cp_marker_publisher = rospy.Publisher('/march/cp_marker', Marker, queue_size=1)
 
         temperature_subscriber = [rospy.Subscriber('/march/temperature/' + joint, Temperature,
                                                    self.temperature_callback, joint) for joint in joint_names]
@@ -35,7 +38,8 @@ class DataCollectorNode(object):
 
     def trajectory_state_callback(self, data):
         rospy.logdebug('received trajectory state' + str(data.desired))
-        self.marker_publisher.publish(self.com_calculator.calculate_com())
+        self.com_marker_publisher.publish(self.com_calculator.calculate_com())
+        self.cp_marker_publisher.publish(self.cp_calculator.calculate_cp(self.com_calculator.calculate_com()))
 
     def imc_state_callback(self, data):
         rospy.logdebug('received IMC message current is ' + str(data.current))
@@ -68,6 +72,7 @@ def main():
     tf_buffer = tf2_ros.Buffer()
     tf_listener = tf2_ros.TransformListener(tf_buffer)
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
+    capture_point_calculator = CPCalculator(center_of_mass_calculator.calculate_com())
 
-    march_data_collector = DataCollectorNode(center_of_mass_calculator)
+    march_data_collector = DataCollectorNode(center_of_mass_calculator, capture_point_calculator)
     rospy.spin()
