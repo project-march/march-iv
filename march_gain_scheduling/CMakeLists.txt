@@ -25,6 +25,10 @@ install(DIRECTORY config launch
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
     )
 
+if(CATKIN_ENABLE_TESTING)
+    catkin_add_nosetests(test/one_step_linear_interpolation_test.py)
+endif()
+
 catkin_install_python(PROGRAMS scripts/${PROJECT_NAME}_node
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
