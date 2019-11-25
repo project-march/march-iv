@@ -110,7 +110,7 @@ def create():
                                transitions={'succeeded': 'STANDING',
                                             'preempted': 'failed', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT RD SLOPE UP', ramp_door_slope_up_sm.create(), # RD stands for Ramp and Door
+        smach.StateMachine.add('GAIT RD SLOPE UP', ramp_door_slope_up_sm.create(),  # RD stands for Ramp and Door
                                transitions={'succeeded': 'STANDING',
                                             'preempted': 'failed', 'failed': 'UNKNOWN'})
 
