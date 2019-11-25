@@ -19,7 +19,5 @@ def create():
     with sm_launch:
         # Add states to the container
         smach.Sequence.add('WAIT FOR GAIT SERVER', WaitForGaitServerState())
-        if rospy.get_param('~unpause', False):
-            smach.Sequence.add('WAIT FOR ROS_CONTROL', WaitForRosControlState())
 
     return sm_launch
