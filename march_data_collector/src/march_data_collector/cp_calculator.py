@@ -18,11 +18,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 import rospy
-import tf2_ros
 from math import sqrt
 from visualization_msgs.msg import Marker
-from urdf_parser_py.urdf import URDF
-from com_calculator import CoMCalculator
 
 
 class CPCalculator(object):
