@@ -1,9 +1,6 @@
-#!/usr/bin/env python
-import rospy
 import smach
 
 from march_state_machine.states.wait_for_gait_server_state import WaitForGaitServerState
-from march_state_machine.states.wait_for_ros_control_state import WaitForRosControlState
 
 
 ##
