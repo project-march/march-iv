@@ -1,25 +1,25 @@
 // Copyright 2019 Project March.
 
-#include "gtest/gtest.h"
-#include "ros/ros.h"
-#include <march_safety/temperature_safety.h>
-#include "ErrorCounter.cpp"
+#include <gtest/gtest.h>
+#include <ros/ros.h>
+#include <sensor_msgs/Temperature.h>
+#include "error_counter.h"
 
 /**
  * The input for the test cases we want to run.
  */
-static const std::vector<std::tuple<float, float>> testCases = {
+static const std::vector<std::tuple<float, size_t>> testCases = {
   // tuple(temperature, error_count)
   std::make_tuple(-10, 0), std::make_tuple(1, 0),  std::make_tuple(69, 0), std::make_tuple(70, 0),
   std::make_tuple(71, 1),  std::make_tuple(72, 1), std::make_tuple(120, 1)
 };
 
 class TestTemperatureParameterized : public ::testing::Test,
-                                     public ::testing::WithParamInterface<std::tuple<float, float>>
+                                     public ::testing::WithParamInterface<std::tuple<float, size_t>>
 {
 protected:
   float temperature;
-  float error_count;
+  size_t error_count;
 
   /**
    * Load all the parametrized variables for this specific test.

@@ -16,6 +16,7 @@ from march_state_machine import tilted_path_sm
 from march_state_machine import walk_small_sm
 from march_state_machine import rough_terrain_high_step_sm
 from march_state_machine import rough_terrain_middle_steps_sm
+from march_state_machine import ramp_door_slope_up_sm
 from march_state_machine import stairs_sm
 from march_state_machine.states.idle_state import IdleState
 from march_state_machine.states.GaitState import GaitState
@@ -29,6 +30,7 @@ class HealthyStart(smach.State):
     def execute(self, userdata):
         if rospy.get_param('~unpause', False):
             unpause = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
+            unpause.wait_for_service()
             unpause(EmptyRequest())
         rospy.loginfo('March is fully operational')
         return 'succeeded'
@@ -105,6 +107,10 @@ def create():
         smach.StateMachine.add('GAIT RT MIDDLE STEPS', rough_terrain_middle_steps_sm.create(),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
+        smach.StateMachine.add('GAIT RD SLOPE UP', ramp_door_slope_up_sm.create(),  # RD stands for Ramp and Door
+                               transitions={'succeeded': 'STANDING',
+                                            'preempted': 'failed', 'failed': 'UNKNOWN'})
+
         # Idle states
         smach.StateMachine.add('SITTING', IdleState(outcomes=['gait_stand', 'preempted']),
                                transitions={'gait_stand': 'GAIT STAND'})
@@ -117,7 +123,9 @@ def create():
                                                                'gait_stairs_up', 'gait_stairs_down',
                                                                'gait_set_ankle_from_2_5_to_min5',
                                                                'gait_walk_small', 'gait_rough_terrain_high_step',
-                                                               'gait_rough_terrain_middle_steps', 'preempted']),
+                                                               'gait_rough_terrain_middle_steps',
+                                                               'gait_ramp_door_slope_up',
+                                                               'preempted']),
                                transitions={'gait_sit': 'GAIT SIT', 'gait_walk': 'GAIT WALK',
                                             'gait_single_step_small': 'GAIT SINGLE STEP SMALL',
                                             'gait_single_step_normal': 'GAIT SINGLE STEP NORMAL',
@@ -131,6 +139,7 @@ def create():
                                             'gait_set_ankle_from_2_5_to_min5': 'GAIT TILTED PATH',
                                             'gait_walk_small': 'GAIT WALK SMALL',
                                             'gait_rough_terrain_high_step': 'GAIT RT HIGH STEP',
-                                            'gait_rough_terrain_middle_steps': 'GAIT RT MIDDLE STEPS'})
+                                            'gait_rough_terrain_middle_steps': 'GAIT RT MIDDLE STEPS',
+                                            'gait_ramp_door_slope_up': 'GAIT RD SLOPE UP'})
 
     return sm_healthy

@@ -1,4 +1,4 @@
 <launch>
     <!-- Launch the required nodes here -->
-    <test test-name="smach_tests" pkg="march_state_machine" type="TestStateMachine.py"/>
+    <test test-name="smach_tests" pkg="march_state_machine" type="test_state_machine.py"/>
 </launch>

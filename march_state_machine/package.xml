@@ -22,5 +22,4 @@
   <exec_depend>executive_smach</exec_depend>
 
   <test_depend>rostest</test_depend>
-  <test_depend>rosunit</test_depend>
 </package>

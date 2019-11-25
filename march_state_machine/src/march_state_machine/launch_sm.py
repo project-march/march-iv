@@ -1,6 +1,6 @@
 import smach
 
-from march_state_machine.states.wait_for_ros_control_state import WaitForRosControlState
+from march_state_machine.states.wait_for_gait_server_state import WaitForGaitServerState
 
 
 def create():
@@ -13,6 +13,6 @@ def create():
         connector_outcome='succeeded')
 
     with sm_launch:
-        smach.Sequence.add('WAIT FOR ROS_CONTROL', WaitForRosControlState())
+        smach.Sequence.add('WAIT FOR GAIT SERVER', WaitForGaitServerState())
 
     return sm_launch
