@@ -4,7 +4,7 @@ import unittest
 import rospy
 from smach import InvalidTransitionError, InvalidStateError
 
-import march_state_machine.StateMachine as StateMachine
+import march_state_machine.state_machine as sm
 
 PKG = 'march_state_machine'
 
@@ -27,7 +27,7 @@ class TestStateMachine(unittest.TestCase):
         rospy.init_node("test_state_machine", anonymous=True, disable_signals=True)
 
         try:
-            state_machine = StateMachine.create_sm()
+            state_machine = sm.create_sm()
             state_machine.check_consistency()
         except InvalidStateError:
             self.fail("State machine has invalid states. Launch it independently for more information.")
