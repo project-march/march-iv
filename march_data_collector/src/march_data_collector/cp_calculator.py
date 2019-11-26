@@ -21,8 +21,8 @@ class CPCalculator(object):
         self.marker.scale.y = 0.03
         self.marker.scale.z = 0.03
 
-        g = 9.81 #gravity constant
-        z_zero = 0.715500019353 #height of CoM
+        g = 9.81  # gravity constant
+        z_zero = 0.715500019353  # height of CoM
         self.MULTIPLICATION_CONSTANT = sqrt(z_zero/g)
 
     def calculate_cp(self, com_mark):
