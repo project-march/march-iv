@@ -11,7 +11,6 @@ class IdleState(smach.State):
         if outcomes is None:
             outcomes = []
         smach.State.__init__(self, outcomes=outcomes)
-        self._idle = True
 
     def execute(self, userdata):
         # Sleep for a cycle, Simulate rospy.spinOnce() which is not available.
