@@ -1,4 +1,4 @@
-class Limits:
+class Limits(object):
 
     def __init__(self, lower, upper,  velocity):
         self.lower = lower

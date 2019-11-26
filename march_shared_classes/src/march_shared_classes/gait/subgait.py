@@ -4,7 +4,7 @@ from joint_trajectory import JointTrajectory
 import yaml
 
 
-class Subgait:
+class Subgait(object):
     joint_class = JointTrajectory
 
     def __init__(self, joints, duration, gait_type='walk_like',
@@ -19,7 +19,7 @@ class Subgait:
         self.duration = duration
 
     @classmethod
-    def from_file(cls, robot, file_name):
+    def from_file(cls, robot, file_name, *args):
         if file_name is None or file_name == "":
             return None
         try:
@@ -32,10 +32,10 @@ class Subgait:
         except Exception as e:
             rospy.logerr("Error occured in subgait: {}, {} ".format(type(e), e))
             return None
-        return cls.from_dict(robot, subgait_dict, gait_name, subgait_name, version)
+        return cls.from_dict(robot, subgait_dict, gait_name, subgait_name, version, *args)
 
     @classmethod
-    def from_dict(cls, robot, subgait_dict, gait_name, subgait_name, version):
+    def from_dict(cls, robot, subgait_dict, gait_name, subgait_name, version, *args):
         if robot is None:
             rospy.logerr("Cannot create gait without a loaded robot.")
             return None
@@ -53,7 +53,7 @@ class Subgait:
                             urdf_joint.safety_controller.soft_upper_limit,
                             urdf_joint.limit.velocity)
 
-            joint_list.append(cls.joint_class.from_dict(subgait_dict, joint_name, limits, duration))
+            joint_list.append(cls.joint_class.from_dict(subgait_dict, joint_name, limits, duration, *args))
 
         return cls(joint_list, duration, subgait_dict['gait_type'], gait_name, subgait_name,
                    version, subgait_dict['description'])

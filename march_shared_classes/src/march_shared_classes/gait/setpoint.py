@@ -1,4 +1,4 @@
-class Setpoint:
+class Setpoint(object):
     digits = 4
 
     def __init__(self, time, position, velocity):
