@@ -95,7 +95,7 @@ class Subgait(object):
 
                 if interpolated_setpoint.time != timestamp:
                     rospy.logwarn("Time mismatch in joint {} at timestamp {}, "
-                                 "got time {}".format(joint.name, timestamp, interpolated_setpoint.time))
+                                  "got time {}".format(joint.name, timestamp, interpolated_setpoint.time))
                 joint_trajectory_point.positions.append(interpolated_setpoint.position)
                 joint_trajectory_point.velocities.append(interpolated_setpoint.velocity)
             joint_trajectory_msg.points.append(joint_trajectory_point)
