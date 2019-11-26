@@ -38,8 +38,9 @@ class DataCollectorNode(object):
 
     def trajectory_state_callback(self, data):
         rospy.logdebug('received trajectory state' + str(data.desired))
-        self.com_marker_publisher.publish(self.com_calculator.calculate_com())
-        self.cp_marker_publisher.publish(self.cp_calculator.calculate_cp(self.com_calculator.calculate_com()))
+        com = self.com_calculator.calculate_com()
+        self.com_marker_publisher.publish(com)
+        self.cp_marker_publisher.publish(self.cp_calculator.calculate_cp(com))
 
     def imc_state_callback(self, data):
         rospy.logdebug('received IMC message current is ' + str(data.current))
