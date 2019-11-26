@@ -13,6 +13,7 @@ def main():
     rospy.init_node('state_machine')
 
     sm = create_sm()
+    rospy.on_shutdown(sm.request_preempt)
 
     sis = None
     if rospy.get_param('~state_machine_viewer', False):

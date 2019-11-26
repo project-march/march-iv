@@ -25,5 +25,5 @@ class SafetyState(smach_ros.MonitorState):
         if msg.type == Error.NON_FATAL:
             rospy.logerr('SafetyState has noticed a non fatal error: ' + msg.error_message)
             return True
-        rospy.logfatal('SafetyState has noticed an fatal error: ' + msg.error_message)
+        rospy.logfatal('SafetyState has noticed a fatal error: ' + msg.error_message)
         return False

@@ -17,10 +17,15 @@ class WaitForGaitServerState(smach.State):
         rospy.logdebug('Waiting for /march/gait/perform action server')
         gait_client = actionlib.SimpleActionClient('/march/gait/perform', GaitNameAction)
 
-        if gait_client.wait_for_server(self._timeout):
-            return 'succeeded'
-        elif rospy.is_shutdown():
-            return 'preempted'
-        else:
-            rospy.logerr('Waiting for gait server timed out')
+        end_time = rospy.Time.now() + self._timeout
+        while not gait_client.wait_for_server(rospy.Duration(0.1)):
+            if rospy.Time.now() > end_time:
+                rospy.logerr('Waiting for gait server timed out after {}s'.format(self._timeout.to_sec()))
+                return 'failed'
+            if self.preempt_requested():
+                self.service_preempt()
+                return 'preempted'
+
+        if rospy.is_shutdown():
             return 'failed'
+        return 'succeeded'
