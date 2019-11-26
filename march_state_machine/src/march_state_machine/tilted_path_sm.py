@@ -1,7 +1,5 @@
-#!/usr/bin/env python
 import smach
 
-from march_state_machine import stairs_sm
 from march_state_machine import set_ankle_from_2_5_to_min5_sm
 from march_state_machine import tilted_path_first_starting_step_sm
 from march_state_machine import tilted_path_second_starting_step_sm
@@ -12,7 +10,6 @@ from march_state_machine import tilted_path_first_ending_step_sm
 from march_state_machine import tilted_path_second_ending_step_sm
 from march_state_machine import set_ankle_from_min5_to_2_5_sm
 
-from march_state_machine.states.GaitState import GaitState
 from march_state_machine.states.idle_state import IdleState
 
 

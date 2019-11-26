@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 import smach
 
-from march_state_machine.states.GaitState import GaitState
+from march_state_machine.states.gait_state import GaitState
 
 
 def create():

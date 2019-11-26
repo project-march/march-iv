@@ -19,7 +19,7 @@ from march_state_machine import rough_terrain_middle_steps_sm
 from march_state_machine import ramp_door_slope_up_sm
 from march_state_machine import stairs_sm
 from march_state_machine.states.idle_state import IdleState
-from march_state_machine.states.GaitState import GaitState
+from march_state_machine.states.gait_state import GaitState
 from std_srvs.srv import Empty, EmptyRequest
 
 
