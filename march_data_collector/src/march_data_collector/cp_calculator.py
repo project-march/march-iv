@@ -21,8 +21,9 @@ class CPCalculator(object):
         self.marker.scale.y = 0.03
         self.marker.scale.z = 0.03
 
-        self.g = 9.81
-        self.z_zero = 0.715500019353
+        g = 9.81 #gravity constant
+        z_zero = 0.715500019353 #height of CoM
+        self.MULTIPLICATION_CONSTANT = sqrt(z_zero/g)
 
     def calculate_cp(self, com_mark):
         x_dot = 0
@@ -34,8 +35,8 @@ class CPCalculator(object):
             x_dot = (com_mark.pose.position.x - self.prev_x)/(time_difference)
             y_dot = (com_mark.pose.position.y - self.prev_y)/(time_difference)
 
-        x_cap = x_dot*sqrt(self.z_zero/self.g)
-        y_cap = y_dot*sqrt(self.z_zero/self.g)
+        x_cap = com_mark.pose.position.x + x_dot*self.MULTIPLICATION_CONSTANT
+        y_cap = com_mark.pose.position.y + y_dot*self.MULTIPLICATION_CONSTANT
 
         # send CP position to RViZ
         self.marker.header.stamp = rospy.get_rostime()
