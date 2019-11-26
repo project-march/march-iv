@@ -3,7 +3,8 @@
 import unittest
 import rosunit
 
-from march_gain_scheduling.interpolate_pid_values import interpolate
+from march_gain_scheduling.one_step_linear_interpolation import interpolate
+from march_gain_scheduling.unequal_gain_length_error import UnequalGainLengthError
 
 class OneStepLinearInterpolationTest(unittest.TestCase):
     def test_interpolate_up(self):
@@ -28,7 +29,8 @@ class OneStepLinearInterpolationTest(unittest.TestCase):
     def test_interpolate_list_length(self):
         current = [2, 5, 6, 8]
         needed = [4, 3, 4]
-        self.assertRaises(Exception, interpolate, current, needed, 1, 0.1)
+        with self.assertRaises(UnequalGainLengthError):
+            interpolate(current, needed, 1, 0.1)
 
     def test_interpolate_different_paths(self):
         current = [1, 1, 1]
