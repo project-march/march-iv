@@ -102,6 +102,19 @@ class Subgait(object):
 
         return joint_trajectory_msg
 
+    def to_setpoints(self):
+        user_defined_setpoints = []
+        timestamps = self.get_unique_timestamps()
+        for timestamp in timestamps:
+            user_defined_setpoint = Setpoint()
+            user_defined_setpoint.time_from_start = rospy.Duration.from_sec(timestamp)
+            for joint in self.joints:
+                for setpoint in joint.setpoints:
+                    if setpoint.time == timestamp:
+                        user_defined_setpoint.joint_names.append(joint.name)
+            user_defined_setpoints.append(user_defined_setpoint)
+        return user_defined_setpoints
+
     def get_unique_timestamps(self):
         timestamps = []
         for joint in self.joints:
