@@ -2,6 +2,8 @@ import rospy
 from limits import Limits
 from joint_trajectory import JointTrajectory
 import yaml
+from march_shared_resources import msg as march_msg
+from trajectory_msgs import msg as trajectory_msg
 
 
 class Subgait(object):
@@ -64,6 +66,54 @@ class Subgait(object):
             if urdf_joint.name == joint_name:
                 return urdf_joint
         return None
+
+    def to_subgait_msg(self):
+        # Name and version will be empty as it's stored in the filename.
+        subgait_msg = march_msg.Subgait()
+
+        subgait_msg.gait_type = self.gait_type
+        subgait_msg.trajectory = self._to_joint_trajectory_msg()
+        subgait_msg.setpoints = self.to_setpoints()
+        subgait_msg.description = str(self.description)
+
+        subgait_msg.duration = rospy.Duration.from_sec(self.duration)
+        return subgait_msg
+
+    def _to_joint_trajectory_msg(self):
+        joint_trajectory_msg = trajectory_msg.JointTrajectory()
+
+        timestamps = self.get_unique_timestamps()
+
+        for joint in self.joints:
+            joint_trajectory_msg.joint_names.append(joint.name)
+
+        for timestamp in timestamps:
+            joint_trajectory_point = trajectory_msg.JointTrajectoryPoint()
+            joint_trajectory_point.time_from_start = rospy.Duration(timestamp)
+            for joint in self.joints:
+                interpolated_setpoint = joint.get_interpolated_setpoint(timestamp)
+
+                if interpolated_setpoint.time != timestamp:
+                    rospy.logwarn("Time mismatch in joint {} at timestamp {}, "
+                                  "got time {}".format(joint.name, timestamp, interpolated_setpoint.time))
+                joint_trajectory_point.positions.append(interpolated_setpoint.position)
+                joint_trajectory_point.velocities.append(interpolated_setpoint.velocity)
+            joint_trajectory_msg.points.append(joint_trajectory_point)
+
+        return joint_trajectory_msg
+
+    def to_setpoints(self):
+        user_defined_setpoints = []
+        timestamps = self.get_unique_timestamps()
+        for timestamp in timestamps:
+            user_defined_setpoint = Setpoint()
+            user_defined_setpoint.time_from_start = rospy.Duration.from_sec(timestamp)
+            for joint in self.joints:
+                for setpoint in joint.setpoints:
+                    if setpoint.time == timestamp:
+                        user_defined_setpoint.joint_names.append(joint.name)
+            user_defined_setpoints.append(user_defined_setpoint)
+        return user_defined_setpoints
 
     def get_unique_timestamps(self):
         timestamps = []
