@@ -51,7 +51,7 @@ class IdleState(smach.State):
             control_flow.gait_accepted()
             self._trigger_event.set()
         else:
-            rospy.logwarn('The %s is not a possible gait in the current state', result_gait)
+            rospy.logwarn('The {} is not a possible gait in the current state'.format(gait))
             control_flow.gait_rejected()
 
     def request_preempt(self):
