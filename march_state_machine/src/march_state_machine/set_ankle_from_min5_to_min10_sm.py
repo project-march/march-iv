@@ -8,5 +8,5 @@ def create():
     with sm_set_ankle_from_min5_to_min10:
         smach.StateMachine.add('SET ANKLE FROM MIN5 TO MIN10',
                                GaitState("set_ankle_from_min5_to_min10", "set_ankle_from_min5_to_min10"),
-                               transitions={'succeeded': 'succeeded', 'preempted': 'preempted', 'aborted': 'failed'})
+                               transitions={'succeeded': 'succeeded', 'aborted': 'failed'})
     return sm_set_ankle_from_min5_to_min10

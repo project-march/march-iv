@@ -108,8 +108,7 @@ def create():
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
         smach.StateMachine.add('GAIT RD SLOPE UP', ramp_door_slope_up_sm.create(),  # RD stands for Ramp and Door
-                               transitions={'succeeded': 'STANDING',
-                                            'preempted': 'failed', 'failed': 'UNKNOWN'})
+                               transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
         # Idle states
         smach.StateMachine.add('SITTING', IdleState(outcomes=['gait_stand', 'preempted']),

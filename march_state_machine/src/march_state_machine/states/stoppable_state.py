@@ -14,8 +14,8 @@ class StoppableState(FeedbackActionState):
                                      GaitNameGoal(name=gait_name, subgait_name=self.subgait_name), outcomes=outcomes,
                                      input_keys=['stop_pressed'], output_keys=['stop_pressed'])
 
-    def execute(self, ud):
-        result = FeedbackActionState.execute(self, ud)
+    def execute(self, userdata):
+        result = super(StoppableState, self).execute(userdata)
 
         if self.preempt_requested():
             self.service_preempt()
