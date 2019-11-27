@@ -1,7 +1,9 @@
 import rospy
+import yaml
+
 from limits import Limits
 from joint_trajectory import JointTrajectory
-import yaml
+
 from march_shared_resources import msg as march_msg
 from trajectory_msgs import msg as trajectory_msg
 
@@ -106,7 +108,7 @@ class Subgait(object):
         user_defined_setpoints = []
         timestamps = self.get_unique_timestamps()
         for timestamp in timestamps:
-            user_defined_setpoint = Setpoint()
+            user_defined_setpoint = march_msg.Setpoint()
             user_defined_setpoint.time_from_start = rospy.Duration.from_sec(timestamp)
             for joint in self.joints:
                 for setpoint in joint.setpoints:
@@ -124,8 +126,14 @@ class Subgait(object):
         return sorted(set(timestamps))
 
     def get_joint(self, name):
-        for i in range(0, len(self.joints)):
-            if self.joints[i].name == name:
-                return self.joints[i]
+        for joint in self.joints:
+            if joint.name == name:
+                return joint
         rospy.logerr('Joint with name ' + name + ' does not exist in gait ' + self.gait_name)
         return None
+
+    def __getitem__(self, index):
+        return self.joints[index]
+
+    def __len__(self):
+        return len(self.joints)

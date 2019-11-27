@@ -29,17 +29,20 @@ class JointTrajectory(object):
                    *args
                    )
 
-    def get_setpoint(self, index):
-        return self.setpoints[index]
-
     def get_setpoints_unzipped(self):
         time = []
         position = []
         velocity = []
 
-        for i in range(0, len(self.setpoints)):
-            time.append(self.setpoints[i].time)
-            position.append(self.setpoints[i].position)
-            velocity.append(self.setpoints[i].velocity)
+        for setpoint in self.setpoints:
+            time.append(setpoint.time)
+            position.append(setpoint.position)
+            velocity.append(setpoint.velocity)
 
         return time, position, velocity
+
+    def __getitem__(self, index):
+        return self.setpoints[index]
+
+    def __len__(self):
+        return len(self.setpoints)
