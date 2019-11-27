@@ -20,6 +20,7 @@
 
   <exec_depend>rospy</exec_depend>
   <exec_depend>executive_smach</exec_depend>
+  <exec_depend>python-psutil</exec_depend>
 
   <test_depend>rostest</test_depend>
 </package>
