@@ -12,7 +12,7 @@ class SafetyState(smach_ros.MonitorState):
     """
 
     def __init__(self):
-        smach_ros.MonitorState.__init__(self, '/march/error', Error, SafetyState.error_callback)
+        super(SafetyState, self).__init__('/march/error', Error, self.error_callback)
 
     @staticmethod
     def error_callback(userdata, msg):
