@@ -13,11 +13,6 @@ def main():
     rospy.init_node('state_machine')
 
     sm = create_sm()
-    try:
-        sm.check_consistency()
-    except smach.InvalidTransitionError as e:
-        rospy.signal_shutdown(e)
-        sys.exit(1)
 
     sis = None
     if rospy.get_param('~state_machine_viewer', False):

@@ -1,7 +1,6 @@
-#!/usr/bin/env python
 import smach
 
-from march_state_machine.states.WaitForRosControlState import WaitForRosControlState
+from march_state_machine.states.wait_for_gait_server_state import WaitForGaitServerState
 
 
 ##
@@ -16,6 +15,6 @@ def create():
     # Open the container
     with sm_launch:
         # Add states to the container
-        smach.Sequence.add('WAIT FOR ROS_CONTROL', WaitForRosControlState())
+        smach.Sequence.add('WAIT FOR GAIT SERVER', WaitForGaitServerState())
 
     return sm_launch
