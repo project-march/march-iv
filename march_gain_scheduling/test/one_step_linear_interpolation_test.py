@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+PKG = 'march_gain_scheduling`
 
 import unittest
 import rosunit
@@ -45,7 +46,7 @@ class OneStepLinearInterpolationTest(unittest.TestCase):
             current = interpolate(current, needed, 1, 0.2)
         self.assertEqual(current, [2, 5, 4])
 
-    def test_interpolate_up(self):
+    def test_interpolate_empty_lists(self):
         current = []
         needed = []
         result = interpolate(current, needed, 1, 0.1)
