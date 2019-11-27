@@ -11,7 +11,7 @@ class WaitForGaitServerState(smach.State):
 
     def __init__(self, timeout=rospy.Duration(secs=DEFAULT_TIMEOUT_SECS)):
         self._timeout = timeout
-        smach.State.__init__(self, outcomes=['succeeded', 'preempted', 'failed'])
+        super(WaitForGaitServerState, self).__init__(outcomes=['succeeded', 'preempted', 'failed'])
 
     def execute(self, _userdata):
         rospy.logdebug('Waiting for /march/gait/perform action server')

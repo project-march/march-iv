@@ -10,9 +10,10 @@ class StoppableState(FeedbackActionState):
         self.subgait_name = subgait_name
         outcomes = ['succeeded', 'preempted', 'aborted', 'stopped']
 
-        FeedbackActionState.__init__(self, '/march/gait/perform', GaitNameAction,
-                                     GaitNameGoal(name=gait_name, subgait_name=self.subgait_name), outcomes=outcomes,
-                                     input_keys=['stop_pressed'], output_keys=['stop_pressed'])
+        super(StoppableState, self).__init__('/march/gait/perform', GaitNameAction,
+                                             GaitNameGoal(name=gait_name, subgait_name=self.subgait_name),
+                                             outcomes=outcomes,
+                                             input_keys=['stop_pressed'], output_keys=['stop_pressed'])
 
     def execute(self, userdata):
         result = super(StoppableState, self).execute(userdata)

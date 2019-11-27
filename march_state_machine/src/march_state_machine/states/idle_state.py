@@ -11,7 +11,7 @@ class IdleState(smach.State):
     def __init__(self, outcomes=None):
         if outcomes is None:
             outcomes = []
-        smach.State.__init__(self, outcomes=outcomes)
+        super(IdleState, self).__init__(outcomes=outcomes)
 
         self._result_gait = None
         self._trigger_event = threading.Event()

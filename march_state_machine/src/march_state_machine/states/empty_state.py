@@ -9,7 +9,7 @@ class EmptyState(smach.State):
 
     def __init__(self, sleep_time=0.1):
         self.sleep_time = sleep_time
-        smach.State.__init__(self, outcomes=['succeeded'])
+        super(EmptyState, self).__init__(outcomes=['succeeded'])
 
     """Sleep so the statemachine stays in this state longer."""
     def execute(self, userdata):

@@ -25,7 +25,7 @@ from std_srvs.srv import Empty, EmptyRequest
 
 class HealthyStart(smach.State):
     def __init__(self):
-        smach.State.__init__(self, outcomes=['succeeded'])
+        super(HealthyStart, self).__init__(outcomes=['succeeded'])
 
     def execute(self, userdata):
         if rospy.get_param('~unpause', False):
