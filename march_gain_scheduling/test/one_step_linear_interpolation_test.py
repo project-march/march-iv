@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-PKG = 'march_gain_scheduling`
+PKG = 'march_gain_scheduling'
 
 import unittest
 import rosunit
