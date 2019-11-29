@@ -747,6 +747,7 @@
         </actuator>
     </transmission>
 
-
-
+    <gazebo>
+        <plugin name="model_push" filename="libmodel_push.so"/>
+    </gazebo>
 </robot>
