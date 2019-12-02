@@ -1,8 +1,9 @@
 import rospy
-from setpoint import Setpoint
+
+from .setpoint import Setpoint
 
 
-class JointTrajectory:
+class JointTrajectory(object):
     setpoint_class = Setpoint
 
     def __init__(self, name, limits, setpoints, duration):
@@ -12,7 +13,7 @@ class JointTrajectory:
         self.duration = duration
 
     @classmethod
-    def from_dict(cls, subgait_dict, joint_name, limits, duration):
+    def from_dict(cls, subgait_dict, joint_name, limits, duration, *args):
         joint_trajectory = subgait_dict['trajectory']
         joint_index = joint_trajectory['joint_names'].index(joint_name)
 
@@ -25,20 +26,24 @@ class JointTrajectory:
         return cls(joint_name,
                    limits,
                    setpoints,
-                   duration
+                   duration,
+                   *args
                    )
-
-    def get_setpoint(self, index):
-        return self.setpoints[index]
 
     def get_setpoints_unzipped(self):
         time = []
         position = []
         velocity = []
 
-        for i in range(0, len(self.setpoints)):
-            time.append(self.setpoints[i].time)
-            position.append(self.setpoints[i].position)
-            velocity.append(self.setpoints[i].velocity)
+        for setpoint in self.setpoints:
+            time.append(setpoint.time)
+            position.append(setpoint.position)
+            velocity.append(setpoint.velocity)
 
         return time, position, velocity
+
+    def __getitem__(self, index):
+        return self.setpoints[index]
+
+    def __len__(self):
+        return len(self.setpoints)

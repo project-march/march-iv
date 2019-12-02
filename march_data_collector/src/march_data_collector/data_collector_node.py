@@ -1,37 +1,46 @@
-import rospy
-from sensor_msgs.msg import Temperature, Imu
+from math import pi
+
 from control_msgs.msg import JointTrajectoryControllerState
 from march_shared_resources.msg import ImcErrorState
 from geometry_msgs.msg import TransformStamped
 from tf.transformations import *
-from math import pi
-from com_calculator import CoMCalculator
-from cp_calculator import CPCalculator
-from visualization_msgs.msg import Marker
-from urdf_parser_py.urdf import URDF
+
+from .com_calculator import CoMCalculator
+from .cp_calculator import CPCalculator
+
+import rospy
+from sensor_msgs.msg import Imu, Temperature
+from tf.transformations import quaternion_from_euler, quaternion_multiply
 import tf2_ros
+from urdf_parser_py.urdf import URDF
+from visualization_msgs.msg import Marker
+
+from march_shared_resources.msg import ImcErrorState
 
 
 class DataCollectorNode(object):
 
     def __init__(self, com_calculator, cp_calculator):
-        self.com_calculator = com_calculator
-        self.cp_calculator = cp_calculator
+        self._com_calculator = com_calculator
+        self._cp_calculator = cp_calculator
         joint_names = rospy.get_param('/march/joint_names')
-        self.imu_broadcaster = tf2_ros.TransformBroadcaster()
+        self._imu_broadcaster = tf2_ros.TransformBroadcaster()
 
-        self.com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
-        self.cp_marker_publisher = rospy.Publisher('/march/cp_marker', Marker, queue_size=1)
+        self._marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
+        self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
+        self._cp_marker_publisher = rospy.Publisher('/march/cp_marker', Marker, queue_size=1)
 
-        temperature_subscriber = [rospy.Subscriber('/march/temperature/' + joint, Temperature,
-                                                   self.temperature_callback, joint) for joint in joint_names]
+        self._temperature_subscriber = [rospy.Subscriber('/march/temperature/' + joint,
+                                                         Temperature,
+                                                         self.temperature_callback, joint) for joint in joint_names]
 
-        trajectory_state_subscriber = rospy.Subscriber('/march/controller/trajectory/state',
-                                                       JointTrajectoryControllerState, self.trajectory_state_callback)
+        self._trajectory_state_subscriber = rospy.Subscriber('/march/controller/trajectory/state',
+                                                             JointTrajectoryControllerState,
+                                                             self.trajectory_state_callback)
 
-        imc_state_subscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback)
+        self._imc_state_subscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback)
 
-        imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
+        self._imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
 
     def temperature_callback(self, data, joint):
         rospy.logdebug('Temperature' + joint + ' is ' + str(data.temperature))

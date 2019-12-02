@@ -3,7 +3,6 @@ project(march_gait_selection)
 
 find_package(catkin REQUIRED COMPONENTS
     march_shared_resources
-    roslint
     std_msgs
 )
 
@@ -14,9 +13,6 @@ catkin_package(
     march_shared_resources
     std_msgs
 )
-
-file(GLOB_RECURSE lintfiles "src/*.py")
-roslint_python(${lintfiles})
 
 catkin_install_python(PROGRAMS scripts/${PROJECT_NAME}_node
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

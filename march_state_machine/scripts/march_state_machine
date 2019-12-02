@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from march_state_machine import StateMachine
+from march_state_machine import state_machine
 
 if __name__ == '__main__':
-    StateMachine.main()
+    state_machine.main()

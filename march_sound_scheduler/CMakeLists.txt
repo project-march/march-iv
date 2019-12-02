@@ -1,11 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(march_sound_scheduler)
-add_compile_options(-std=c++11 -Wall -g)
+add_compile_options(-std=c++11 -Wall -Wextra)
 
 find_package(catkin REQUIRED COMPONENTS
     march_shared_resources
     roscpp
-    roslint
     sound_play
 )
 
@@ -17,15 +16,6 @@ catkin_package(
     roscpp
     sound_play
 )
-
-set(ROSLINT_CPP_OPTS "--linelength=120")
-
-file(GLOB_RECURSE lintfiles
-    "include/*.h"
-    "src/*.cpp"
-)
-
-roslint_cpp(${lintfiles})
 
 include_directories(
     include
