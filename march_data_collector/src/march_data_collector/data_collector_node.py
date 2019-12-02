@@ -1,13 +1,7 @@
 from math import pi
 
 from control_msgs.msg import JointTrajectoryControllerState
-from march_shared_resources.msg import ImcErrorState
 from geometry_msgs.msg import TransformStamped
-from tf.transformations import *
-
-from .com_calculator import CoMCalculator
-from .cp_calculator import CPCalculator
-
 import rospy
 from sensor_msgs.msg import Imu, Temperature
 from tf.transformations import quaternion_from_euler, quaternion_multiply
@@ -16,6 +10,9 @@ from urdf_parser_py.urdf import URDF
 from visualization_msgs.msg import Marker
 
 from march_shared_resources.msg import ImcErrorState
+
+from .com_calculator import CoMCalculator
+from .cp_calculator import CPCalculator
 
 
 class DataCollectorNode(object):
@@ -66,7 +63,7 @@ class DataCollectorNode(object):
             transform.transform.translation.z = 0.0
 
             imu_rotation = quaternion_multiply([-data.orientation.x, -data.orientation.y, data.orientation.z,
-                                                data.orientation.w], quaternion_from_euler(0, -0.5*pi, 0))
+                                                data.orientation.w], quaternion_from_euler(0, -0.5 * pi, 0))
             transform.transform.rotation.x = imu_rotation[0]
             transform.transform.rotation.y = imu_rotation[1]
             transform.transform.rotation.z = imu_rotation[2]
@@ -80,9 +77,9 @@ def main():
 
     robot = URDF.from_parameter_server()
     tf_buffer = tf2_ros.Buffer()
-    tf_listener = tf2_ros.TransformListener(tf_buffer)
+    tf2_ros.TransformListener(tf_buffer)
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
     capture_point_calculator = CPCalculator(center_of_mass_calculator.calculate_com())
 
-    march_data_collector = DataCollectorNode(center_of_mass_calculator, capture_point_calculator)
+    DataCollectorNode(center_of_mass_calculator, capture_point_calculator)
     rospy.spin()
