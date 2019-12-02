@@ -25,7 +25,8 @@ class DataCollectorNode(object):
 
         self._marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
         self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
-        self._cp_marker_publisher = rospy.Publisher('/march/cp_marker', Marker, queue_size=1)
+        self._cp_marker_publishers = [rospy.Publisher('/march/cp_marker_left', Marker, queue_size=1),
+                                      rospy.Publisher('/march/cp_marker_right', Marker, queue_size=1)]
 
         self._temperature_subscriber = [rospy.Subscriber('/march/temperature/' + joint,
                                                          Temperature,
@@ -44,9 +45,11 @@ class DataCollectorNode(object):
 
     def trajectory_state_callback(self, data):
         rospy.logdebug('received trajectory state' + str(data.desired))
-        com = self.com_calculator.calculate_com()
-        self.com_marker_publisher.publish(com)
-        self.cp_marker_publisher.publish(self.cp_calculator.calculate_cp(com))
+        com = self._com_calculator.calculate_com()
+        self._com_marker_publisher.publish(com)
+        cp_markers = self._cp_calculator.calculate_cp(com)
+        self._cp_marker_publishers[0].publish(cp_markers[0])
+        self._cp_marker_publishers[1].publish(cp_markers[1])
 
     def imc_state_callback(self, data):
         rospy.logdebug('received IMC message current is ' + str(data.current))
@@ -79,7 +82,7 @@ def main():
     tf_buffer = tf2_ros.Buffer()
     tf2_ros.TransformListener(tf_buffer)
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
-    capture_point_calculator = CPCalculator(center_of_mass_calculator.calculate_com())
+    capture_point_calculator = CPCalculator(center_of_mass_calculator.calculate_com(), tf_buffer)
 
     DataCollectorNode(center_of_mass_calculator, capture_point_calculator)
     rospy.spin()
