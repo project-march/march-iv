@@ -13,19 +13,19 @@ class OneStepLinearInterpolationTest(unittest.TestCase):
         current = [0, 0, 0]
         needed = [1, 1, 1]
         result = interpolate(current, needed, 1, 0.1)
-        self.assertEqual(result, [0.1, 0.1, 0.1])
+        self.assertEqual(result, ([0.1, 0.1, 0.1], False))
 
     def test_interpolate_down(self):
         current = [5, 5, 5]
         needed = [3, 3, 3]
         result = interpolate(current, needed, 1, 0.1)
-        self.assertEqual(result, [4.9, 4.9, 4.9])
+        self.assertEqual(result, ([4.9, 4.9, 4.9], False))
 
     def test_interpolate_up_and_down(self):
         current = [2, 5, 6]
         needed = [4, 3, 4]
         result = interpolate(current, needed, 3, 0.1)
-        self.assertEqual(result, [2.3, 4.7, 5.7])
+        self.assertEqual(result, ([2.3, 4.7, 5.7], False))
 
     def test_interpolate_list_length(self):
         current = [2, 5, 6, 8]
@@ -44,13 +44,13 @@ class OneStepLinearInterpolationTest(unittest.TestCase):
         needed = [2, 5, 4]
         for i in range(26):  # Loop until needed is reached and a bit further
             current = interpolate(current, needed, 1, 0.2)
-        self.assertEqual(current, [2, 5, 4])
+        self.assertEqual(current, ([2, 5, 4], True))
 
     def test_interpolate_empty_lists(self):
         current = []
         needed = []
         result = interpolate(current, needed, 1, 0.1)
-        self.assertEqual(result, [])
+        self.assertEqual(result, ([], True))
 
 
 
