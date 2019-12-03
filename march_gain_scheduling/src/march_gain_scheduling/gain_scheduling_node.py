@@ -8,7 +8,8 @@ def main():
     joint_list = ["left_hip_aa", "right_hip_aa", "left_ankle", "right_ankle", "left_hip_fe", "right_hip_fe",
                   "left_knee", "right_knee"]
 
-    DynamicPIDReconfigurer("random", joint_list)
-
     rospy.init_node("march_gain_scheduling_node")
+
+    DynamicPIDReconfigurer(joint_list=joint_list)
+
     rospy.spin()

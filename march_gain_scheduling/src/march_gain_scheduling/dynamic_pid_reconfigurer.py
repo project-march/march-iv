@@ -6,9 +6,14 @@ from .one_step_linear_interpolation import interpolate
 
 
 class DynamicPIDReconfigurer:
-    def __init__(self, gait_name=None, joint_list=None):
-        self._gait_name = gait_name
+    def __init__(self, gait_type='walk_like', joint_list=None, max_time_step=0.1):
+        self._gait_type = gait_type
         self._joint_list = joint_list
+        self._max_time_step = max_time_step
+        self.current_gains = [self.look_up_table(i) for i in range(len(self._joint_list))]
+        self.interpolation_done = True
+        print(self.current_gains)
+        self.last_update_time = 0
         self._clients = []
         for i in range(len(self._joint_list)):
             self._clients.append(Client("/march/controller/trajectory/gains/" + self._joint_list[i], timeout=30))
@@ -16,32 +21,29 @@ class DynamicPIDReconfigurer:
         self._linearize = rospy.get_param("/linearize_gain_scheduling")
 
     def gait_selection_callback(self, data):
-        rospy.logdebug("This is the gait name: %s", data.goal.current_subgait.gait_type)
-        if self._gait_name != data.goal.current_subgait.gait_type:
-            rospy.logdebug("The selected gait: {0} is not the same as the previous gait: {1}".format(
-                data.goal.current_subgait.gait_type, self._gait_name))
-            self._gait_name = data.goal.current_subgait.gait_type
+        rospy.loginfo("This is the gait name: %s", data.goal.current_subgait.gait_type)
+        if self._gait_type != data.goal.current_subgait.gait_type or self.interpolation_done == False:
+            rospy.loginfo("The selected gait: {0} is not the same as the previous gait: {1}".format(
+                data.goal.current_subgait.gait_type, self._gait_type))
+            self._gait_type = data.goal.current_subgait.gait_type
             self.client_update()
 
     def client_update(self):
-        rospy.logdebug("self.linearize is: {0}".format(self._linearize))
-        if self._linearize:
+        rospy.loginfo("self.linearize is: {0}".format(self._linearize))
+        if True: # if self._linearize:
             for i in range(len(self._joint_list)):
-                gain_dict = self.look_up_table(i)
-                needed_gains = gain_dict.items()
-                del[needed_gains['p'],needed_gains['i'],needed_gains['d']]
-                if rospy.has_param("/linear_slope") and rospy.has_param("/linear_time_interval"):
-                    gradient = rospy.get_param("/linear_slope")
-                    linear_time_interval = rospy.get_param("\linear_time_interval")
-                else:
-                    raise
-
-                p_value_list = interpolate(p_value, self._clients[i].get_configuration()[0])
-                for k in range(len(p_value_list)):
-                    self._clients[i].update_configuration({"p": current_gains[0],
-                                                           "i": current_gains[1],
-                                                           "d": current_gains[2]})
-                    rospy.logdebug("Config set to {0}, {1}, {2}".format(p_value, i_value, d_value))
+                needed_gains = self.look_up_table(i)
+                gradient = rospy.get_param("/linear_slope")
+                current_time = rospy.get_time()
+                time_interval = current_time - self.last_update_time
+                self.current_gains[i], self.interpolation_done = interpolate(self.current_gains[i], needed_gains, gradient, time_interval)
+                self._clients[i].update_configuration({"p": self.current_gains[i][0],
+                                                       "i": self.current_gains[i][1],
+                                                       "d": self.current_gains[i][2]})
+                rospy.loginfo("Config set to {0}, {1}, {2}".format(self.current_gains[i][0],
+                                                                   self.current_gains[i][1],
+                                                                   self.current_gains[i][2]))
+                self.last_update_time = current_time
         else:
             for i in range(len(self._joint_list)):
                 p_value, i_value, d_value = self.look_up_table(i)
@@ -52,9 +54,11 @@ class DynamicPIDReconfigurer:
                     rospy.logdebug("nonlinear Config set to {0}, {1}, {2}".format(p_value, i_value, d_value))
 
     # Method that pulls the PID values from the gains_per_gait_type.yaml config file
-    def look_up_table(self, i):
-        if rospy.has_param("~gait_types/" + self._gait_name):
-            gains = rospy.get_param("~gait_types/" + self._gait_name + "/" + self._joint_list[i])
-            return gains['p'], gains['i'], gains['d']
+    def look_up_table(self, joint_index):
+        gains = rospy.get_param("~gait_types/" + self._gait_type + "/" + self._joint_list[joint_index])
+        print(gains)
+        if rospy.has_param("~gait_types/" + self._gait_type):
+            gains = rospy.get_param("~gait_types/" + self._gait_type + "/" + self._joint_list[joint_index])
+            return [gains['p'], gains['i'], gains['d']]
         else:
-            return None, None, None
+            return [None, None, None]
