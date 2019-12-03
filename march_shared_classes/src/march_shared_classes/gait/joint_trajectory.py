@@ -13,6 +13,16 @@ class JointTrajectory(object):
 
     @classmethod
     def from_dict(cls, subgait_dict, joint_name, limits, duration, *args):
+        """ fill class attributes
+        :param subgait_dict:
+            The dictionary extracted from the yaml file
+        :param joint_name:
+            The name of the joint corresponding to this specific object
+        :param limits:
+            Defined soft limits of the urdf file
+        :param duration:
+            The timestamps of the subgait file
+        """
         joint_trajectory = subgait_dict['trajectory']
         joint_index = joint_trajectory['joint_names'].index(joint_name)
 
@@ -22,14 +32,10 @@ class JointTrajectory(object):
             setpoints.append(cls.setpoint_class(time, point['positions'][joint_index],
                                                 point['velocities'][joint_index]))
 
-        return cls(joint_name,
-                   limits,
-                   setpoints,
-                   duration,
-                   *args
-                   )
+        return cls(joint_name, limits, setpoints, duration)
 
     def get_setpoints_unzipped(self):
+        """Get all the listed attributes of the setpoints"""
         time = []
         position = []
         velocity = []
