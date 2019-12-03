@@ -1,12 +1,10 @@
+from joint_trajectory import JointTrajectory
+from limits import Limits
 import rospy
+from trajectory_msgs import msg as trajectory_msg
 import yaml
 
-from limits import Limits
-from setpoints import Setpoint
-from joint_trajectory import JointTrajectory
-
 from march_shared_resources import msg as march_msg
-from trajectory_msgs import msg as trajectory_msg
 
 
 class Subgait(object):
@@ -25,24 +23,24 @@ class Subgait(object):
 
     @classmethod
     def from_file(cls, robot, file_name, *args):
-        if file_name is None or file_name == "":
+        if file_name is None or file_name == '':
             return None
         try:
-            gait_name = file_name.split("/")[-3]
-            subgait_name = file_name.split("/")[-2]
-            version = file_name.split("/")[-1].replace(".subgait", "")
+            gait_name = file_name.split('/')[-3]
+            subgait_name = file_name.split('/')[-2]
+            version = file_name.split('/')[-1].replace('.subgait', '')
             subgait_dict = yaml.load(open(file_name), Loader=yaml.SafeLoader)
             if 'gait_type' not in subgait_dict:
                 subgait_dict['gait_type'] = 'walk_like'
         except Exception as e:
-            rospy.logerr("Error occured in subgait: {}, {} ".format(type(e), e))
+            rospy.logerr('Error occured in subgait: {0}, {1} '.format(type(e), e))
             return None
         return cls.from_dict(robot, subgait_dict, gait_name, subgait_name, version, *args)
 
     @classmethod
     def from_dict(cls, robot, subgait_dict, gait_name, subgait_name, version, *args):
         if robot is None:
-            rospy.logerr("Cannot create gait without a loaded robot.")
+            rospy.logerr('Cannot create gait without a loaded robot.')
             return None
 
         joint_trajectory = subgait_dict['trajectory']
@@ -51,7 +49,7 @@ class Subgait(object):
         for joint_name in joint_trajectory['joint_names']:
             urdf_joint = cls._get_joint_from_urdf(robot, joint_name)
             if urdf_joint is None:
-                rospy.logwarn("Not all joints in gait are in robot.")
+                rospy.logwarn('Not all joints in gait are in robot.')
                 continue
 
             limits = Limits(urdf_joint.safety_controller.soft_lower_limit,
@@ -97,8 +95,8 @@ class Subgait(object):
                 interpolated_setpoint = joint.get_interpolated_setpoint(timestamp)
 
                 if interpolated_setpoint.time != timestamp:
-                    rospy.logwarn("Time mismatch in joint {} at timestamp {}, "
-                                  "got time {}".format(joint.name, timestamp, interpolated_setpoint.time))
+                    rospy.logwarn('Time mismatch in joint {0} at timestamp {1}, '
+                                  'got time {2}'.format(joint.name, timestamp, interpolated_setpoint.time))
                 joint_trajectory_point.positions.append(interpolated_setpoint.position)
                 joint_trajectory_point.velocities.append(interpolated_setpoint.velocity)
             joint_trajectory_msg.points.append(joint_trajectory_point)
@@ -109,7 +107,7 @@ class Subgait(object):
         user_defined_setpoints = []
         timestamps = self.get_unique_timestamps()
         for timestamp in timestamps:
-            user_defined_setpoint = Setpoint()
+            user_defined_setpoint = march_msg.Setpoint()
             user_defined_setpoint.time_from_start = rospy.Duration.from_sec(timestamp)
             for joint in self.joints:
                 for setpoint in joint.setpoints:

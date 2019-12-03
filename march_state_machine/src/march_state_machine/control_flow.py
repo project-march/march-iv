@@ -1,6 +1,7 @@
 import rospy
-from march_shared_resources.msg import GaitInstruction
 from std_msgs.msg import Bool
+
+from march_shared_resources.msg import GaitInstruction
 
 
 class ControlFlow:
@@ -14,6 +15,27 @@ class ControlFlow:
         self._input_device_instruction_response_publisher = rospy.Publisher('/march/input_device/instruction_response',
                                                                             Bool,
                                                                             queue_size=20)
+        self._stopped_cb = None
+        self._gait_selected_cb = None
+
+    def clear_callbacks(self):
+        """Clears all currently registered callbacks."""
+        self._stopped_cb = None
+        self._gait_selected_cb = None
+
+    def set_stopped_callback(self, cb):
+        """Sets the callback for when stop is pressed.
+
+        :param cb: Callback that will be called with no arguments
+        """
+        self._stopped_cb = cb
+
+    def set_gait_selected_callback(self, cb):
+        """Sets the callback for when a new gait is selected.
+
+        :param cb: Callback that will be called with one string argument gait_name
+        """
+        self._gait_selected_cb = cb
 
     def stop_pressed(self):
         return self._stopped
@@ -44,8 +66,12 @@ class ControlFlow:
     def callback_input_device_instruction(self, msg):
         if msg.type == GaitInstruction.STOP:
             self._stopped = True
+            if callable(self._stopped_cb):
+                self._stopped_cb()
         if msg.type == GaitInstruction.GAIT:
             self._gait = msg.gait_name
+            if callable(self._gait_selected_cb):
+                self._gait_selected_cb(self._gait)
         if msg.type == GaitInstruction.PAUSE:
             self._paused = True
         if msg.type == GaitInstruction.CONTINUE:

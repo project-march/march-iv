@@ -4,7 +4,6 @@ project(march_state_machine)
 find_package(catkin REQUIRED COMPONENTS
     controller_manager_msgs
     march_shared_resources
-    roslint
     std_msgs
     std_srvs
 )
@@ -16,9 +15,6 @@ catkin_package(CATKIN_DEPENDS
     march_shared_resources
     std_msgs
 )
-
-file(GLOB_RECURSE lintfiles "src/*.py")
-roslint_python(${lintfiles})
 
 install(DIRECTORY launch
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}

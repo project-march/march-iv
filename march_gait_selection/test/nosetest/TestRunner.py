@@ -1,10 +1,10 @@
 import rosunit
 
-import TestGetSubgait, TestValidateSubgaitName, TestValidateVersionName, TestValidateVersionMap, \
-    TestValidateTrajectoryTransition, TestValidateGait, TestScanDirectory, TestBasicGaitSelection, \
-    TestValidateSubgaitTransition
+from . import (TestBasicGaitSelection, TestGetSubgait, TestScanDirectory,
+               TestValidateGait, TestValidateSubgaitName, TestValidateSubgaitTransition,
+               TestValidateTrajectoryTransition, TestValidateVersionMap, TestValidateVersionName)
 
-PKG = "march_gait_selection"
+PKG = 'march_gait_selection'
 
 
 if __name__ == '__main__':

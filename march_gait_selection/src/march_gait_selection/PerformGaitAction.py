@@ -1,7 +1,7 @@
-import rospy
 import actionlib
+import rospy
 
-from march_shared_resources.msg import GaitNameAction, GaitAction, GaitGoal
+from march_shared_resources.msg import GaitAction, GaitGoal, GaitNameAction
 
 
 class PerformGaitAction(object):

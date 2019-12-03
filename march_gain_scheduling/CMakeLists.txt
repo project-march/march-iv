@@ -4,7 +4,6 @@ project(march_gain_scheduling)
 find_package(catkin REQUIRED COMPONENTS
     dynamic_reconfigure
     march_shared_resources
-    roslint
     rospy
     std_msgs
 )
@@ -17,9 +16,6 @@ catkin_package(
     rospy
     std_msgs
 )
-
-file(GLOB_RECURSE lintfiles "src/*.py")
-roslint_python(${lintfiles})
 
 install(DIRECTORY config launch
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}

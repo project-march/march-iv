@@ -11,6 +11,4 @@
     <depend>roscpp</depend>
     <depend>march_shared_resources</depend>
     <depend>sound_play</depend>
-
-    <build_depend>roslint</build_depend>
 </package>
