@@ -180,11 +180,16 @@ class Subgait(object):
 
         return sorted(set(timestamps))
 
-    def get_joint(self, name):
-        for joint in self.joints:
-            if joint.name == name:
-                return joint
-        rospy.logerr('Joint with name ' + name + ' does not exist in gait ' + self.gait_name)
+    def get_joint(self, name=None, index=None):
+        """Get joint object with given name or index"""
+        if name:
+            joints = [joint for joint in self.joints if joint.name == name]
+            if len(joints) == 1:
+                return joints[0]
+
+        elif index:
+            return self.joints[index]
+
         return None
 
     def get_joint_names(self):
