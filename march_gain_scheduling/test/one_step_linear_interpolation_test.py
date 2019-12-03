@@ -43,8 +43,8 @@ class OneStepLinearInterpolationTest(unittest.TestCase):
         current = [1, 1, 1]
         needed = [2, 5, 4]
         for i in range(26):  # Loop until needed is reached and a bit further
-            current = interpolate(current, needed, 1, 0.2)
-        self.assertEqual(current, ([2, 5, 4], True))
+            current, interpolation_done = interpolate(current, needed, 1, 0.2)
+        self.assertEqual(current, [2, 5, 4])
 
     def test_interpolate_empty_lists(self):
         current = []
