@@ -30,7 +30,7 @@ class DynamicPIDReconfigurer:
 
     def client_update(self):
         rospy.loginfo("self.linearize is: {0}".format(self._linearize))
-        if True: # if self._linearize:
+        if self._linearize:
             for i in range(len(self._joint_list)):
                 needed_gains = self.look_up_table(i)
                 gradient = rospy.get_param("/linear_slope")
