@@ -42,8 +42,8 @@ class DynamicPIDReconfigurer:
                                                        'i': self.current_gains[i][1],
                                                        'd': self.current_gains[i][2]})
                 rospy.logdebug('Config set to {0}, {1}, {2}'.format(self.current_gains[i][0],
-                                                                   self.current_gains[i][1],
-                                                                   self.current_gains[i][2]))
+                                                                    self.current_gains[i][1],
+                                                                    self.current_gains[i][2]))
                 self.last_update_time = current_time
         else:
             for i in range(len(self._joint_list)):
