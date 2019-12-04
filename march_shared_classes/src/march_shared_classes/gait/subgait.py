@@ -1,12 +1,11 @@
-
 import rospy
+from trajectory_msgs import msg as trajectory_msg
 import yaml
 
 from limits import Limits
 from joint_trajectory import JointTrajectory
 
 from march_shared_resources import msg as march_msg
-from trajectory_msgs import msg as trajectory_msg
 
 
 class Subgait(object):
@@ -71,7 +70,7 @@ class Subgait(object):
             A populated Subgait object
         """
         if robot is None:
-            rospy.logerr("Cannot create gait without a loaded robot.")
+            rospy.logerr('Cannot create gait without a loaded robot.')
             return None
 
         joint_trajectory = subgait_dict['trajectory']
@@ -82,7 +81,7 @@ class Subgait(object):
             urdf_joint = cls._get_joint_from_urdf(robot, joint_name)
 
             if urdf_joint is None:
-                rospy.logwarn("Not all joints in gait are in robot.")
+                rospy.logwarn('Not all joints in gait are in robot.')
                 continue
 
             limits = Limits(urdf_joint.safety_controller.soft_lower_limit,

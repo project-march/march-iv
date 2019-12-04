@@ -1,12 +1,12 @@
 
 import os
 
-import yaml
 import rospkg
 import rospy
 import socket
 
 from urdf_parser_py import urdf
+import yaml
 
 from march_shared_classes.gait.subgait import Subgait
 from march_shared_classes.exceptions.general_exceptions import FileNotFoundError, PackageNotFoundError
@@ -42,7 +42,7 @@ class GaitSelection(object):
             rospy.logwarn("No urdf found, cannot filter unused joints, Gait selection will publish all joints.")
 
         except socket.error:
-            rospy.logerr("Could not connect to parameter server.")
+            rospy.logerr('Could not connect to parameter server.')
 
         rospy.loginfo("GaitSelection initialized with package: {pk} of directory {dr}".format(pk=package, dr=directory))
         rospy.logdebug("GaitSelection initialized with gait_version_map: {vm}".format(vm=str(self.gait_version_map)))

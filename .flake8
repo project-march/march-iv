@@ -1,0 +1,40 @@
+[flake8]
+show-source = true
+max-line-length = 120
+format = ${cyan}%(path)s${reset}:${yellow_bold}%(row)d${reset}:${green_bold}%(col)d${reset}: ${red_bold}%(code)s${reset} %(text)s
+exclude = .git
+application-package-names =
+    march_description,
+    march_gain_scheduling,
+    march_gait_scheduler,
+    march_gait_selection,
+    march_launch,
+    march_safety,
+    march_shared_classes,
+    march_shared_resources,
+    march_sound_scheduler,
+    march_state_machine
+import-order-style = appnexus
+ignore =
+    # D100: Missing docstring in public module
+    D100,
+    # D102: Missing docstring in public class
+    D101,
+    # D102: Missing docstring in public method
+    D102,
+    # D103: Missing docstring in public function
+    D103,
+    # D104: Missing docstring in public package
+    D104,
+    # D105: Missing docstring in magic method
+    D105,
+    # D106: Missing docstring in public nested class
+    D106,
+    # D107: Missing docstring in __init__
+    D107,
+    # D401: First line should be in imperative mood
+    D401,
+    # W503: Line break before operator
+    W503,
+    # C815: Trailing comma in Python 3.5
+    C815

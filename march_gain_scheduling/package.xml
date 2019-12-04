@@ -15,6 +15,5 @@
   <depend>dynamic_reconfigure</depend>
   <depend>march_shared_resources</depend>
 
-  <build_depend>roslint</build_depend>
   <test_depend>rosunit</test_depend>
 </package>

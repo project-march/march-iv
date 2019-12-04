@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-PKG = 'march_gain_scheduling'
-
 import unittest
+
 import rosunit
 
+from march_gain_scheduling.interpolation_errors import NegativeValueError, UnequalLengthError
 from march_gain_scheduling.one_step_linear_interpolation import interpolate
-from march_gain_scheduling.interpolation_errors import UnequalLengthError, NegativeValueError
+
+PKG = 'march_gain_scheduling'
 
 
 class OneStepLinearInterpolationTest(unittest.TestCase):
@@ -51,7 +52,6 @@ class OneStepLinearInterpolationTest(unittest.TestCase):
         needed = []
         result = interpolate(current, needed, 1, 0.1)
         self.assertEqual(result, [])
-
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
-
 import os
 import unittest
+
 import rospkg
 
 from march_gait_selection.GaitSelection import GaitSelection

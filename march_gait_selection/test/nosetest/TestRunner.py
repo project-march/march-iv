@@ -6,7 +6,8 @@ import TestScanDirectory
 import TestBasicGaitSelection
 import TestValidateSubgaitTransition
 
-PKG = "march_gait_selection"
+
+PKG = 'march_gait_selection'
 
 
 if __name__ == '__main__':

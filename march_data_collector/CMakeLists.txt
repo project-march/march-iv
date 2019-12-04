@@ -4,7 +4,6 @@ project(march_data_collector)
 find_package(catkin REQUIRED COMPONENTS
     control_msgs
     march_shared_resources
-    roslint
     rospy
     sensor_msgs
     std_msgs
@@ -19,9 +18,6 @@ catkin_package(
     sensor_msgs
     std_msgs
 )
-
-file(GLOB_RECURSE lintfiles "src/*.py")
-roslint_python(${lintfiles})
 
 catkin_install_python(PROGRAMS scripts/${PROJECT_NAME}
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

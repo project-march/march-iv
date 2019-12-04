@@ -1,5 +1,6 @@
 import rospy
-from setpoint import Setpoint
+
+from .setpoint import Setpoint
 
 
 class JointTrajectory(object):

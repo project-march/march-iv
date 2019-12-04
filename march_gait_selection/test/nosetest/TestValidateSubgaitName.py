@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 import unittest
 
 from march_gait_selection.GaitSelection import GaitSelection

@@ -10,7 +10,5 @@
 
   <depend>march_shared_resources</depend>
 
-  <build_depend>roslint</build_depend>
-
   <exec_depend>rospy</exec_depend>
 </package>

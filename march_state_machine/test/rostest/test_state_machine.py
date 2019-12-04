@@ -2,16 +2,16 @@
 import unittest
 
 import rospy
-from smach import InvalidTransitionError, InvalidStateError
+from smach import InvalidStateError, InvalidTransitionError
 
-import march_state_machine.StateMachine as StateMachine
+import march_state_machine.state_machine as sm
 
 PKG = 'march_state_machine'
 
 
 class TestStateMachine(unittest.TestCase):
-
     """Check the entire state machine for consistency.
+
     This asserts that all transition targets are states that are in the
     state machine. If this fails, it raises an L{InvalidTransitionError}
     with relevant information.
@@ -23,16 +23,17 @@ class TestStateMachine(unittest.TestCase):
     specification fails validation, a L{smach.InvalidStateError} is
     thrown.
     """
+
     def test_state_machine_consistency(self):
-        rospy.init_node("test_state_machine", anonymous=True, disable_signals=True)
+        rospy.init_node('test_state_machine', anonymous=True, disable_signals=True)
 
         try:
-            state_machine = StateMachine.create_sm()
+            state_machine = sm.create_sm()
             state_machine.check_consistency()
         except InvalidStateError:
-            self.fail("State machine has invalid states. Launch it independently for more information.")
+            self.fail('State machine has invalid states. Launch it independently for more information.')
         except InvalidTransitionError:
-            self.fail("State machine has invalid transitions. Launch it independently for more information.")
+            self.fail('State machine has invalid transitions. Launch it independently for more information.')
 
 
 if __name__ == '__main__':
