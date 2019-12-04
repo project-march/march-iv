@@ -1,4 +1,4 @@
-from .interpolation_errors import UnequalLengthError, NegativeValueError
+from .interpolation_errors import NegativeValueError, UnequalLengthError
 
 
 def interpolate(current_gains, needed_gains, gradient, delta_t):
