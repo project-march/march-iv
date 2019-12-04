@@ -110,7 +110,7 @@ def create():
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
         smach.StateMachine.add('GAIT RD SLOPE DOWN', ramp_door_slope_down_sm.create(),
-                               transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
+                               transitions={'succeeded': 'STANDING SLOPE DOWN', 'failed': 'UNKNOWN'})
 
         smach.StateMachine.add('GAIT RD LAST STEP', ramp_door_last_step_sm.create(),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
@@ -120,6 +120,8 @@ def create():
                                transitions={'gait_stand': 'GAIT STAND'})
         smach.StateMachine.add('SOFA SITTING', IdleState(outcomes=['gait_sofa_stand', 'preempted']),
                                transitions={'gait_sofa_stand': 'GAIT SOFA STAND'})
+        smach.StateMachine.add('STANDING SLOPE DOWN', IdleState(outcomes=['gait_ramp_door_last_step', 'preempted']),
+                               transitions={'gait_ramp_door_last_step': 'GAIT RD LAST STEP'})
         smach.StateMachine.add('STANDING', IdleState(outcomes=['gait_sit', 'gait_walk', 'gait_single_step_small',
                                                                'gait_single_step_normal', 'gait_side_step_left',
                                                                'gait_side_step_right', 'gait_side_step_left_small',
@@ -129,7 +131,6 @@ def create():
                                                                'gait_walk_small', 'gait_rough_terrain_high_step',
                                                                'gait_rough_terrain_middle_steps',
                                                                'gait_ramp_door_slope_up', 'gait_ramp_door_slope_down',
-                                                               'gait_ramp_door_last_step',
                                                                'preempted']),
                                transitions={'gait_sit': 'GAIT SIT', 'gait_walk': 'GAIT WALK',
                                             'gait_single_step_small': 'GAIT SINGLE STEP SMALL',
@@ -146,7 +147,6 @@ def create():
                                             'gait_rough_terrain_high_step': 'GAIT RT HIGH STEP',
                                             'gait_rough_terrain_middle_steps': 'GAIT RT MIDDLE STEPS',
                                             'gait_ramp_door_slope_up': 'GAIT RD SLOPE UP',
-                                            'gait_ramp_door_slope_down': 'GAIT RD SLOPE DOWN',
-                                            'gait_ramp_door_last_step': 'GAIT RD LAST STEP'})
+                                            'gait_ramp_door_slope_down': 'GAIT RD SLOPE DOWN'})
 
     return sm_healthy
