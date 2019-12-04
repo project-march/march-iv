@@ -2,38 +2,21 @@
 
 import unittest
 
-import os
-import rospkg
-import yaml
-
-from rospy_message_converter import message_converter
-
 from march_gait_selection.GaitSelection import GaitSelection
 
 
 class TestValidateSubgaitTransition(unittest.TestCase):
     def setUp(self):
-        self.gait_selection = GaitSelection('march_gait_selection', 'test/correct_walking_gait')
-
-        gait_path = os.path.join(rospkg.RosPack().get_path('march_gait_selection'),
-                                 "test/correct_walking_gait/walking/walking.gait")
-        gait_yaml = yaml.load(open(gait_path), Loader=yaml.SafeLoader)
-        self.gait = message_converter.convert_dictionary_to_ros_message('march_shared_resources/GaitGoal',
-                                                                        gait_yaml,
-                                                                        kind="message")
-        self.assertTrue(self.gait_selection.validate_gait(self.gait))
+        self.gait_selection = GaitSelection('march_gait_selection', "test/correct_walking_gait")
+        self.actual_map = {"walking": {
+            "right_open": "test_a_bit_higher", "left_swing": "test", "right_close": "right_close"}}
 
     def test_transition_correct(self):
-        self.assertTrue(self.gait_selection.validate_subgait_transition("walking", "left_swing", "right_close"))
+        self.assertTrue(self.gait_selection._validate_trajectory_transition("walking", "left_swing", "right_close"))
 
     def test_transition_wrong_from(self):
-        self.assertFalse(self.gait_selection.validate_subgait_transition("walking", "wrong", "right_close"))
+        self.assertRaises(KeyError, self.gait_selection._validate_trajectory_transition, "walking", "wrong", "right_close")
 
     def test_transition_wrong_to(self):
-        self.assertFalse(self.gait_selection.validate_subgait_transition("walking", "left_swing", "wrong"))
+        self.assertRaises(KeyError, self.gait_selection._validate_trajectory_transition, "walking", "left_swing", "wrong")
 
-    def test_transition_wrong_to_from_start(self):
-        self.assertFalse(self.gait_selection.validate_subgait_transition("walking", "start", "wrong"))
-
-    def test_transition_wrong_from_to_end(self):
-        self.assertFalse(self.gait_selection.validate_subgait_transition("walking", "wrong", "end"))

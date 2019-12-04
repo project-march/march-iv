@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 import os
 
 import yaml
@@ -6,63 +6,155 @@ import rospkg
 import rospy
 import socket
 
-from march_shared_resources.msg import Subgait
-from trajectory_msgs.msg import JointTrajectory
-from rospy_message_converter import message_converter
 from urdf_parser_py import urdf
+
+from march_shared_classes.gait.subgait import Subgait
+from march_shared_classes.exceptions.general_exceptions import FileNotFoundError, PackageNotFoundError
+from march_shared_classes.exceptions.gait_exceptions import *
 
 
 class GaitSelection(object):
-
+    """Base class for the gait selection module"""
     def __init__(self, package, directory):
-        try:
-            default_yaml = os.path.join(rospkg.RosPack().get_path(package), directory, 'default.yaml')
-        except rospkg.common.ResourceNotFound:
-            rospy.logerr("Could not find package %s, Shutting down.", package)
-            raise Exception("Could not find package " + package + ", Shutting down.", )
-        try:
-            default_config = yaml.load(open(default_yaml), Loader=yaml.SafeLoader)
-        except IOError:
-            rospy.logerr("Could not find %s/%s/default.yaml, Shutting down.", package, directory)
-            raise Exception("Could not find " + package + "/" + directory + "/default.yaml, Shutting down.")
-
-        self.gait_directory = os.path.join(rospkg.RosPack().get_path(package), directory)
-
-        self.gait_version_map = default_config["gaits"]
+        self.gait_version_map = None
         self.loaded_subgaits = None
-        self.joint_names = []
+        self.gait_directory = None
+        self.joint_names = list()
         self.robot = None
+
+        package_path = self.get_ros_package_path(package)
+        default_yaml = os.path.join(package_path, directory, 'default.yaml')
+
+        if not os.path.isfile(default_yaml):
+            raise FileNotFoundError(file_path=default_yaml)
+
+        with open(default_yaml, 'r') as default_yaml_file:
+            default_config = yaml.load(default_yaml_file, Loader=yaml.SafeLoader)
+
+        self.gait_directory = os.path.join(package_path, directory)
+        self.gait_version_map = default_config["gaits"]
 
         try:
             self.robot = urdf.Robot.from_parameter_server('/robot_description')
-
-            for joint in self.robot.joints:
-                if joint.type != "fixed":
-                    self.joint_names.append(joint.name)
+            self.joint_names = [joint.name for joint in self.robot.joints if joint.type != "fixed"]
 
         except KeyError:
-            rospy.logwarn("No urdf found, cannot filter out unused joints. "
-                          "The gait selection will publish gaits with all joints.")
+            rospy.logwarn("No urdf found, cannot filter unused joints, Gait selection will publish all joints.")
+
         except socket.error:
             rospy.logerr("Could not connect to parameter server.")
 
-        rospy.loginfo("GaitSelection initialized with gait_directory %s/%s.", package, directory)
-        rospy.logdebug("GaitSelection initialized with gait_version_map %s.", str(self.gait_version_map))
+        rospy.loginfo("GaitSelection initialized with package: {pk} of directory {dr}".format(pk=package, dr=directory))
+        rospy.logdebug("GaitSelection initialized with gait_version_map: {vm}".format(vm=str(self.gait_version_map)))
 
         self.load_subgait_files()
 
+    @staticmethod
+    def get_ros_package_path(package):
+        """Get the path of where the given (ros) package is located"""
+        try:
+            return rospkg.RosPack().get_path(package)
+        except rospkg.common.ResourceNotFound:
+            raise PackageNotFoundError(package)
+
+    def get_subgait_path(self, gait_name, subgait_name):
+        """Construct the subgait file path with the given gait and subgait name"""
+        self.validate_gaits_in_map(gait_name, subgait_name)
+
+        subgait_path = os.path.join(self.gait_directory, gait_name, subgait_name,
+                                    self.gait_version_map[gait_name][subgait_name] + '.subgait')
+
+        if not os.path.isfile(subgait_path):
+            raise FileNotFoundError(file_path=subgait_path)
+
+        return subgait_path
+
+    def get_subgait_from_loaded_subgaits(self, gait_name, subgait_name):
+        """Get the sub gait data from gait and subgait name"""
+        return self.loaded_subgaits[gait_name][subgait_name]
+
     def set_gait_version_map(self, gait_version_map):
+        """Set gait version map and reload subgait files
+        :param gait_version_map:
+            list of gaits from yaml file
+        """
         self.gait_version_map = gait_version_map
         self.load_subgait_files()
 
     def set_subgait_version(self, gait_name, subgait_name, version):
-        if self.validate_version_name(gait_name, subgait_name, version):
+        """Set the sub gait version to a specific sub gait and reload subgait files
+        :param gait_name:
+            name of the gait in which the subgait is placed
+        :param subgait_name:
+            name of the subgait
+        :param version:
+            new version to set to parameter
+
+        :returns
+            if input was valid and version is set return True else False
+        """
+        if self.validate_version_file(self.gait_directory, gait_name, subgait_name, version):
             self.gait_version_map[gait_name][subgait_name] = version
             self.load_subgait_files()
             return True
         return False
 
+    def validate_gaits_in_map(self, gait_name=None, subgait_name=None):
+        """Validate the given name and subgait in the parsed map"""
+        if gait_name is not None:
+            if self.gait_version_map.get(gait_name) is None:
+                raise GaitNameNotFound(gait_name)
+
+            if subgait_name is not None:
+                if self.gait_version_map[gait_name].get(subgait_name) is None:
+                    raise SubgaitNameNotFound(subgait_name)
+
+        return True
+
+    @staticmethod
+    def validate_version_file(gait_directory, gait_name, subgait_name, version):
+        """Validate if the given gait name, subgait name and version form file path"""
+        if any(len(directory_name) == 0 for directory_name in (gait_name, subgait_name, version)):
+            return False
+
+        subgait_path = os.path.join(gait_directory, gait_name, subgait_name, version + '.subgait')
+        if os.path.isfile(subgait_path):
+            return True
+
+        return False
+
+    def validate_version_in_map(self, gait_map):
+        """Check if the given version in the gait mapping exists within the directory"""
+        for gait in gait_map:
+            for subgait in gait_map[gait]:
+                version = gait_map[gait][subgait]
+                if not self.validate_version_file(self.gait_directory, gait, subgait, version):
+                    return False
+        return True
+
+    def validate_gait_file(self, gait_name):
+        """Validate if the given gait name exists in the gait mapping
+        NOTE: the gait has a gait map which has an identical name
+        """
+        gait_map = gait_name
+        gait_path = os.path.join(self.gait_directory, gait_map, gait_name + ".gait")
+        if not os.path.isfile(gait_path):
+            raise FileNotFoundError(gait_path)
+
+        return self.validate_gait_content(gait_path)
+
+    def load_subgait(self, gait_name, subgait_name):
+        """Read the .subgait file and extract the data
+        :returns
+            if gait and subgait names are valid return populated SubGaitSelector object
+        """
+        subgait_path = self.get_subgait_path(gait_name, subgait_name)
+        subgait = Subgait.from_file(self.robot, subgait_path)
+
+        return subgait
+
     def load_subgait_files(self):
+        """extract data from the subgait file and set to the corresponding subgait parameter"""
         rospy.logdebug("Loading subgait files")
         self.loaded_subgaits = {}
 
@@ -71,230 +163,93 @@ class GaitSelection(object):
             for subgait in self.gait_version_map[gait]:
                 self.loaded_subgaits[gait][subgait] = self.load_subgait(gait, subgait)
 
-    def get_subgait(self, gait_name, subgait_name):
-        try:
-            return self.loaded_subgaits[gait_name][subgait_name]
-        except KeyError:
-            return None
-
-    def load_subgait(self, gait_name, subgait_name):
-        try:
-            subgait_path = self.get_subgait_path(gait_name, subgait_name)
-        except KeyError as e:
-            rospy.logerr(str(e))
-            return None
-
-        subgait_yaml = yaml.load(open(subgait_path), Loader=yaml.SafeLoader)
-
-        try:
-            subgait = message_converter.convert_dictionary_to_ros_message('march_shared_resources/Subgait',
-                                                                          subgait_yaml)
-        except ValueError as e:
-            rospy.logerr(str(e))
-            rospy.logerr("Could not load subgait " + gait_name + "/" + subgait_name + " from " + subgait_path)
-            return None
-
-        subgait.name = subgait_name
-        subgait.version = self.gait_version_map[gait_name][subgait_name]
-        if subgait.gait_type == '':
-            subgait.gait_type = 'walk_like'
-
-        if self.robot is not None:
-            subgait = self.filter_subgait(subgait, self.joint_names)
-
-        return subgait
-
-    def filter_subgait(self, subgait, joint_names):
-        """Remove joints from the subgait if they are not present in the urdf."""
-
-        for i in reversed(range(0, len(subgait.trajectory.joint_names))):
-            joint = subgait.trajectory.joint_names[i]
-            if joint not in joint_names:
-                del subgait.trajectory.joint_names[i]
-                for j in range(0, len(subgait.trajectory.points)):
-                    if len(subgait.trajectory.points[j].positions) > 0:
-                        del subgait.trajectory.points[j].positions[i]
-                    if len(subgait.trajectory.points[j].velocities) > 0:
-                        del subgait.trajectory.points[j].velocities[i]
-                    if len(subgait.trajectory.points[j].accelerations) > 0:
-                        del subgait.trajectory.points[j].acceleration[i]
-                    if len(subgait.trajectory.points[j].effort) > 0:
-                        del subgait.trajectory.points[j].effort[i]
-
-        return subgait
-
-    def validate_subgait_name(self, gait_name, subgait_name):
-        try:
-            self.gait_version_map[gait_name]
-        except KeyError:
-            rospy.logerr("Gait " + gait_name + " does not exist")
-            return False
-        try:
-            self.gait_version_map[gait_name][subgait_name]
-        except KeyError:
-            rospy.logerr("Subgait " + subgait_name + " does not exist")
-            return False
-        return True
-
-    def validate_version_name(self, gait_name, subgait_name, version):
-        if len(gait_name) == 0 or len(subgait_name) == 0 or len(version) == 0:
-            return False
-
-        subgait_path = os.path.join(self.gait_directory, gait_name, subgait_name, version + '.subgait')
-        try:
-            open(subgait_path)
-        except IOError:
-            return False
-        return True
-
-    def get_subgait_path(self, gait_name, subgait_name):
-        if not self.validate_subgait_name(gait_name, subgait_name):
-            raise KeyError(
-                "Could not find subgait " + gait_name + "/" + subgait_name +
-                " in the mapping" + str(self.gait_version_map))
-        if not self.validate_version_name(gait_name, subgait_name, self.gait_version_map[gait_name][subgait_name]):
-            raise KeyError(
-                "Could not find subgait file " + gait_name + "/" + subgait_name + "/" +
-                self.gait_version_map[gait_name][subgait_name] + ".subgait")
-
-        return os.path.join(self.gait_directory, gait_name, subgait_name,
-                            self.gait_version_map[gait_name][subgait_name] + '.subgait')
-
     def scan_directory(self):
         """Scan the gait_directory recursively and create a dictionary of all subgait files"""
-        rootdir = self.gait_directory.rstrip(os.sep)
+        root_dir = self.gait_directory.rstrip(os.sep)
 
         directory_dict = {}
-        for gait in os.listdir(rootdir):
-            gait_path = os.path.join(rootdir, gait)
+        for gait in os.listdir(root_dir):
+            gait_path = os.path.join(root_dir, gait)
 
-            if not os.path.isdir(gait_path):
-                continue
+            if os.path.isdir(gait_path):
+                gait_dict = {"image": os.path.join(gait_path, gait + '.png'), "subgaits": {}}
 
-            gait_dict = {"image": os.path.join(gait_path, gait + '.png'), "subgaits": {}}
+                for subgait in os.listdir(gait_path):
+                    subgait_path = os.path.join(gait_path, subgait)
 
-            for subgait in os.listdir(gait_path):
-                subgait_path = os.path.join(gait_path, subgait)
-                if not os.path.isdir(subgait_path):
-                    continue
-                versions = []
-                for version in os.listdir(os.path.join(subgait_path)):
-                    versions.append(version.replace(".subgait", ""))
-                versions.sort()
-                gait_dict["subgaits"][subgait] = versions
-            directory_dict[gait] = gait_dict
+                    if os.path.isdir(subgait_path):
+                        versions = []
+                        for version in os.listdir(os.path.join(subgait_path)):
+                            if version.endswith('.subgait'):
+                                versions.append(version.replace('.subgait', ''))
 
+                        versions.sort()
+                        gait_dict["subgaits"][subgait] = versions
+
+                    directory_dict[gait] = gait_dict
         return directory_dict
 
-    def validate_version_map(self, map):
-        """Check if all subgaits in the map exist."""
-        for gait in map:
-            for subgait in map[gait]:
-                version = map[gait][subgait]
-                if not self.validate_version_name(gait, subgait, version):
-                    return False
+    def validate_gait_content(self, gait_path):
+        """Validate if a start and end  point is defined in the gait"""
+        with open(gait_path, 'r') as gait_file:
+            gait = yaml.load(gait_file, Loader=yaml.SafeLoader)
+
+        gait_name = gait['name']
+        gait_content = gait['graph']
+
+        if len(gait_content['from_subgait']) != len(gait_content['to_subgait']):
+            raise NonValidGaitContent(msg='Gait {gn} does not have equal amount of subgaits'.format(gn=gait_name))
+
+        if 'start' not in gait_content['from_subgait'] or 'start' in gait_content['to_subgait']:
+            raise NonValidGaitContent(msg='Gait {gn} does not have valid starting subgaits'.format(gn=gait_name))
+
+        if 'end' not in gait_content['to_subgait'] or 'end' in gait_content['from_subgait']:
+            raise NonValidGaitContent(msg='Gait {gn} does not have valid ending subgaits'.format(gn=gait_name))
+
+        from_subgaits = gait_content['from_subgait']
+        to_subgaits = gait_content['to_subgait']
+
+        subgaits = from_subgaits + to_subgaits
+        subgaits = filter(lambda name: name not in ('start', 'end'), subgaits)
+
+        if not all(self.validate_gaits_in_map(gait_name, subgait_name) for subgait_name in subgaits):
+            raise NonValidGaitContent(msg='Subgaits in gait {gn} do not exist in the mapped subgait'.format(gn=gait_name))
+
+        if all(self._validate_trajectory_transition(gait_name, from_subgait, to_subgait) for from_subgait, to_subgait
+               in zip(from_subgaits, to_subgaits)):
+            return True
+
+    def _validate_trajectory_transition(self, gait_name, from_subgait_name, to_subgait_name):
+        """Compare and validate the trajectory end and start points
+        :param gait_name:
+            Name of the general gait to which these subgaits are assigned to
+        :param from_subgait_name:
+            a subgait of the list of subgaits defined in the from_subgait header of the gait file
+        :param to_subgait_name:
+            a subgait of the list of subgaits defined in the to_subgait header of the gait file
+        """
+        if all(name not in ('start', 'end') for name in (from_subgait_name, to_subgait_name)):
+
+            from_subgait_obj = self.get_subgait_from_loaded_subgaits(gait_name, from_subgait_name)
+            to_subgait_obj = self.get_subgait_from_loaded_subgaits(gait_name, to_subgait_name)
+
+            from_subgait_joint_names = set(from_subgait_obj.get_joint_names())
+            to_subgait_joint_names = set(to_subgait_obj.get_joint_names())
+
+            if from_subgait_joint_names != to_subgait_joint_names:
+                raise NonValidGaitContent(msg='Structure of joints does not match between subgait {} and subgait {}'
+                                          .format(from_subgait_name, to_subgait_name))
+
+            for fs_joint_name, ts_joint_name in zip(from_subgait_joint_names, to_subgait_joint_names):
+                fs_joint_point = from_subgait_obj.get_joint(name=fs_joint_name).get_setpoints_unzipped()
+                ts_joint_point = to_subgait_obj.get_joint(name=ts_joint_name).get_setpoints_unzipped()
+
+                for index, (fs_point_data, ts_point_data) in enumerate(zip(fs_joint_point, ts_joint_point)):
+                    if index == 0:
+                        continue  # timestamps should not be compared
+
+                    if fs_point_data[-1] != ts_point_data[0]:
+                        raise NonValidGaitContent(msg="End setpoint of joint {} in subgait {} does not match"
+                                                  .format(fs_joint_name, from_subgait_name))
+
         return True
-
-    def validate_gait_by_name(self, gait_name):
-        gait_path = os.path.join(self.gait_directory, gait_name, gait_name + ".gait")
-        try:
-            gait_yaml = yaml.load(open(gait_path), Loader=yaml.SafeLoader)
-        except IOError:
-            rospy.logerr("No such gait at %s.", gait_path)
-            return False
-        gait = message_converter.convert_dictionary_to_ros_message('march_shared_resources/GaitGoal',
-                                                                   gait_yaml,
-                                                                   kind="message")
-        return self.validate_gait(gait)
-
-    def validate_gait(self, gait):
-        if gait is None:
-            rospy.logerr("Cannot validate gait None")
-            return False
-        if len(gait.graph.from_subgait) != len(gait.graph.to_subgait):
-            rospy.logerr("Graph has the wrong size in gait %s", gait.name)
-            return False
-        if "start" not in gait.graph.from_subgait:
-            rospy.logerr("Start does not exist in gait %s", gait.name)
-            return False
-        if "end" not in gait.graph.to_subgait:
-            rospy.logerr("End does not exist in gait %s", gait.name)
-            return False
-        if "start" in gait.graph.to_subgait:
-            rospy.logerr("Gait %s has a transition to start", gait.name)
-            return False
-        if "end" in gait.graph.from_subgait:
-            rospy.logerr("Gait %s has a transition from end", gait.name)
-            return False
-
-        for i in range(0, len(gait.graph.from_subgait)):
-            if not self.validate_subgait_transition(gait.name, gait.graph.from_subgait[i], gait.graph.to_subgait[i]):
-                return False
-        return True
-
-    def validate_subgait_transition(self, gait_name, from_name, to_name):
-        if from_name == "start":
-            if self.get_subgait(gait_name, to_name) is None:
-                rospy.logerr("Could not find 'to' subgait %s/%s", gait_name, from_name)
-                return False
-            else:
-                return True
-
-        if to_name == "end":
-            if self.get_subgait(gait_name, from_name) is None:
-                rospy.logerr("Could not find 'from' subgait %s/%s", gait_name, from_name)
-                return False
-            else:
-                return True
-
-        from_subgait = self.get_subgait(gait_name, from_name)
-        to_subgait = self.get_subgait(gait_name, to_name)
-
-        if from_subgait is None:
-            rospy.logerr("Could not find 'from' subgait %s/%s", gait_name, from_name)
-            return False
-        if to_subgait is None:
-            rospy.logerr("Could not find 'to' subgait %s/%s", gait_name, to_name)
-            return False
-
-        transition_msg = self.validate_trajectory_transition(from_subgait.trajectory, to_subgait.trajectory)
-        if transition_msg != "":
-            rospy.logerr("Wrong transition from %s/%s/%s.subgait to %s/%s/%s.subgait, transition wrong at: %s",
-                         gait_name, from_name, from_subgait.version, gait_name, to_name, to_subgait.version,
-                         transition_msg)
-            return False
-        return True
-
-    @staticmethod
-    def validate_trajectory_transition(old_trajectory, new_trajectory):
-        if set(old_trajectory.joint_names) != set(new_trajectory.joint_names):
-            rospy.logwarn("Joint names are not equal: %s, %s",
-                          str(old_trajectory.joint_names), str(new_trajectory.joint_names))
-            return False
-
-        last_old_point_positions = set(zip(old_trajectory.joint_names, old_trajectory.points[-1].positions))
-        last_old_point_velocities = set(zip(old_trajectory.joint_names, old_trajectory.points[-1].velocities))
-        last_old_point_accelerations = set(zip(old_trajectory.joint_names, old_trajectory.points[-1].accelerations))
-        last_old_point_effort = set(zip(old_trajectory.joint_names, old_trajectory.points[-1].effort))
-
-        first_new_point_positions = set(zip(new_trajectory.joint_names, new_trajectory.points[0].positions))
-        first_new_point_velocities = set(zip(new_trajectory.joint_names, new_trajectory.points[0].velocities))
-        first_new_point_accelerations = set(zip(new_trajectory.joint_names, new_trajectory.points[0].accelerations))
-        first_new_point_effort = set(zip(new_trajectory.joint_names, new_trajectory.points[0].effort))
-
-        def match(old_points, new_points, type_str):
-            if old_points != new_points:
-                msg = "\n" + type_str + " end old subgait does not match start new subgait: \n"
-                msg = msg + type_str + " for old subgait \n"
-                for joint in sorted(old_points.difference(new_points)):
-                    msg = msg + str(joint) + '\n'
-                msg = msg + type_str + " for new subgait"
-                for joint in sorted(new_points.difference(old_points)):
-                    msg = msg + '\n' + str(joint)
-                return msg
-            return ""
-
-        return (match(last_old_point_positions, first_new_point_positions, "Positions") +
-                match(last_old_point_velocities, first_new_point_velocities, "Velocities") +
-                match(last_old_point_accelerations, first_new_point_accelerations, "Accelerations") +
-                match(last_old_point_effort, first_new_point_effort, "Efforts"))

@@ -30,13 +30,13 @@ def set_gait_version_map(msg, gait_selection):
     except ValueError:
         return [False, 'Not a valid dictionary ' + str(msg.string)]
 
-    if not gait_selection.validate_version_map(map):
+    if not gait_selection.validate_version_in_map(map):
         return [False, 'Gait version map is not valid ' + str(map)]
 
     backup_map = gait_selection.gait_version_map
     gait_selection.set_gait_version_map(map)
     for gait in map:
-        if not gait_selection.validate_gait_by_name(gait):
+        if not gait_selection.validate_gait_file(gait):
             gait_selection.set_gait_version_map(backup_map)
             return [False, 'Gait ' + gait + ' is invalid']
     return [True, 'Gait version map set to ' + str(gait_selection.gait_version_map)]

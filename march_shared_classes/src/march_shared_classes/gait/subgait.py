@@ -47,9 +47,6 @@ class Subgait(object):
             with open(file_name, 'r') as yaml_file:
                 subgait_dict = yaml.load(yaml_file, Loader=yaml.SafeLoader)
 
-            if 'gait_type' not in subgait_dict:
-                subgait_dict['gait_type'] = 'walk_like'
-
         except Exception as e:
             rospy.logerr("Error occurred in subgait: {}, {} ".format(type(e), e))
             return None
@@ -94,8 +91,8 @@ class Subgait(object):
 
             joint_list.append(cls.joint_class.from_dict(subgait_dict, joint_name, limits, duration, *args))
 
-        subgait_type = subgait_dict['gait_type']
-        subgait_description = subgait_dict['description']
+        subgait_type = subgait_dict['gait_type'] if subgait_dict.get('gait_type') else ''
+        subgait_description = subgait_dict['description'] if subgait_dict.get('description') else ''
 
         return cls(joint_list, duration, subgait_type, gait_name, subgait_name, version, subgait_description)
 

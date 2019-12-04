@@ -19,11 +19,11 @@ class PerformGaitAction(object):
 
     def target_gait_callback(self, goal):
         rospy.logdebug('Trying to schedule subgait %s/%s', goal.name, goal.subgait_name)
-        if not self.gait_selection.validate_gait_by_name(goal.name):
+        if not self.gait_selection.validate_gait_file(goal.name):
             rospy.logerr('Gait %s is invalid', goal.name)
             self.action_server.set_aborted('Gait ' + str(goal.name) + 'is invalid')
             return False
-        subgait = self.gait_selection.get_subgait(goal.name, goal.subgait_name)
+        subgait = self.gait_selection.get_subgait_from_loaded_subgaits(goal.name, goal.subgait_name)
         trajectory_state = self.schedule_gait(goal.name, subgait)
 
         if trajectory_state == actionlib.GoalStatus.SUCCEEDED:
