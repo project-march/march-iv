@@ -17,13 +17,10 @@ def create():
                                transitions={'succeeded': 'RIGHT SWING', 'aborted': 'failed'})
 
         smach.StateMachine.add('RIGHT SWING', StoppableState('ramp_door_slope_down', 'right_swing'),
-                               transitions={'succeeded': 'LEFT SWING',
-                                            'stopped': 'LEFT CLOSE',
-                                            'aborted': 'failed'})
+                               transitions={'succeeded': 'LEFT SWING', 'stopped': 'LEFT CLOSE', 'aborted': 'failed'})
 
         smach.StateMachine.add('LEFT SWING', StoppableState('ramp_door_slope_down', 'left_swing'),
-                               transitions={'succeeded': 'RIGHT SWING',
-                                            'stopped': 'RIGHT CLOSE', 'aborted': 'failed'})
+                               transitions={'succeeded': 'RIGHT SWING', 'stopped': 'RIGHT CLOSE', 'aborted': 'failed'})
 
         smach.StateMachine.add('RIGHT CLOSE', GaitState('ramp_door_slope_down', 'right_close'),
                                transitions={'succeeded': 'succeeded', 'aborted': 'failed'})
