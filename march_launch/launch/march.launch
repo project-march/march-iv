@@ -42,6 +42,15 @@
         </include>
     </group>
 
+    <group if="$(eval configuration == 'test_joint_rotational')">
+        <include file="$(find march_hardware_interface)/launch/hardware.launch" if="$(arg hardware_interface)">
+            <arg name="robot" value="test_joint_rotational"/>
+        </include>
+        <include file="$(find march_gain_scheduling)/launch/march_gain_scheduling.launch">
+             <arg name="march_type" value="test_joint_rotational"/>
+        </include>
+    </group>
+
     <group if="$(eval configuration == 'exoskeleton')">
         <include file="$(find march_launch)/launch/serial_connection.launch">
             <arg name="wireless" value="$(arg wireless)"/>

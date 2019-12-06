@@ -26,7 +26,10 @@ class DynamicPIDReconfigurer:
             rospy.logdebug('The selected gait: {0} is not the same as the previous gait: {1}'.format(
                 data.goal.current_subgait.gait_type, self._gait_type))
             self._gait_type = data.goal.current_subgait.gait_type
-            self.client_update()
+            self.interpolation_done = False
+            while not self.interpolation_done:
+                self.interpolation_done = True
+                self.client_update()
 
     def client_update(self):
         rospy.logdebug('self.linearize is: {0}'.format(self._linearize))
