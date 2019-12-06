@@ -6,83 +6,76 @@ import rospy
 from std_srvs.srv import Trigger
 import yaml
 
+
+from march_shared_classes.exceptions.gait_exceptions import GaitError
 from march_shared_resources.srv import StringTrigger
 
 from .GaitSelection import GaitSelection
 from .PerformGaitAction import PerformGaitAction
 
 
-def set_selected_version_callback(msg, gait_selection):
-    try:
-        string = msg.string.replace('.subgait', '')
-        gait_name, subgait_name, version_name = string.split('/')
-    except ValueError:
-        return [False, 'Could not split gait ' + msg.string + '.']
-
-    if gait_selection.set_subgait_version(gait_name, subgait_name, version_name):
-        return [True, 'Subgait ' + gait_name + '/' + subgait_name + ' now uses version ' + version_name + '.']
-    return [False, 'Version ' + gait_name + '/' + subgait_name + '/' + version_name + '.subgait is not valid.']
+NODE_NAME = 'gait_selection'
+GAIT_FILES_MAP_NAME = 'march_gait_files'
+GAIT_DIRECTORY_NAME = 'gait'
 
 
 def set_gait_version_map(msg, gait_selection):
-    try:
-        gait_map = ast.literal_eval(msg.string)
-    except ValueError:
-        return [False, 'Not a valid dictionary ' + str(msg.string)]
-
-    if not gait_selection.validate_version_in_map(map):
-        return [False, 'Gait version map is not valid ' + str(map)]
-
+    """Set a new gait version map to the gait selection class."""
     backup_map = gait_selection.gait_version_map
-    gait_selection.set_gait_version_map(map)
-    for gait in map:
-        if not gait_selection.validate_gait_file(gait):
-            gait_selection.set_gait_version_map(backup_map)
-            return [False, 'Gait ' + gait + ' is invalid']
-    return [True, 'Gait version map set to ' + str(gait_selection.gait_version_map)]
+
+    try:
+        new_gait_version_map = ast.literal_eval(msg.string)
+
+        if not gait_selection.validate_versions_in_directory(new_gait_version_map):
+            return [False, 'Gait version map: {gm}, is not valid'.format(gm=new_gait_version_map)]
+
+        gait_selection.gait_version_map = new_gait_version_map
+
+        return [True, 'Gait version map set to: \n {gm}'.format(gm=str(gait_selection.gait_version_map))]
+
+    except ValueError:
+        return [False, 'Not a valid dictionary: {msg}'.format(msg=str(msg.string))]
+
+    except GaitError as e:
+        gait_selection.gait_version_map = backup_map
+        return [False, 'Error occurred when constructing gaits: {er}'.format(er=e)]
 
 
 def update_default_versions(gait_package, gait_directory, gait_version_map):
+    """Update the default.yaml file in the given directory."""
     default_yaml = os.path.join(rospkg.RosPack().get_path(gait_package), gait_directory, 'default.yaml')
-    default_dict = {'gaits': gait_version_map}
+    new_default_dict = {'gaits': gait_version_map}
+
     try:
-        output_file = open(default_yaml, 'w+')
-        yaml_content = yaml.dump(default_dict)
-        output_file.write(yaml_content)
-        output_file.close()
+        with open(default_yaml, 'w') as default_yaml_content:
+            yaml_content = yaml.dump(new_default_dict)
+            default_yaml_content.write(yaml_content)
+
+        return [True, 'New default values were written to: {pn}'.format(pn=default_yaml)]
+
     except IOError:
-        return [False, 'Could not write to ' + default_yaml]
-    return [True, 'Succesfully wrote defaults ' + str(gait_version_map) + ' to file ' + default_yaml]
+        return [False, 'Error occurred when writing to file path: {pn}'.format(pn=default_yaml)]
 
 
 def main():
-    rospy.init_node('gait_selection')
-    gait_package = rospy.get_param('~gait_package', 'march_gait_files')
-    gait_directory = rospy.get_param('~gait_directory', 'gait')
+    rospy.init_node(NODE_NAME)
+    gait_package = rospy.get_param('~gait_package', GAIT_FILES_MAP_NAME)
+    gait_directory = rospy.get_param('~gait_directory', GAIT_DIRECTORY_NAME)
 
     gait_selection = GaitSelection(gait_package, gait_directory)
 
     # Use lambdas to process service calls inline
-    get_gait_version_map_service = rospy.Service('/march/gait_selection/get_version_map', Trigger,  # noqa F841
-                                                 lambda msg: [True,
-                                                              str(gait_selection.gait_version_map)])
+    rospy.Service('/march/gait_selection/get_version_map', Trigger,
+                  lambda msg: [True, str(gait_selection.gait_version_map)])
 
-    get_all_gait_files_service = rospy.Service('/march/gait_selection/get_directory_structure', Trigger,  # noqa F841
-                                               lambda msg: [True,
-                                                            str(gait_selection.scan_directory())])
+    rospy.Service('/march/gait_selection/set_version_map', StringTrigger,
+                  lambda msg: set_gait_version_map(msg, gait_selection))
 
-    set_selected_version_service = rospy.Service('/march/gait_selection/set_version', StringTrigger,  # noqa F841
-                                                 lambda msg: set_selected_version_callback(
-                                                     msg, gait_selection))
+    rospy.Service('/march/gait_selection/get_directory_structure', Trigger,
+                  lambda msg: [True, str(gait_selection.scan_directory())])
 
-    set_gait_version_map_service = rospy.Service('/march/gait_selection/set_version_map', StringTrigger,  # noqa F841
-                                                 lambda msg: set_gait_version_map(
-                                                     msg, gait_selection))
+    rospy.Service('/march/gait_selection/update_default_versions', Trigger,
+                  lambda msg: update_default_versions(gait_package, gait_directory, gait_selection.gait_version_map))
 
-    update_default_versions_service = rospy.Service('/march/gait_selection/update_default_versions', Trigger,  # noqa F841
-                                                    lambda msg: update_default_versions(
-                                                        gait_package, gait_directory, gait_selection.gait_version_map))
-
-    perform_gait_server = PerformGaitAction(gait_selection)  # noqa F841
-
+    PerformGaitAction(gait_selection)
     rospy.spin()
