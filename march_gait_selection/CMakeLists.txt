@@ -3,6 +3,7 @@ project(march_gait_selection)
 
 find_package(catkin REQUIRED COMPONENTS
     march_shared_resources
+    march_shared_classes
     std_msgs
 )
 
@@ -11,6 +12,7 @@ catkin_python_setup()
 catkin_package(
     CATKIN_DEPENDS
     march_shared_resources
+    march_shared_classes
     std_msgs
 )
 
