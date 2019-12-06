@@ -3,6 +3,7 @@ import smach
 from std_srvs.srv import Empty, EmptyRequest
 
 from . import ramp_door_slope_up_sm
+from . import ramp_down_sm
 from . import rough_terrain_high_step_sm
 from . import rough_terrain_middle_steps_sm
 from . import side_step_left_sm
@@ -107,6 +108,9 @@ def create():
         smach.StateMachine.add('GAIT RD SLOPE UP', ramp_door_slope_up_sm.create(),  # RD stands for Ramp and Door
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
+        smach.StateMachine.add('GAIT RD RAMP DOWN', ramp_down_sm.create(),
+                               transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
+
         # Idle states
         smach.StateMachine.add('SITTING', IdleState(outcomes=['gait_stand', 'preempted']),
                                transitions={'gait_stand': 'GAIT STAND'})
@@ -120,7 +124,7 @@ def create():
                                                                'gait_set_ankle_from_2_5_to_min5',
                                                                'gait_walk_small', 'gait_rough_terrain_high_step',
                                                                'gait_rough_terrain_middle_steps',
-                                                               'gait_ramp_door_slope_up',
+                                                               'gait_ramp_door_slope_up', 'gait_ramp_door_slope_down',
                                                                'preempted']),
                                transitions={'gait_sit': 'GAIT SIT', 'gait_walk': 'GAIT WALK',
                                             'gait_single_step_small': 'GAIT SINGLE STEP SMALL',
@@ -136,6 +140,7 @@ def create():
                                             'gait_walk_small': 'GAIT WALK SMALL',
                                             'gait_rough_terrain_high_step': 'GAIT RT HIGH STEP',
                                             'gait_rough_terrain_middle_steps': 'GAIT RT MIDDLE STEPS',
-                                            'gait_ramp_door_slope_up': 'GAIT RD SLOPE UP'})
+                                            'gait_ramp_door_slope_up': 'GAIT RD SLOPE UP',
+                                            'gait_ramp_door_slope_down': 'GAIT RD RAMP DOWN'})
 
     return sm_healthy
