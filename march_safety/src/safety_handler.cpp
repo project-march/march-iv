@@ -3,12 +3,14 @@
 
 #include <string>
 
-SafetyHandler::SafetyHandler(ros::NodeHandle* n, ros::Publisher* error_publisher, ros::Publisher* sound_publisher,
-                             ros::Publisher* gait_instruction_publisher)
+SafetyHandler::SafetyHandler(ros::NodeHandle* n, ros::Publisher* error_publisher,
+                             ros::Publisher* gait_instruction_publisher,
+                             sound_play::SoundClient& sound_client)
   : n_(n)
   , error_publisher_(error_publisher)
-  , sound_publisher_(sound_publisher)
   , gait_instruction_publisher_(gait_instruction_publisher)
+  , fatal_sound_(sound_client.waveSoundFromPkg("march_safety", "sound/fatal.wav"))
+  , non_fatal_sound_(sound_client.waveSoundFromPkg("march_safety", "sound/non_fatal.wav"))
 {
 }
 
@@ -30,35 +32,19 @@ void SafetyHandler::publishStopMessage() const
   this->gait_instruction_publisher_->publish(gait_instruction_msg);
 }
 
-void SafetyHandler::publishErrorSound(int8_t error_type) const
-{
-  march_shared_resources::Sound sound;
-  sound.header.stamp = ros::Time::now();
-  sound.time = ros::Time::now();
-  if (error_type == march_shared_resources::Error::FATAL)
-  {
-    sound.file_name = "fatal.wav";
-  }
-  else if (error_type == march_shared_resources::Error::NON_FATAL)
-  {
-    sound.file_name = "non-fatal.wav";
-  }
-  this->sound_publisher_->publish(sound);
-}
-
-void SafetyHandler::publishFatal(std::string message)
+void SafetyHandler::publishFatal(const std::string& message)
 {
   ROS_ERROR("%s", message.c_str());
 
   this->publishErrorMessage(message, march_shared_resources::Error::FATAL);
-  this->publishErrorSound(march_shared_resources::Error::FATAL);
+  this->non_fatal_sound_.play();
 }
 
-void SafetyHandler::publishNonFatal(std::string message)
+void SafetyHandler::publishNonFatal(const std::string& message)
 {
   ROS_ERROR("%s", message.c_str());
 
   this->publishStopMessage();
   this->publishErrorMessage(message, march_shared_resources::Error::NON_FATAL);
-  this->publishErrorSound(march_shared_resources::Error::NON_FATAL);
+  this->non_fatal_sound_.play();
 }
