@@ -10,6 +10,7 @@ from march_shared_resources import msg as march_msg
 
 class Subgait(object):
     """ Base class for usage of the defined sub gaits"""
+
     joint_class = JointTrajectory
 
     def __init__(self, joints, duration, gait_type='walk_like', gait_name='Walk', subgait_name='right_open',
@@ -39,15 +40,15 @@ class Subgait(object):
             return None
 
         try:
-            gait_name = file_name.split("/")[-3]
-            subgait_name = file_name.split("/")[-2]
-            version = file_name.split("/")[-1].replace(".subgait", "")
+            gait_name = file_name.split('/')[-3]
+            subgait_name = file_name.split('/')[-2]
+            version = file_name.split('/')[-1].replace('.subgait', '')
 
             with open(file_name, 'r') as yaml_file:
                 subgait_dict = yaml.load(yaml_file, Loader=yaml.SafeLoader)
 
         except Exception as e:
-            rospy.logerr("Error occurred in subgait: {}, {} ".format(type(e), e))
+            rospy.logerr('Error occurred in subgait: {}, {} '.format(type(e), e))
             return None
 
         return cls.from_dict(robot, subgait_dict, gait_name, subgait_name, version, *args)
@@ -124,8 +125,8 @@ class Subgait(object):
                 interpolated_setpoint = joint.get_interpolated_setpoint(timestamp)
 
                 if interpolated_setpoint.time != timestamp:
-                    rospy.logwarn("Time mismatch in joint {} at timestamp {}, "
-                                  "got time {}".format(joint.name, timestamp, interpolated_setpoint.time))
+                    rospy.logwarn('Time mismatch in joint {} at timestamp {}, '
+                                  'got time {}'.format(joint.name, timestamp, interpolated_setpoint.time))
 
                 joint_trajectory_point.positions.append(interpolated_setpoint.position)
                 joint_trajectory_point.velocities.append(interpolated_setpoint.velocity)
