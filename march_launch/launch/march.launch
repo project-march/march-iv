@@ -39,7 +39,7 @@
 
         <include file="$(find march_safety)/launch/march_safety.launch"/>
 
-        <include file="$(find march_sound_scheduler)/launch/march_sound_scheduler.launch"/>
+        <node name="sound_play" pkg="sound_play" type="soundplay_node.py"/>
 
         <include file="$(find march_gait_selection)/launch/march_gait_selection.launch">
             <arg name="gait_directory" value="$(arg gait_directory)"/>
