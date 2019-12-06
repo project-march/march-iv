@@ -6,12 +6,14 @@ from visualization_msgs.msg import Marker
 
 class CPCalculator(object):
 
-    def __init__(self, com_mark, tf_buffer, foot_link):
+    def __init__(self, tf_buffer, foot_link):
         self.tf_buffer = tf_buffer
         self.foot_link = foot_link
-        self.prev_x = com_mark.pose.position.x
-        self.prev_y = com_mark.pose.position.y
-        self.prev_t = com_mark.header.stamp
+        self.publisher = rospy.Publisher('/march/cp_marker_' + foot_link, Marker, queue_size=1)
+
+        self.prev_x = 0
+        self.prev_y = 0
+        self.prev_t = rospy.Time.now()
 
         self.marker = Marker()
 
@@ -25,9 +27,7 @@ class CPCalculator(object):
         self.marker.scale.y = 0.03
         self.marker.scale.z = 0.03
 
-        g = 9.81  # gravity constant
-        z_zero = 0.715500019353  # height of CoM
-        self.MULTIPLICATION_CONSTANT = sqrt(z_zero / g)
+        self.g = 9.81  # gravity constant
 
     def calculate_cp(self, com_mark):
         current_time = com_mark.header.stamp
@@ -37,18 +37,24 @@ class CPCalculator(object):
             y_dot = (com_mark.pose.position.y - self.prev_y) / time_difference
 
             trans = self.tf_buffer.lookup_transform('world', self.foot_link, rospy.Time())
-            x_cap = trans.transform.translation.x + x_dot * self.MULTIPLICATION_CONSTANT
-            y_cap = trans.transform.translation.y + y_dot * self.MULTIPLICATION_CONSTANT
+            multiplier = sqrt(com_mark.pose.position.z / self.g)
+            x_cp = trans.transform.translation.x + x_dot * multiplier
+            y_cp = trans.transform.translation.y + y_dot * multiplier
 
-            # send CP position to RViZ
-            self.marker.header.stamp = rospy.get_rostime()
-            self.marker.pose.position.x = x_cap
-            self.marker.pose.position.y = y_cap
-            self.marker.pose.position.z = 0
-            rospy.logdebug('capture point is at ' + str(self.marker.pose.position))
+            self.update_marker(x_cp, y_cp)
 
             self.prev_x = com_mark.pose.position.x
             self.prev_y = com_mark.pose.position.y
             self.prev_t = current_time
 
         return self.marker
+
+    def update_marker(self, x_cp, y_cp):
+        self.marker.header.stamp = rospy.get_rostime()
+        self.marker.pose.position.x = x_cp
+        self.marker.pose.position.y = y_cp
+        self.marker.pose.position.z = 0
+
+        rospy.logdebug('capture point is at ' + str(self.marker.pose.position))
+
+        self.publisher.publish(self.marker)

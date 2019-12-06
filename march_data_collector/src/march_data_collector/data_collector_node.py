@@ -20,13 +20,11 @@ class DataCollectorNode(object):
     def __init__(self, com_calculator, cp_calculators):
         self._com_calculator = com_calculator
         self._cp_calculators = cp_calculators
-        joint_names = rospy.get_param('/march/joint_names')
-        self._imu_broadcaster = tf2_ros.TransformBroadcaster()
 
-        self._marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
+        joint_names = rospy.get_param('/march/joint_names')
+
+        self._imu_broadcaster = tf2_ros.TransformBroadcaster()
         self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
-        self._cp_marker_publishers = [rospy.Publisher('/march/cp_marker_left', Marker, queue_size=1),
-                                      rospy.Publisher('/march/cp_marker_right', Marker, queue_size=1)]
 
         self._temperature_subscriber = [rospy.Subscriber('/march/temperature/' + joint,
                                                          Temperature,
@@ -47,8 +45,8 @@ class DataCollectorNode(object):
         rospy.logdebug('received trajectory state' + str(data.desired))
         com = self._com_calculator.calculate_com()
         self._com_marker_publisher.publish(com)
-        for cp_calculator, publisher in zip(self._cp_calculators, self._cp_marker_publishers):
-            publisher.publish(cp_calculator.calculate_cp(com))
+        for cp_calculator in self._cp_calculators:
+            cp_calculator.calculate_cp(com)
 
     def imc_state_callback(self, data):
         rospy.logdebug('received IMC message current is ' + str(data.current))
@@ -71,7 +69,7 @@ class DataCollectorNode(object):
             transform.transform.rotation.z = imu_rotation[2]
             transform.transform.rotation.w = imu_rotation[3]
 
-            self.imu_broadcaster.sendTransform(transform)
+            self._imu_broadcaster.sendTransform(transform)
 
 
 def main():
@@ -82,7 +80,7 @@ def main():
     tf2_ros.TransformListener(tf_buffer)
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
     feet = ['ankle_plate_left', 'ankle_plate_right']
-    cp_calculators = [CPCalculator(center_of_mass_calculator.calculate_com(), tf_buffer, foot) for foot in feet]
+    cp_calculators = [CPCalculator(tf_buffer, foot) for foot in feet]
 
     DataCollectorNode(center_of_mass_calculator, cp_calculators)
     rospy.spin()
