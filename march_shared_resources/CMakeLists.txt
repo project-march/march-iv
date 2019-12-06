@@ -21,7 +21,6 @@ add_message_files(
     LowVoltageNet.msg
     PowerDistributionBoardState.msg
     Setpoint.msg
-    Sound.msg
     Subgait.msg
 )
 
