@@ -50,7 +50,7 @@ class IdleState(smach.State):
 
     def _gait_cb(self, gait):
         if gait in self.get_registered_outcomes():
-            rospy.loginfo('Accepted {0}'.format(gait))
+            rospy.logdebug('Accepted {0}'.format(gait))
             self._result_gait = gait
             control_flow.gait_accepted()
             self._trigger_event.set()

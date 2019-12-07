@@ -14,8 +14,8 @@ class PerformGaitAction(object):
         self.action_server.start()
 
         self.schedule_gait_client = actionlib.SimpleActionClient('/march/gait/schedule', GaitAction)
-        while not rospy.is_shutdown() and not self.schedule_gait_client.wait_for_server(rospy.Duration(5.0)):
-            rospy.loginfo('Waiting for /march/gait/schedule to come up')
+        while not rospy.is_shutdown() and not self.schedule_gait_client.wait_for_server(rospy.Duration(5)):
+            rospy.logdebug('Waiting for /march/gait/schedule to come up')
 
     def target_gait_callback(self, goal):
         rospy.logdebug('Trying to schedule subgait %s/%s', goal.name, goal.subgait_name)
