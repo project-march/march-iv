@@ -33,6 +33,7 @@ class PerformGaitAction(object):
                     self.action_server.set_succeeded(trajectory_state)
                 else:
                     self.action_server.set_aborted(trajectory_state)
+                return True
 
         rospy.logdebug('Gait {gn} {sn} does not exist in parsed gaits'.format(gn=goal.name, sn=goal.subgait_name))
         self.action_server.set_aborted('Gait {gn} does not exist in parsed gaits'.format(gn=goal.name))

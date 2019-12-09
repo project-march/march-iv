@@ -4,6 +4,8 @@ from .setpoint import Setpoint
 
 
 class JointTrajectory(object):
+    """Base class for joint trajectory of a gait."""
+
     setpoint_class = Setpoint
 
     def __init__(self, name, limits, setpoints, duration):
@@ -14,7 +16,8 @@ class JointTrajectory(object):
 
     @classmethod
     def from_dict(cls, subgait_dict, joint_name, limits, duration, *args):
-        """ fill class attributes
+        """Create class of JointTrajectory with filled attributes.
+
         :param subgait_dict:
             The dictionary extracted from the yaml file
         :param joint_name:
@@ -36,7 +39,7 @@ class JointTrajectory(object):
         return cls(joint_name, limits, setpoints, duration)
 
     def get_setpoints_unzipped(self):
-        """Get all the listed attributes of the setpoints"""
+        """Get all the listed attributes of the setpoints."""
         time = []
         position = []
         velocity = []

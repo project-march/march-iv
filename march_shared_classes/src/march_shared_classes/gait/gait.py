@@ -1,15 +1,15 @@
 
 import os
+
 import yaml
 
-from march_shared_classes.exceptions.general_exceptions import *
-from march_shared_classes.exceptions.gait_exceptions import *
-
+from march_shared_classes.exceptions.gait_exceptions import GaitNameNotFound, NonValidGaitContent, SubgaitNameNotFound
+from march_shared_classes.exceptions.general_exceptions import FileNotFoundError
 from march_shared_classes.gait.subgait import Subgait
 
 
 class Gait(object):
-    """base class for a generated gait"""
+    """base class for a generated gait."""
 
     def __init__(self, gait_name, subgaits, from_subgaits_name, to_subgaits_names):
         self.gait_name = gait_name
@@ -19,7 +19,8 @@ class Gait(object):
 
     @classmethod
     def from_file(cls, gait_name, gait_directory, robot, gait_version_map):
-        """Extract the data from the .gait file
+        """Extract the data from the .gait file.
+
         :param gait_name:
             name of the gait to unpack
         :param gait_directory:
@@ -42,7 +43,8 @@ class Gait(object):
 
     @classmethod
     def from_dict(cls, robot, gait_dictionary, gait_directory, gait_version_map):
-        """ Create a new gait object using the .gait and .subgait files
+        """Create a new gait object using the .gait and .subgait files.
+
         :param robot:
             the robot corresponding to the given .gait file
         :param gait_dictionary:
@@ -82,7 +84,8 @@ class Gait(object):
 
     @staticmethod
     def load_subgait(robot, gait_directory, gait_name, subgait_name, gait_version_map):
-        """Read the .subgait file and extract the data
+        """Read the .subgait file and extract the data.
+
         :returns
             if gait and subgait names are valid return populated SubGaitSelector object
         """
@@ -102,7 +105,8 @@ class Gait(object):
 
     @staticmethod
     def _validate_trajectory_transition(subgaits, from_subgait_names, to_subgait_names):
-        """Compare and validate the trajectory end and start points
+        """Compare and validate the trajectory end and start points.
+
         :param subgaits:
             The list of subgait objects used in this gait
         :param from_subgait_names:
@@ -122,8 +126,8 @@ class Gait(object):
             to_subgait_joint_names = set(to_subgait.get_joint_names())
 
             if from_subgait_joint_names != to_subgait_joint_names:
-                raise NonValidGaitContent(msg='Structure of joints does not match between subgait {} and subgait {}'
-                                          .format(from_subgait_name, to_subgait_name))
+                raise NonValidGaitContent(msg='Structure of joints does not match between subgait {fn} and subgait {tn}'
+                                          .format(fn=from_subgait_name, tn=to_subgait_name))
 
             for from_subgait_joint_name, to_subgait_joint_name in zip(from_subgait_joint_names, to_subgait_joint_names):
                 from_joint = from_subgait.get_joint(name=from_subgait_joint_name)
@@ -137,9 +141,9 @@ class Gait(object):
 
                 for from_data_point, to_data_point in zip(from_joint_points, to_joint_points):
                     if from_data_point[-1] != to_data_point[0]:
-                        raise NonValidGaitContent(msg='End setpoint of joint {} in subgait {} does not match'
-                                                  .format(from_subgait_joint_name, from_subgait_name))
+                        raise NonValidGaitContent(msg='End setpoint of joint {jn} in subgait {sn} does not match'
+                                                  .format(jn=from_subgait_joint_name, sn=from_subgait_name))
 
     def __getitem__(self, name):
-        """Get a subgait from the loaded subgaits"""
+        """Get a subgait from the loaded subgaits."""
         return next((subgait for subgait in self.subgaits if subgait.subgait_name == name), None)

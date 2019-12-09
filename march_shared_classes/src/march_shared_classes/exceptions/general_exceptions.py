@@ -23,4 +23,3 @@ class PackageNotFoundError(Exception):
             msg = 'Package: {fp} could not be found.'.format(fp=package_name)
 
         super(PackageNotFoundError, self).__init__(msg)
-

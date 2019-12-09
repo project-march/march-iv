@@ -1,15 +1,15 @@
+
+from joint_trajectory import JointTrajectory
+from limits import Limits
 import rospy
 from trajectory_msgs import msg as trajectory_msg
 import yaml
-
-from limits import Limits
-from joint_trajectory import JointTrajectory
 
 from march_shared_resources import msg as march_msg
 
 
 class Subgait(object):
-    """ Base class for usage of the defined sub gaits"""
+    """Base class for usage of the defined sub gaits."""
 
     joint_class = JointTrajectory
 
@@ -27,7 +27,8 @@ class Subgait(object):
 
     @classmethod
     def from_file(cls, robot, file_name, *args):
-        """Extract sub gait data of the given yaml
+        """Extract sub gait data of the given yaml.
+
         :param robot:
             The robot corresponding to the given sub-gait file
         :param file_name:
@@ -36,7 +37,7 @@ class Subgait(object):
         :returns
             A populated Subgait object
         """
-        if file_name is None or file_name == "":
+        if file_name is None or file_name == '':
             return None
 
         try:
@@ -48,14 +49,15 @@ class Subgait(object):
                 subgait_dict = yaml.load(yaml_file, Loader=yaml.SafeLoader)
 
         except Exception as e:
-            rospy.logerr('Error occurred in subgait: {}, {} '.format(type(e), e))
+            rospy.logerr('Error occurred in subgait: {te}, {er} '.format(te=type(e), er=e))
             return None
 
         return cls.from_dict(robot, subgait_dict, gait_name, subgait_name, version, *args)
 
     @classmethod
     def from_dict(cls, robot, subgait_dict, gait_name, subgait_name, version, *args):
-        """List parameters from the yaml file in organized lists
+        """List parameters from the yaml file in organized lists.
+
         :param robot:
             The robot corresponding to the given sub-gait file
         :param subgait_dict:
@@ -98,14 +100,14 @@ class Subgait(object):
 
     @staticmethod
     def _get_joint_from_urdf(robot, joint_name):
-        """Get the name of the robot joint corresponding with the joint in the subgait"""
+        """Get the name of the robot joint corresponding with the joint in the subgait."""
         for urdf_joint in robot.joints:
             if urdf_joint.name == joint_name:
                 return urdf_joint
         return None
 
     def _to_joint_trajectory_msg(self):
-        """Create trajectory msg for the publisher
+        """Create trajectory msg for the publisher.
 
         :returns
             a ROS msg for the joint trajectory
@@ -125,8 +127,8 @@ class Subgait(object):
                 interpolated_setpoint = joint.get_interpolated_setpoint(timestamp)
 
                 if interpolated_setpoint.time != timestamp:
-                    rospy.logwarn('Time mismatch in joint {} at timestamp {}, '
-                                  'got time {}'.format(joint.name, timestamp, interpolated_setpoint.time))
+                    rospy.logwarn('Time mismatch in joint {jn} at timestamp {ts}, '
+                                  'got time {ti}'.format(jn=joint.name, ts=timestamp, ti=interpolated_setpoint.time))
 
                 joint_trajectory_point.positions.append(interpolated_setpoint.position)
                 joint_trajectory_point.velocities.append(interpolated_setpoint.velocity)
@@ -136,9 +138,7 @@ class Subgait(object):
         return joint_trajectory_msg
 
     def to_subgait_msg(self):
-        """Convert class attribute values back to ROS msg (necessary for publisher)
-        NOTE: Name and version will be empty as it's stored in the filename.
-        """
+        """Convert class attribute values back to ROS msg (necessary for publisher)."""
         subgait_msg = march_msg.Subgait()
 
         subgait_msg.gait_type = self.gait_type
@@ -150,7 +150,7 @@ class Subgait(object):
         return subgait_msg
 
     def to_setpoints(self):
-        """Define setpoints that correspond with the given timestamps"""
+        """Define setpoints that correspond with the given timestamps."""
         timestamps = self.get_unique_timestamps()
 
         user_defined_setpoints = []
@@ -169,7 +169,7 @@ class Subgait(object):
         return user_defined_setpoints
 
     def get_unique_timestamps(self):
-        """The timestamp that is unique to a setpoint"""
+        """The timestamp that is unique to a setpoint."""
         timestamps = []
         for joint in self.joints:
             for setpoint in joint.setpoints:
@@ -178,7 +178,7 @@ class Subgait(object):
         return sorted(set(timestamps))
 
     def get_joint(self, name=None, index=None):
-        """Get joint object with given name or index"""
+        """Get joint object with given name or index."""
         if name:
             joints = [joint for joint in self.joints if joint.name == name]
             if len(joints) == 1:
@@ -190,7 +190,7 @@ class Subgait(object):
         return None
 
     def get_joint_names(self):
-        """Get the names of all the joints existing in the joint list"""
+        """Get the names of all the joints existing in the joint list."""
         return [joint.name for joint in self.joints]
 
     def __getitem__(self, index):
