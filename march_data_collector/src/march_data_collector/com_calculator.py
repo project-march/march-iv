@@ -71,7 +71,7 @@ class CoMCalculator(object):
         z = z / self.mass
 
         # send CoM position to RViZ
-        self.marker.header.stamp = rospy.Time()
+        self.marker.header.stamp = rospy.get_rostime()
         self.marker.pose.position.x = x
         self.marker.pose.position.y = y
         self.marker.pose.position.z = z

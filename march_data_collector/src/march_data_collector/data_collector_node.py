@@ -12,16 +12,19 @@ from visualization_msgs.msg import Marker
 from march_shared_resources.msg import ImcErrorState
 
 from .com_calculator import CoMCalculator
+from .cp_calculator import CPCalculator
 
 
 class DataCollectorNode(object):
 
-    def __init__(self, com_calculator):
+    def __init__(self, com_calculator, cp_calculators):
         self._com_calculator = com_calculator
-        joint_names = rospy.get_param('/march/joint_names')
-        self._imu_broadcaster = tf2_ros.TransformBroadcaster()
+        self._cp_calculators = cp_calculators
 
-        self._marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
+        joint_names = rospy.get_param('/march/joint_names')
+
+        self._imu_broadcaster = tf2_ros.TransformBroadcaster()
+        self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
 
         self._temperature_subscriber = [rospy.Subscriber('/march/temperature/' + joint,
                                                          Temperature,
@@ -40,7 +43,10 @@ class DataCollectorNode(object):
 
     def trajectory_state_callback(self, data):
         rospy.logdebug('received trajectory state' + str(data.desired))
-        self._marker_publisher.publish(self._com_calculator.calculate_com())
+        com = self._com_calculator.calculate_com()
+        self._com_marker_publisher.publish(com)
+        for cp_calculator in self._cp_calculators:
+            cp_calculator.calculate_cp(com)
 
     def imc_state_callback(self, data):
         rospy.logdebug('received IMC message current is ' + str(data.current))
@@ -71,8 +77,10 @@ def main():
 
     robot = URDF.from_parameter_server()
     tf_buffer = tf2_ros.Buffer()
-    tf_listener = tf2_ros.TransformListener(tf_buffer)  # noqa
+    tf2_ros.TransformListener(tf_buffer)
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
+    feet = ['ankle_plate_left', 'ankle_plate_right']
+    cp_calculators = [CPCalculator(tf_buffer, foot) for foot in feet]
 
-    march_data_collector = DataCollectorNode(center_of_mass_calculator)  # noqa
+    DataCollectorNode(center_of_mass_calculator, cp_calculators)
     rospy.spin()
