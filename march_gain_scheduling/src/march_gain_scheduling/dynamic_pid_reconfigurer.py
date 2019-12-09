@@ -18,7 +18,7 @@ class DynamicPIDReconfigurer:
         for i in range(len(self._joint_list)):
             self._clients.append(Client('/march/controller/trajectory/gains/' + self._joint_list[i], timeout=30))
         rospy.Subscriber('/march/gait/schedule/goal', GaitActionGoal, callback=self.gait_selection_callback)
-        self._linearize = rospy.get_param('/linearize_gain_scheduling')
+        self._linearize = rospy.get_param('~linearize_gain_scheduling')
 
     def gait_selection_callback(self, data):
         rospy.logdebug('This is the gait name: %s', data.goal.current_subgait.gait_type)
@@ -28,7 +28,6 @@ class DynamicPIDReconfigurer:
             self._gait_type = data.goal.current_subgait.gait_type
             self.interpolation_done = False
             while not self.interpolation_done:
-                self.interpolation_done = True
                 self.client_update()
 
     def client_update(self):
@@ -36,7 +35,7 @@ class DynamicPIDReconfigurer:
         if self._linearize:
             for i in range(len(self._joint_list)):
                 needed_gains = self.look_up_table(i)
-                gradient = rospy.get_param('/linear_slope')
+                gradient = rospy.get_param('~linear_slope')
                 current_time = rospy.get_time()
                 time_interval = current_time - self.last_update_time
                 self.current_gains[i], self.interpolation_done = interpolate(self.current_gains[i],

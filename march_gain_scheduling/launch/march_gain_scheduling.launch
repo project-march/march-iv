@@ -4,10 +4,9 @@
     <arg name="linear" default="true"/>
     <arg name="slope" default="10.0"/>
 
-    <param name="linearize_gain_scheduling" type="bool" value="$(arg linear)"/>
-    <param name="linear_slope" type="double" value="$(arg slope)"/>
-
     <node name="gain_scheduling_node" pkg="march_gain_scheduling" type="march_gain_scheduling_node" output="screen">
         <rosparam command="load" file="$(find march_gain_scheduling)/config/$(arg march_type)/gains_per_gait_type.yaml"/>
+        <param name="linearize_gain_scheduling" type="bool" value="$(arg linear)"/>
+        <param name="linear_slope" type="double" value="$(arg slope)"/>
     </node>
 </launch>
