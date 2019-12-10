@@ -6,10 +6,7 @@ from .states.stoppable_state import StoppableState
 
 def create():
     sm_ramp_door_slope_up = smach.StateMachine(outcomes=['succeeded', 'preempted', 'failed'])
-    # Open the container
-    sm_ramp_door_slope_up.userdata.stop_pressed = False
     with sm_ramp_door_slope_up:
-        # Movement states
         smach.StateMachine.add('RIGHT OPEN', GaitState('ramp_door_slope_up', 'right_open'),
                                transitions={'succeeded': 'LEFT OPEN', 'aborted': 'failed'})
 

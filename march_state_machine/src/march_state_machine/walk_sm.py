@@ -6,10 +6,7 @@ from .states.stoppable_state import StoppableState
 
 def create():
     sm_walk = smach.StateMachine(outcomes=['succeeded', 'preempted', 'failed'])
-    # Open the container
-    sm_walk.userdata.stop_pressed = False
     with sm_walk:
-        # Movement states
         smach.StateMachine.add('RIGHT_OPEN', GaitState('walk', 'right_open'),
                                transitions={'succeeded': 'LEFT SWING', 'aborted': 'failed'})
 

@@ -7,7 +7,6 @@ from .states.stoppable_state import StoppableState
 def create(gait_name):
     sm_stairs_up = smach.StateMachine(outcomes=['succeeded', 'preempted', 'failed'])
 
-    sm_stairs_up.userdata.stop_pressed = False
     with sm_stairs_up:
         smach.StateMachine.add('RIGHT OPEN', GaitState(gait_name, 'right_open'),
                                transitions={'succeeded': 'LEFT SWING', 'aborted': 'failed'})
