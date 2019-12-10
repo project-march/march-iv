@@ -185,7 +185,7 @@ class Subgait(object):
         for joint_name in to_subgait_joint_names:
             from_joint = self.get_joint(joint_name)
             to_joint = next_subgait.get_joint(joint_name)
-            if from_joint.validate_joint_trajectory(to_joint):
+            if not from_joint.validate_joint_transition(to_joint):
                 return False
 
         return True

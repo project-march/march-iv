@@ -133,7 +133,7 @@ class Gait(object):
 
             if not from_subgait.validate_subgait_transition(to_subgait):
                 raise NonValidGaitContent(msg='End setpoint of subgait {sn} to subgait {ns} does not match'
-                                          .format(sn=from_subgait, ns=to_subgait))
+                                          .format(sn=from_subgait.subgait_name, ns=to_subgait.subgait_name))
 
     def __getitem__(self, name):
         """Get a subgait from the loaded subgaits."""

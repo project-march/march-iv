@@ -61,7 +61,7 @@ class JointTrajectory(object):
             True if ending and starting point are identical else False
         """
         from_setpoint = self.setpoints[-1]
-        to_setpoint = joint.setpoint[0]
+        to_setpoint = joint.setpoints[0]
 
         if from_setpoint.velocity == to_setpoint.velocity and from_setpoint.position == to_setpoint.position:
             return True
