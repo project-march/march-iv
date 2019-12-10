@@ -2,24 +2,10 @@ import rospy
 import smach
 from std_srvs.srv import Empty, EmptyRequest
 
-from . import ramp_door_slope_up_sm
 from . import ramp_down_sm
-from . import rough_terrain_high_step_sm
-from . import rough_terrain_middle_steps_sm
-from . import side_step_left_sm
-from . import side_step_left_small_sm
-from . import side_step_right_sm
-from . import side_step_right_small_sm
-from . import single_step_normal_sm
-from . import single_step_small_sm
-from . import sit_sm
-from . import sofa_sit_sm
-from . import sofa_stand_sm
-from . import stairs_sm
-from . import stand_sm
 from . import tilted_path_sm
-from . import walk_sm
-from . import walk_small_sm
+from .state_machines.step_state_machine import StepStateMachine
+from .state_machines.walk_state_machine import WalkStateMachine
 from .states.gait_state import GaitState
 from .states.idle_state import IdleState
 
@@ -54,58 +40,64 @@ def create():
         smach.StateMachine.add('HOME STAND', GaitState('home', 'home_stand'),
                                transitions={'succeeded': 'STANDING', 'aborted': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT WALK', walk_sm.create(),
+        smach.StateMachine.add('GAIT WALK', WalkStateMachine('walk'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT SIT', sit_sm.create(),
+        smach.StateMachine.add('GAIT WALK SMALL', WalkStateMachine('walk_small'),
+                               transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
+
+        smach.StateMachine.add('GAIT SIT', StepStateMachine('sit', ['sit_down', 'sit_home']),
                                transitions={'succeeded': 'SITTING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT STAND', stand_sm.create(),
+        smach.StateMachine.add('GAIT STAND', StepStateMachine('stand', ['prepare_stand_up', 'stand_up']),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT SINGLE STEP SMALL', single_step_small_sm.create(),
+        smach.StateMachine.add('GAIT SINGLE STEP SMALL', StepStateMachine('single_step_small'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT SINGLE STEP NORMAL', single_step_normal_sm.create(),
+        smach.StateMachine.add('GAIT SINGLE STEP NORMAL', StepStateMachine('single_step_normal'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT SIDE STEP LEFT', side_step_left_sm.create(),
+        smach.StateMachine.add('GAIT SIDE STEP LEFT', StepStateMachine('side_step_left',
+                                                                       ['left_open', 'right_close']),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT SIDE STEP RIGHT', side_step_right_sm.create(),
+        smach.StateMachine.add('GAIT SIDE STEP RIGHT', StepStateMachine('side_step_right'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT SIDE STEP LEFT SMALL', side_step_left_small_sm.create(),
+        smach.StateMachine.add('GAIT SIDE STEP LEFT SMALL', StepStateMachine('side_step_left_small',
+                                                                             ['left_open', 'right_close']),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT SIDE STEP RIGHT SMALL', side_step_right_small_sm.create(),
+        smach.StateMachine.add('GAIT SIDE STEP RIGHT SMALL', StepStateMachine('side_step_right_small'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT SOFA SIT', sofa_sit_sm.create(),
+        smach.StateMachine.add('GAIT SOFA SIT', StepStateMachine('sofa_sit', ['sit_down', 'sit_home']),
                                transitions={'succeeded': 'SOFA SITTING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT SOFA STAND', sofa_stand_sm.create(),
+        smach.StateMachine.add('GAIT SOFA STAND', StepStateMachine('sofa_stand', ['prepare_stand_up', 'stand_up']),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT STAIRS UP', stairs_sm.create('stairs_up'),
+        smach.StateMachine.add('GAIT STAIRS UP', WalkStateMachine('stairs_up'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT STAIRS DOWN', stairs_sm.create('stairs_down'),
+        smach.StateMachine.add('GAIT STAIRS DOWN', WalkStateMachine('stairs_down'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
         smach.StateMachine.add('GAIT TILTED PATH', tilted_path_sm.create(),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT WALK SMALL', walk_small_sm.create(),
+        # RT stands for Rough Terrain
+        smach.StateMachine.add('GAIT RT HIGH STEP', StepStateMachine('rough_terrain_high_step'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT RT HIGH STEP', rough_terrain_high_step_sm.create(),  # RT stands for Rough Terrain
+        smach.StateMachine.add('GAIT RT MIDDLE STEPS', StepStateMachine('rough_terrain_middle_steps',
+                                                                        ['right_open', 'left_swing',
+                                                                         'right_swing', 'left_close']),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT RT MIDDLE STEPS', rough_terrain_middle_steps_sm.create(),
-                               transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
-
-        smach.StateMachine.add('GAIT RD SLOPE UP', ramp_door_slope_up_sm.create(),  # RD stands for Ramp and Door
+        # RD stands for Ramp and Door
+        smach.StateMachine.add('GAIT RD SLOPE UP', WalkStateMachine('ramp_door_slope_up'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
         smach.StateMachine.add('GAIT RD RAMP DOWN', ramp_down_sm.create(),
