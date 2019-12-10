@@ -108,7 +108,7 @@ class GaitSelection(object):
         return True
 
     def validate_gait_in_directory(self, gait_name):
-        """Check if the gait file exists in the given directory."""
+        """Check if the .gait file exists in the given directory."""
         gait_map = gait_name
         gait_path = os.path.join(self.gait_directory, gait_map, gait_name + '.gait')
 

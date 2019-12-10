@@ -5,6 +5,7 @@ import rospy
 from trajectory_msgs import msg as trajectory_msg
 import yaml
 
+from march_shared_classes.exceptions.gait_exceptions import NonValidGaitContent
 from march_shared_resources import msg as march_msg
 
 
@@ -82,7 +83,6 @@ class Subgait(object):
         joint_list = []
         for joint_name in joint_trajectory['joint_names']:
             urdf_joint = cls._get_joint_from_urdf(robot, joint_name)
-
             if urdf_joint is None:
                 rospy.logwarn('Not all joints in gait are in robot.')
                 continue
@@ -125,7 +125,6 @@ class Subgait(object):
 
             for joint in self.joints:
                 interpolated_setpoint = joint.get_interpolated_setpoint(timestamp)
-
                 if interpolated_setpoint.time != timestamp:
                     rospy.logwarn('Time mismatch in joint {jn} at timestamp {ts}, '
                                   'got time {ti}'.format(jn=joint.name, ts=timestamp, ti=interpolated_setpoint.time))
@@ -136,18 +135,6 @@ class Subgait(object):
             joint_trajectory_msg.points.append(joint_trajectory_point)
 
         return joint_trajectory_msg
-
-    def to_subgait_msg(self):
-        """Convert class attribute values back to ROS msg (necessary for publisher)."""
-        subgait_msg = march_msg.Subgait()
-
-        subgait_msg.gait_type = self.gait_type
-        subgait_msg.trajectory = self._to_joint_trajectory_msg()
-        subgait_msg.setpoints = self.to_setpoints()
-        subgait_msg.description = str(self.description)
-
-        subgait_msg.duration = rospy.Duration.from_sec(self.duration)
-        return subgait_msg
 
     def to_setpoints(self):
         """Define setpoints that correspond with the given timestamps."""
@@ -160,13 +147,48 @@ class Subgait(object):
 
             for joint in self.joints:
                 for setpoint in joint.setpoints:
-
                     if setpoint.time == timestamp:
                         user_defined_setpoint.joint_names.append(joint.name)
 
             user_defined_setpoints.append(user_defined_setpoint)
 
         return user_defined_setpoints
+
+    def to_subgait_msg(self):
+        """Convert class attribute values back to ROS msg (necessary for publisher)."""
+        subgait_msg = march_msg.Subgait()
+
+        subgait_msg.gait_type = self.gait_type
+        subgait_msg.trajectory = self._to_joint_trajectory_msg()
+        subgait_msg.setpoints = self.to_setpoints()
+        subgait_msg.description = str(self.description)
+        subgait_msg.duration = rospy.Duration.from_sec(self.duration)
+
+        return subgait_msg
+
+    def validate_subgait_transition(self, next_subgait):
+        """Validate the trajectory transition of this gait to a given gait.
+
+        :param next_subgait:
+            The subgait subsequently to this gait (not the previous one!)
+
+        :returns:
+            True if trajectory transition correct else False
+        """
+        from_subgait_joint_names = set(self.get_joint_names())
+        to_subgait_joint_names = set(next_subgait.get_joint_names())
+
+        if from_subgait_joint_names != to_subgait_joint_names:
+            raise NonValidGaitContent(msg='Structure of joints does not match between subgait {fn} and subgait {tn}'
+                                      .format(fn=self.subgait_name, tn=next_subgait.subgait_name))
+
+        for joint_name in to_subgait_joint_names:
+            from_joint = self.get_joint(joint_name)
+            to_joint = next_subgait.get_joint(joint_name)
+            if from_joint.validate_joint_trajectory(to_joint):
+                return False
+
+        return True
 
     def get_unique_timestamps(self):
         """The timestamp that is unique to a setpoint."""
@@ -177,17 +199,9 @@ class Subgait(object):
 
         return sorted(set(timestamps))
 
-    def get_joint(self, name=None, index=None):
+    def get_joint(self, name):
         """Get joint object with given name or index."""
-        if name:
-            joints = [joint for joint in self.joints if joint.name == name]
-            if len(joints) == 1:
-                return joints[0]
-
-        elif index:
-            return self.joints[index]
-
-        return None
+        return next(joint for joint in self.joints if joint.name == name)
 
     def get_joint_names(self):
         """Get the names of all the joints existing in the joint list."""

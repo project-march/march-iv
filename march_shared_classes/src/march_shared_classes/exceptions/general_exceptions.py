@@ -23,3 +23,12 @@ class PackageNotFoundError(Exception):
             msg = 'Package: {fp} could not be found.'.format(fp=package_name)
 
         super(PackageNotFoundError, self).__init__(msg)
+
+
+class MsgTypeError(Exception):
+    def __init__(self, msg=None):
+        """Class to raise an error when an non msg type is added to a message."""
+        if msg is None:
+            msg = 'A non msg type (defined in shared resources) was added to a ROS-message'
+
+        super(MsgTypeError, self).__init__(msg)
