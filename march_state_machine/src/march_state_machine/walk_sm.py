@@ -1,28 +1,13 @@
-import smach
-
-from .states.gait_state import GaitState
-from .states.stoppable_state import StoppableState
+from .state_machines.gait_state_machine import GaitStateMachine
 
 
 def create():
-    sm_walk = smach.StateMachine(outcomes=['succeeded', 'preempted', 'failed'])
+    sm_walk = GaitStateMachine('walk')
     with sm_walk:
-        smach.StateMachine.add('RIGHT_OPEN', GaitState('walk', 'right_open'),
-                               transitions={'succeeded': 'LEFT SWING', 'aborted': 'failed'})
-
-        smach.StateMachine.add('RIGHT SWING', StoppableState('walk', 'right_swing'),
-                               transitions={'succeeded': 'LEFT SWING',
-                                            'stopped': 'LEFT CLOSE',
-                                            'aborted': 'failed'})
-
-        smach.StateMachine.add('LEFT SWING', StoppableState('walk', 'left_swing'),
-                               transitions={'succeeded': 'RIGHT SWING',
-                                            'stopped': 'RIGHT CLOSE', 'aborted': 'failed'})
-
-        smach.StateMachine.add('RIGHT CLOSE', GaitState('walk', 'right_close'),
-                               transitions={'succeeded': 'succeeded', 'aborted': 'failed'})
-
-        smach.StateMachine.add('LEFT CLOSE', GaitState('walk', 'left_close'),
-                               transitions={'succeeded': 'succeeded', 'aborted': 'failed'})
+        sm_walk.add_subgait('right_open', succeeded='left_swing')
+        sm_walk.add_subgait('right_swing', succeeded='left_swing', stopped='left_close')
+        sm_walk.add_subgait('left_swing', succeeded='right_swing', stopped='right_close')
+        sm_walk.add_subgait('right_close')
+        sm_walk.add_subgait('left_close')
 
     return sm_walk

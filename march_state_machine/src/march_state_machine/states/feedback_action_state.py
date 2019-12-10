@@ -1,4 +1,3 @@
-import rospy
 import smach_ros
 
 
