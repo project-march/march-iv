@@ -6,6 +6,7 @@ import rospy
 from urdf_parser_py import urdf
 import yaml
 
+from march_shared_classes.exception.gait import GaitError
 from march_shared_classes.exceptions.general_exceptions import FileNotFoundError, PackageNotFoundError
 from march_shared_classes.gait.gait import Gait
 
@@ -19,16 +20,16 @@ class GaitSelection(object):
         self.joint_names = list()
         self.robot = None
 
-        package_path = self.get_ros_package_path(package)
-        default_yaml = os.path.join(package_path, directory, 'default.yaml')
+        self.package_path = self.get_ros_package_path(package)
+        self.default_yaml = os.path.join(self.package_path, directory, 'default.yaml')
 
-        if not os.path.isfile(default_yaml):
-            raise FileNotFoundError(file_path=default_yaml)
+        if not os.path.isfile(self.default_yaml):
+            raise FileNotFoundError(file_path=self.default_yaml)
 
-        with open(default_yaml, 'r') as default_yaml_file:
+        with open(self.default_yaml, 'r') as default_yaml_file:
             default_config = yaml.load(default_yaml_file, Loader=yaml.SafeLoader)
 
-        self.gait_directory = os.path.join(package_path, directory)
+        self.gait_directory = os.path.join(self.package_path, directory)
         self._gait_version_map = default_config['gaits']
 
         self.robot = urdf.Robot.from_parameter_server('/robot_description')
@@ -55,6 +56,9 @@ class GaitSelection(object):
     @gait_version_map.setter
     def gait_version_map(self, new_version_map):
         """Set new version map and reload the gaits from the directory."""
+        if not self.validate_versions_in_directory(new_version_map):
+            raise GaitError(msg='Gait version map: {gm}, is not valid'.format(gm=new_version_map))
+
         self._gait_version_map = new_version_map
         self.load_gaits()
 
@@ -118,3 +122,16 @@ class GaitSelection(object):
     def __getitem__(self, name):
         """Get a gait from the loaded gaits."""
         return next((gait for gait in self.loaded_gaits if gait.gait_name == name), None)
+
+    def update_default_versions(self):
+        """Update the default.yaml file in the given directory."""
+        new_default_dict = {'gaits': self.gait_version_map}
+
+        try:
+            with open(self.default_yaml, 'w') as default_yaml_content:
+                yaml_content = yaml.dump(new_default_dict)
+                default_yaml_content.write(yaml_content)
+            return [True, 'New default values were written to: {pn}'.format(pn=self.default_yaml)]
+
+        except IOError:
+            return [False, 'Error occurred when writing to file path: {pn}'.format(pn=self.default_yaml)]

@@ -82,13 +82,11 @@ class Gait(object):
         """
         if not gait_version_map.get(gait_name):
             raise GaitNameNotFound(gait_name)
-
         if not gait_version_map[gait_name].get(subgait_name):
             raise SubgaitNameNotFound(subgait_name)
 
         version = gait_version_map[gait_name][subgait_name]
         subgait_path = os.path.join(gait_directory, gait_name, subgait_name, version + '.subgait')
-
         if not os.path.isfile(subgait_path):
             raise FileNotFoundError(file_path=subgait_path)
 
