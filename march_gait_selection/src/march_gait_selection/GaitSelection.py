@@ -20,8 +20,8 @@ class GaitSelection(object):
         self.joint_names = list()
         self.robot = None
 
-        self.package_path = self.get_ros_package_path(package)
-        self.default_yaml = os.path.join(self.package_path, directory, 'default.yaml')
+        package_path = self.get_ros_package_path(package)
+        self.default_yaml = os.path.join(package_path, directory, 'default.yaml')
 
         if not os.path.isfile(self.default_yaml):
             raise FileNotFoundError(file_path=self.default_yaml)
@@ -29,7 +29,7 @@ class GaitSelection(object):
         with open(self.default_yaml, 'r') as default_yaml_file:
             default_config = yaml.load(default_yaml_file, Loader=yaml.SafeLoader)
 
-        self.gait_directory = os.path.join(self.package_path, directory)
+        self.gait_directory = os.path.join(package_path, directory)
         self._gait_version_map = default_config['gaits']
 
         self.robot = urdf.Robot.from_parameter_server('/robot_description')
