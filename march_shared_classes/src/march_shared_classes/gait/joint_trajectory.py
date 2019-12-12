@@ -1,8 +1,8 @@
+import numpy as np
 import rospy
+from scipy.interpolate import BPoly
 
 from .setpoint import Setpoint
-from scipy.interpolate import BPoly
-import numpy as np
 
 
 class JointTrajectory(object):
@@ -80,8 +80,8 @@ class JointTrajectory(object):
         for i in range(0, len(interpolated_setpoints[0])):
             if interpolated_setpoints[0][i] > time:
                 position = interpolated_setpoints[1][i - 1]
-                velocity = (interpolated_setpoints[1][i - 1] - interpolated_setpoints[1][i - 2]) \
-                           / (interpolated_setpoints[0][i - 1] - interpolated_setpoints[0][i - 2])
+                velocity = ((interpolated_setpoints[1][i - 1] - interpolated_setpoints[1][i - 2])
+                            / (interpolated_setpoints[0][i - 1] - interpolated_setpoints[0][i - 2]))
                 return self.setpoint_class(time, position, velocity)
         rospy.logerr('Could not interpolate setpoint at time {0}'.format(time))
         return self.setpoint_class(0, 0, 0)
