@@ -1,4 +1,7 @@
 from math import pi
+import socket
+import argparse
+import time
 
 from control_msgs.msg import JointTrajectoryControllerState
 from geometry_msgs.msg import TransformStamped
@@ -9,15 +12,15 @@ import tf2_ros
 from urdf_parser_py.urdf import URDF
 from visualization_msgs.msg import Marker
 
-from march_shared_resources.msg import ImcErrorState
+from march_shared_resources.msg import ImcErrorState, PressureSole
 
 from .com_calculator import CoMCalculator
 from .cp_calculator import CPCalculator
 
 
 class DataCollectorNode(object):
-
-    def __init__(self, com_calculator, cp_calculators):
+    # ip = port = 7777
+    def __init__(self, com_calculator, cp_calculators, ps_input_ip, ps_port):
         self._com_calculator = com_calculator
         self._cp_calculators = cp_calculators
 
@@ -37,6 +40,23 @@ class DataCollectorNode(object):
         self._imc_state_subscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback)
 
         self._imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
+
+        self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self._sock.bind((ps_input_ip, ps_port))
+
+        self._pressere_sole_publisher('march/pressure_soles', PressureSole, queue_size=1)
+        ps_message = PressureSole()
+        ps_message.head.source = 'pressure soles'
+
+        while True:
+            data, address = self._sock.recvfrom(1024)
+            datachannels = data.split()
+            values = [float(data) for data in datachannels]
+            time = values[0]
+            ps_message.head.header = rospy.Time.now()
+            ps_message.head.time_ref =
+
+            # configure the values.
 
     def temperature_callback(self, data, joint):
         rospy.logdebug('Temperature' + joint + ' is ' + str(data.temperature))
@@ -70,6 +90,10 @@ class DataCollectorNode(object):
             transform.transform.rotation.w = imu_rotation[3]
 
             self._imu_broadcaster.sendTransform(transform)
+
+        def send_udp(data):
+            message = str(data)
+            self.sock.sendto(message.encode("utf-8"), (host, port))
 
 
 def main():

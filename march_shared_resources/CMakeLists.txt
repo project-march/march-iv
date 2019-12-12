@@ -5,6 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
     actionlib_msgs
     message_generation
     message_runtime
+    sensorMsgs
     std_msgs
     trajectory_msgs
 )
@@ -19,6 +20,7 @@ add_message_files(
     ImcErrorState.msg
     LowVoltageNet.msg
     PowerDistributionBoardState.msg
+    PressureSole.msg
     Setpoint.msg
     Sound.msg
     Subgait.msg
