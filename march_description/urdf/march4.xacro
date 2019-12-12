@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <!-- Revolute-Revolute Manipulator -->
 <robot name="march" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
     <!-- Switch between airgaiting or standing on the ground-->
     <!-- Value set to: 'world' fixes the robot to the world-->
-    <!-- Value set to: 'base_link' makes the robot stand on the ground-->
+    <!-- Value set to: 'base_link' makes the robot stand on the ground also set launch parameter fixed to false and set
+    the hover_height to 0.0-->
     <xacro:property name="parent_name" value="world"/>
     <xacro:property name="hover_height" value="0.3"/>
 

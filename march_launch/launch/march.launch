@@ -8,6 +8,7 @@
     <arg name="gazebo_ui" default="false" doc="Launches the Gazebo UI."/>
     <arg name="wireless" default="false" doc="Enables wireless connection to the input device."/>
     <arg name="unpause" default="true" doc="Unpause simulation when controller starts."/>
+    <arg name="fixed" default="true" doc="Fixes the exoskeleton in the world"/>
 
     <arg name="rosbag" default="true" doc="Enables rosbag record node."/>
     <arg name="bag_prefix" default="log" doc="Prefix of the bag file. Only used if rosbag is true."/>
@@ -63,6 +64,7 @@
     <group if="$(eval configuration == 'simulation')">
         <include file="$(find march_simulation)/launch/march_world.launch">
             <arg name="gazebo_ui" value="$(eval not headless and gazebo_ui)"/>
+            <arg name="fixed" value="$(arg fixed)"/>
         </include>
     </group>
 </launch>
