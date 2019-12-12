@@ -6,7 +6,7 @@ import rospy
 from urdf_parser_py import urdf
 import yaml
 
-from march_shared_classes.exception.gait import GaitError
+from march_shared_classes.exceptions.gait_exceptions import GaitError
 from march_shared_classes.exceptions.general_exceptions import FileNotFoundError, PackageNotFoundError
 from march_shared_classes.gait.gait import Gait
 

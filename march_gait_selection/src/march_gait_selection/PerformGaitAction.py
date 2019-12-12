@@ -29,7 +29,7 @@ class PerformGaitAction(object):
 
         gait = self.gait_selection[subgait_goal_msg.name]
         if gait:
-            subgait = gait[subgait_goal_msg.subgait_name].to_subgait_msg(self)
+            subgait = gait[subgait_goal_msg.subgait_name].to_subgait_msg()
             if subgait:
                 trajectory_state = self.schedule_gait(subgait_goal_msg.name, subgait)
                 if trajectory_state == actionlib.GoalStatus.SUCCEEDED:
