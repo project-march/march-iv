@@ -1,8 +1,8 @@
 import smach
 
-from .state_machines.step_state_machine import StepStateMachine
-from .state_machines.walk_state_machine import WalkStateMachine
-from .states.idle_state import IdleState
+from march_state_machine.state_machines.step_state_machine import StepStateMachine
+from march_state_machine.state_machines.walk_state_machine import WalkStateMachine
+from march_state_machine.states.idle_state import IdleState
 
 
 def create():

@@ -2,8 +2,7 @@ import rospy
 import smach
 from std_srvs.srv import Empty, EmptyRequest
 
-from . import ramp_down_sm
-from . import tilted_path_sm
+from .gaits import ramp_down_sm
 from .state_machines.step_state_machine import StepStateMachine
 from .state_machines.walk_state_machine import WalkStateMachine
 from .states.gait_state import GaitState
@@ -84,9 +83,6 @@ def create():
         smach.StateMachine.add('GAIT STAIRS DOWN', WalkStateMachine('stairs_down'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('GAIT TILTED PATH', tilted_path_sm.create(),
-                               transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
-
         # RT stands for Rough Terrain
         smach.StateMachine.add('GAIT RT HIGH STEP', StepStateMachine('rough_terrain_high_step'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
@@ -113,7 +109,6 @@ def create():
                                                                'gait_side_step_right', 'gait_side_step_left_small',
                                                                'gait_side_step_right_small', 'gait_sofa_sit',
                                                                'gait_stairs_up', 'gait_stairs_down',
-                                                               'gait_set_ankle_from_2_5_to_min5',
                                                                'gait_walk_small', 'gait_rough_terrain_high_step',
                                                                'gait_rough_terrain_middle_steps',
                                                                'gait_ramp_door_slope_up', 'gait_ramp_door_slope_down',
@@ -128,7 +123,6 @@ def create():
                                             'gait_sofa_sit': 'GAIT SOFA SIT',
                                             'gait_stairs_up': 'GAIT STAIRS UP',
                                             'gait_stairs_down': 'GAIT STAIRS DOWN',
-                                            'gait_set_ankle_from_2_5_to_min5': 'GAIT TILTED PATH',
                                             'gait_walk_small': 'GAIT WALK SMALL',
                                             'gait_rough_terrain_high_step': 'GAIT RT HIGH STEP',
                                             'gait_rough_terrain_middle_steps': 'GAIT RT MIDDLE STEPS',
