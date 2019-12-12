@@ -1,7 +1,4 @@
-
 class Setpoint(object):
-    """Base class to define the setpoints of a subgait."""
-
     digits = 4
 
     def __init__(self, time, position, velocity):
