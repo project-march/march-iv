@@ -39,7 +39,7 @@ class PerformGaitAction(object):
                 return True
 
         rospy.logwarn('Gait {gn} {sn} does not exist in parsed gaits'
-                       .format(gn=subgait_goal_msg.name, sn=subgait_goal_msg.subgait_name))
+                      .format(gn=subgait_goal_msg.name, sn=subgait_goal_msg.subgait_name))
 
         self.action_server.set_aborted('Gait {gn} does not exist in parsed gaits'
                                        .format(gn=subgait_goal_msg.name))

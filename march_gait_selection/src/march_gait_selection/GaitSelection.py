@@ -108,7 +108,7 @@ class GaitSelection(object):
                 subgait_path = os.path.join(self.gait_directory, gait_name, subgait_name, version + '.subgait')
 
                 if not os.path.isfile(subgait_path):
-                    rospy.logwarn("{sp} does not exist".format(sp=subgait_path))
+                    rospy.logwarn('{sp} does not exist'.format(sp=subgait_path))
                     return False
         return True
 
