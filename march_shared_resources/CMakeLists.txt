@@ -14,6 +14,7 @@ add_message_files(
     AfterLimitJointCommand.msg
     Error.msg
     GaitInstruction.msg
+    GaitInstructionResponse.msg
     Graph.msg
     HighVoltageNet.msg
     ImcErrorState.msg
