@@ -6,7 +6,7 @@ import rospy
 from urdf_parser_py import urdf
 import yaml
 
-from march_shared_classes.exception.gait import GaitError
+from march_shared_classes.exceptions.gait_exceptions import GaitError
 from march_shared_classes.exceptions.general_exceptions import FileNotFoundError, PackageNotFoundError
 from march_shared_classes.gait.gait import Gait
 
@@ -108,6 +108,7 @@ class GaitSelection(object):
                 subgait_path = os.path.join(self.gait_directory, gait_name, subgait_name, version + '.subgait')
 
                 if not os.path.isfile(subgait_path):
+                    rospy.logwarn('{sp} does not exist'.format(sp=subgait_path))
                     return False
         return True
 
