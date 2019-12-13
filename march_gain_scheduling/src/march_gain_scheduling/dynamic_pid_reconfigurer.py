@@ -27,7 +27,9 @@ class DynamicPIDReconfigurer:
                 data.goal.current_subgait.gait_type, self._gait_type))
             self._gait_type = data.goal.current_subgait.gait_type
             self.interpolation_done = False
+            rate = rospy.Rate(10)
             while not self.interpolation_done:
+                rate.sleep()
                 self.client_update()
 
     def client_update(self):
@@ -38,16 +40,19 @@ class DynamicPIDReconfigurer:
                 gradient = rospy.get_param('~linear_slope')
                 current_time = rospy.get_time()
                 time_interval = current_time - self.last_update_time
-                self.current_gains[i], self.interpolation_done = interpolate(self.current_gains[i],
-                                                                             needed_gains, gradient, time_interval)
-                self._clients[i].update_configuration({'p': self.current_gains[i][0],
-                                                       'i': self.current_gains[i][1],
-                                                       'd': self.current_gains[i][2]})
-                rospy.logdebug('Config set to {0}, {1}, {2}'.format(self.current_gains[i][0],
-                                                                    self.current_gains[i][1],
-                                                                    self.current_gains[i][2]))
+                self.next_gains = [0] * len(needed_gains)
+                self.next_gains[i] = interpolate(self.current_gains[i], needed_gains, gradient, time_interval)
+                if self.next_gains[i] == self.current_gains:
+                    self.interpolation_done = True
+                self._clients[i].update_configuration({'p': self.next_gains[i][0],
+                                                       'i': self.next_gains[i][1],
+                                                       'd': self.next_gains[i][2]})
+                rospy.logdebug('Config set to {0}, {1}, {2}'.format(self.next_gains[i][0],
+                                                                    self.next_gains[i][1],
+                                                                    self.next_gains[i][2]))
                 self.last_update_time = current_time
         else:
+            self.interpolation_done = True
             for i in range(len(self._joint_list)):
                 p_value, i_value, d_value = self.look_up_table(i)
                 if p_value is not None:
