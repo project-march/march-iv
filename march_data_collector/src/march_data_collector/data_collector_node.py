@@ -44,17 +44,18 @@ class DataCollectorNode(object):
         self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self._sock.bind((ps_input_ip, ps_port))
 
-        self._pressere_sole_publisher('march/pressure_soles', PressureSole, queue_size=1)
-        ps_message = PressureSole()
-        ps_message.head.source = 'pressure soles'
+        #self._pressere_sole_publisher('march/pressure_soles', PressureSole, queue_size=1)
+        #ps_message = PressureSole()
+        #ps_message.head.source = 'pressure soles'
 
         while True:
             data, address = self._sock.recvfrom(1024)
             datachannels = data.split()
             values = [float(data) for data in datachannels]
             time = values[0]
-            ps_message.head.header = rospy.Time.now()
-            ps_message.head.time_ref =
+            print(time)
+            #ps_message.head.header = rospy.Time.now()
+            #ps_message.head.time_ref =
 
             # configure the values.
 
@@ -67,6 +68,8 @@ class DataCollectorNode(object):
         self._com_marker_publisher.publish(com)
         for cp_calculator in self._cp_calculators:
             cp_calculator.calculate_cp(com)
+
+        self.send_udp(data.actual.position)
 
     def imc_state_callback(self, data):
         rospy.logdebug('received IMC message current is ' + str(data.current))
@@ -93,6 +96,7 @@ class DataCollectorNode(object):
 
         def send_udp(data):
             message = str(data)
+            print(message)
             self.sock.sendto(message.encode("utf-8"), (host, port))
 
 
@@ -106,5 +110,5 @@ def main():
     feet = ['ankle_plate_left', 'ankle_plate_right']
     cp_calculators = [CPCalculator(tf_buffer, foot) for foot in feet]
 
-    DataCollectorNode(center_of_mass_calculator, cp_calculators)
+    DataCollectorNode(center_of_mass_calculator, cp_calculators, "192.168.8.105", 8888)
     rospy.spin()

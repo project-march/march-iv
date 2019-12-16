@@ -5,7 +5,7 @@ find_package(catkin REQUIRED COMPONENTS
     actionlib_msgs
     message_generation
     message_runtime
-    sensorMsgs
+    sensor_msgs
     std_msgs
     trajectory_msgs
 )
@@ -42,6 +42,7 @@ add_action_files(
 generate_messages(
     DEPENDENCIES
     actionlib_msgs
+    sensor_msgs
     std_msgs
     trajectory_msgs
 )
@@ -51,6 +52,7 @@ catkin_package(
     actionlib_msgs
     message_generation
     message_runtime
+    sensor_msgs
     std_msgs
     trajectory_msgs
 )
