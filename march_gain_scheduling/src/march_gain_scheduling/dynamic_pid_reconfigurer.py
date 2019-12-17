@@ -26,6 +26,9 @@ class DynamicPIDReconfigurer:
             rospy.logdebug('The selected gait: {0} is not the same as the previous gait: {1}'.format(
                 data.goal.current_subgait.gait_type, self._gait_type))
             self._gait_type = data.goal.current_subgait.gait_type
+            if self._gait_type == None or self._gait_type == '':
+                self._gait_type = 'walk_like'
+                rospy.logwarn('The gait has no gait type, default is set to walk_like')
             self.interpolation_done = False
             rate = rospy.Rate(10)
             while not self.interpolation_done:
@@ -34,32 +37,28 @@ class DynamicPIDReconfigurer:
 
     def client_update(self):
         rospy.logdebug('self.linearize is: {0}'.format(self._linearize))
-        if self._linearize:
-            self.interpolation_done = True
-            for i in range(len(self._joint_list)):
+        self.interpolation_done = True
+
+        for i in range(len(self._joint_list)):
+            if self._linearize:
                 needed_gains = self.look_up_table(i)
                 gradient = rospy.get_param('~linear_slope')
                 current_time = rospy.get_time()
                 time_interval = current_time - self.last_update_time
+
                 self.current_gains[i] = interpolate(self.current_gains[i], needed_gains, gradient, time_interval)
-                if self.current_gains[i] != self.needed_gains:
+                if self.current_gains[i] != needed_gains:
                     self.interpolation_done = False
-                self._clients[i].update_configuration({'p': self.current_gains[i][0],
-                                                       'i': self.current_gains[i][1],
-                                                       'd': self.current_gains[i][2]})
-                rospy.logdebug('Config set to {0}, {1}, {2}'.format(self.current_gains[i][0],
-                                                                    self.current_gains[i][1],
-                                                                    self.current_gains[i][2]))
                 self.last_update_time = current_time
-        else:
-            self.interpolation_done = True
-            for i in range(len(self._joint_list)):
-                p_value, i_value, d_value = self.look_up_table(i)
-                if p_value is not None:
-                    self._clients[i].update_configuration({'p': p_value,
-                                                           'i': i_value,
-                                                           'd': d_value})
-                    rospy.logdebug('nonlinear Config set to {0}, {1}, {2}'.format(p_value, i_value, d_value))
+            else:
+                self.current_gains[i] = self.look_up_table(i)
+
+            self._clients[i].update_configuration({'p': self.current_gains[i][0],
+                                                   'i': self.current_gains[i][1],
+                                                   'd': self.current_gains[i][2]})
+            rospy.loginfo('Config set to {0}, {1}, {2}'.format(self.current_gains[i][0],
+                                                                self.current_gains[i][1],
+                                                                self.current_gains[i][2]))
 
     # Method that pulls the PID values from the gains_per_gait_type.yaml config file
     def look_up_table(self, joint_index):
