@@ -20,7 +20,7 @@ class PerformGaitAction(object):
         self.schedule_gait_client = actionlib.SimpleActionClient('/march/gait/schedule', GaitAction)
 
         while not rospy.is_shutdown() and not self.schedule_gait_client.wait_for_server(rospy.Duration(SERVER_TIMEOUT)):
-            rospy.loginfo('Waiting for /march/gait/schedule to come up')
+            rospy.logdebug('Waiting for /march/gait/schedule to come up')
 
     def target_gait_callback(self, subgait_goal_msg):
         """Set a new target subgait over the action server."""
@@ -29,17 +29,17 @@ class PerformGaitAction(object):
 
         gait = self.gait_selection[subgait_goal_msg.name]
         if gait:
-            subgait = gait[subgait_goal_msg.subgait_name].to_subgait_msg(self)
+            subgait = gait[subgait_goal_msg.subgait_name]
             if subgait:
-                trajectory_state = self.schedule_gait(subgait_goal_msg.name, subgait)
+                trajectory_state = self.schedule_gait(subgait_goal_msg.name, subgait.to_subgait_msg())
                 if trajectory_state == actionlib.GoalStatus.SUCCEEDED:
                     self.action_server.set_succeeded(trajectory_state)
                 else:
                     self.action_server.set_aborted(trajectory_state)
                 return True
 
-        rospy.logdebug('Gait {gn} {sn} does not exist in parsed gaits'
-                       .format(gn=subgait_goal_msg.name, sn=subgait_goal_msg.subgait_name))
+        rospy.logwarn('Gait {gn} {sn} does not exist in parsed gaits'
+                      .format(gn=subgait_goal_msg.name, sn=subgait_goal_msg.subgait_name))
 
         self.action_server.set_aborted('Gait {gn} does not exist in parsed gaits'
                                        .format(gn=subgait_goal_msg.name))
