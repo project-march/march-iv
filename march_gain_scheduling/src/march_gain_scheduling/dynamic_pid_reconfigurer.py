@@ -26,7 +26,7 @@ class DynamicPIDReconfigurer:
             rospy.logdebug('The selected gait: {0} is not the same as the previous gait: {1}'.format(
                 data.goal.current_subgait.gait_type, self._gait_type))
             self._gait_type = data.goal.current_subgait.gait_type
-            if self._gait_type == None or self._gait_type == '':
+            if self._gait_type is None or self._gait_type == '':
                 self._gait_type = 'walk_like'
                 rospy.logwarn('The gait has no gait type, default is set to walk_like')
             self.interpolation_done = False
@@ -56,7 +56,7 @@ class DynamicPIDReconfigurer:
             self._clients[i].update_configuration({'p': self.current_gains[i][0],
                                                    'i': self.current_gains[i][1],
                                                    'd': self.current_gains[i][2]})
-            rospy.loginfo('Config set to {0}, {1}, {2}'.format(self.current_gains[i][0],
+            rospy.logdebug('Config set to {0}, {1}, {2}'.format(self.current_gains[i][0],
                                                                 self.current_gains[i][1],
                                                                 self.current_gains[i][2]))
 
