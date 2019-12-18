@@ -7,7 +7,7 @@
     />
     <arg
             name="gait_directory"
-            default="test_versions-v"
+            default="training-v"
             doc="The directory where the gait files are located, relative to the above package"
     />
 
