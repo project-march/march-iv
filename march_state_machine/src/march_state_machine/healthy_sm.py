@@ -5,7 +5,6 @@ from std_srvs.srv import Empty, EmptyRequest
 from .gaits import ramp_down_sm
 from .state_machines.step_state_machine import StepStateMachine
 from .state_machines.walk_state_machine import WalkStateMachine
-from .states.gait_state import GaitState
 from .states.idle_state import IdleState
 
 
@@ -33,11 +32,11 @@ def create():
                                transitions={'home_sit': 'HOME SIT', 'home_stand': 'HOME STAND'})
 
         # Movement states
-        smach.StateMachine.add('HOME SIT', GaitState('home', 'home_sit'),
-                               transitions={'succeeded': 'SITTING', 'aborted': 'UNKNOWN'})
+        smach.StateMachine.add('HOME SIT', StepStateMachine('home', ['home_sit']),
+                               transitions={'succeeded': 'SITTING', 'failed': 'UNKNOWN'})
 
-        smach.StateMachine.add('HOME STAND', GaitState('home', 'home_stand'),
-                               transitions={'succeeded': 'STANDING', 'aborted': 'UNKNOWN'})
+        smach.StateMachine.add('HOME STAND', StepStateMachine('home', ['home_stand']),
+                               transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
         smach.StateMachine.add('GAIT WALK', WalkStateMachine('walk'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
