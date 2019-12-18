@@ -3,6 +3,7 @@ import smach
 from std_srvs.srv import Empty, EmptyRequest
 
 from .gaits import ramp_down_sm
+from .state_machines.slope_state_machine import SlopeStateMachine
 from .state_machines.step_state_machine import StepStateMachine
 from .state_machines.walk_state_machine import WalkStateMachine
 from .states.gait_state import GaitState
@@ -93,7 +94,7 @@ def create():
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
         # RD stands for Ramp and Door
-        smach.StateMachine.add('GAIT RD SLOPE UP', WalkStateMachine('ramp_door_slope_up'),
+        smach.StateMachine.add('GAIT RD SLOPE UP', SlopeStateMachine('ramp_door_slope_up'),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
         smach.StateMachine.add('GAIT RD RAMP DOWN', ramp_down_sm.create(),
