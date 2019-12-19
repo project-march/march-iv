@@ -29,6 +29,8 @@ class HealthyStateMachine(smach.StateMachine):
     def __init__(self):
         super(HealthyStateMachine, self).__init__(outcomes=['succeeded', 'failed', 'preempted'])
 
+        rospy.Service('state_machine/get_possible_gaits', PossibleGaits, self.get_possible_gaits)
+
         self.open()
         self.add_auto('START', HealthyStart(), connector_outcomes=['succeeded'])
         self.add('UNKNOWN', IdleState(outcomes=['home_sit', 'home_stand', 'failed', 'preempted']),
@@ -116,3 +118,13 @@ class HealthyStateMachine(smach.StateMachine):
         :param succeeded: name of the state that the given state should transition to once succeeded"""
         self.assert_opened()
         self.add(label, state, transitions={'succeeded': succeeded, 'failed': 'UNKNOWN'})
+
+    def get_possible_gaits(self, _req):
+        """Returns the possible gaits from the current state.
+
+        :type _req: march_shared_resources.srv.PossibleGaitsRequest
+        :rtype march_shared_resources.srv.PossibleGaitsResponse
+        """
+        non_gaits = ['succeeded', 'failed', 'preempted', 'aborted']
+        gaits = [k for k in self._current_transitions.keys() if k not in non_gaits] if self.is_running() else []
+        return {'gaits': gaits}
