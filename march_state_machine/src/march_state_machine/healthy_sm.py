@@ -78,7 +78,7 @@ class HealthyStateMachine(smach.StateMachine):
         self.add_state('GAIT RD RAMP DOWN', ramp_down_sm.create(), 'STANDING')
 
         self.add('SITTING', IdleState(outcomes=['gait_stand', 'preempted']),
-                               transitions={'gait_stand': 'GAIT STAND'})
+                 transitions={'gait_stand': 'GAIT STAND'})
         self.add('STANDING', IdleState(outcomes=['gait_sit', 'gait_walk', 'gait_single_step_small',
                                                  'gait_single_step_normal', 'gait_side_step_left',
                                                  'gait_side_step_right', 'gait_side_step_left_small',
@@ -115,7 +115,8 @@ class HealthyStateMachine(smach.StateMachine):
         :type state: smach.State
         :param state: State (or statemachine to be added)
         :type: succeeded: str
-        :param succeeded: name of the state that the given state should transition to once succeeded"""
+        :param succeeded: name of the state that the given state should transition to once succeeded
+        """
         self.assert_opened()
         self.add(label, state, transitions={'succeeded': succeeded, 'failed': 'UNKNOWN'})
 
