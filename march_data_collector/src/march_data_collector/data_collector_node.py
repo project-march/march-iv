@@ -2,6 +2,7 @@ from math import pi
 import socket
 import argparse
 import time
+import random
 
 from control_msgs.msg import JointTrajectoryControllerState
 from geometry_msgs.msg import TransformStamped
@@ -19,10 +20,13 @@ from .cp_calculator import CPCalculator
 
 
 class DataCollectorNode(object):
-    # ip = port = 7777
     def __init__(self, com_calculator, cp_calculators, ps_input_ip, ps_port):
         self._com_calculator = com_calculator
         self._cp_calculators = cp_calculators
+        self.host = ps_input_ip
+        self.port = ps_port
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.val = 200
 
         joint_names = rospy.get_param('/march/joint_names')
 
@@ -41,23 +45,6 @@ class DataCollectorNode(object):
 
         self._imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
 
-        self._sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self._sock.bind((ps_input_ip, ps_port))
-
-        #self._pressere_sole_publisher('march/pressure_soles', PressureSole, queue_size=1)
-        #ps_message = PressureSole()
-        #ps_message.head.source = 'pressure soles'
-
-        while True:
-            data, address = self._sock.recvfrom(1024)
-            datachannels = data.split()
-            values = [float(data) for data in datachannels]
-            time = values[0]
-            print(time)
-            #ps_message.head.header = rospy.Time.now()
-            #ps_message.head.time_ref =
-
-            # configure the values.
 
     def temperature_callback(self, data, joint):
         rospy.logdebug('Temperature' + joint + ' is ' + str(data.temperature))
@@ -68,8 +55,7 @@ class DataCollectorNode(object):
         self._com_marker_publisher.publish(com)
         for cp_calculator in self._cp_calculators:
             cp_calculator.calculate_cp(com)
-
-        self.send_udp(data.actual.position)
+        self.send_udp(data.actual.positions)
 
     def imc_state_callback(self, data):
         rospy.logdebug('received IMC message current is ' + str(data.current))
@@ -94,21 +80,19 @@ class DataCollectorNode(object):
 
             self._imu_broadcaster.sendTransform(transform)
 
-        def send_udp(data):
-            message = str(data)
-            print(message)
-            self.sock.sendto(message.encode("utf-8"), (host, port))
+    def send_udp(self, data):
+        message = " ".join([str(1000*val) for val in data])
+        print(message + " is send")
+        self.sock.sendto(message.encode("utf-8"), (self.host, self.port))
 
 
 def main():
     rospy.init_node('data_collector', anonymous=True)
-
     robot = URDF.from_parameter_server()
     tf_buffer = tf2_ros.Buffer()
     tf2_ros.TransformListener(tf_buffer)
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
     feet = ['ankle_plate_left', 'ankle_plate_right']
     cp_calculators = [CPCalculator(tf_buffer, foot) for foot in feet]
-
-    DataCollectorNode(center_of_mass_calculator, cp_calculators, "192.168.8.105", 8888)
+    DataCollectorNode(center_of_mass_calculator, cp_calculators, "192.168.8.137", 9999)
     rospy.spin()
