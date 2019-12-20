@@ -5,7 +5,6 @@ from std_srvs.srv import Empty, EmptyRequest
 from .gaits import ramp_down_sm
 from .state_machines.slope_state_machine import SlopeStateMachine
 from .state_machines.step_state_machine import StepStateMachine
-from .state_machines.tilted_path_straight_start_left_state_machine import TiltedPathStraightStartLeftStateMachine
 from .state_machines.walk_state_machine import WalkStateMachine
 from .states.idle_state import IdleState
 
@@ -105,7 +104,8 @@ def create():
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
         smach.StateMachine.add('GAIT TP STRAIGHT START LEFT',
-                               TiltedPathStraightStartLeftStateMachine('tilted_path_straight_start_left'),
+                               StepStateMachine('tilted_path_straight_start_left',
+                                                subgaits=['left_open', 'right_close']),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
         # Idle states
