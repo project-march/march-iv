@@ -1,6 +1,5 @@
-from math import pi, floor
+from math import pi
 import socket
-import time
 
 from control_msgs.msg import JointTrajectoryControllerState
 from geometry_msgs.msg import TransformStamped
@@ -18,15 +17,14 @@ from .cp_calculator import CPCalculator
 
 
 class DataCollectorNode(object):
-    def __init__(self, com_calculator, cp_calculators, input_host, output_host, input_port, output_port):
+    def __init__(self, com_calculator, cp_calculators):
         self._com_calculator = com_calculator
         self._cp_calculators = cp_calculators
-        self.output_host = output_host
-        self.output_port = output_port
-        self.output_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-        self.input_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.input_sock.bind((input_host, input_port))
+        self.output_host = rospy.get_param('moticon_ip')
+        self.input_host = rospy.get_param('host_ip')
+        if (self.output_host != ""):
+            self.output_port = 9999
+            self.output_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
         joint_names = rospy.get_param('/march/joint_names')
 
@@ -47,7 +45,9 @@ class DataCollectorNode(object):
 
         self._pressure_sole_publisher = rospy.Publisher('/march/pressure_soles', PressureSole, queue_size=1)
 
-        if True:
+        if (self.input_host != ""):
+            self.input_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            self.input_sock.bind((rospy.get_param('host_ip'), 8888))
             self.delay = []
             self.receive_udp()
 
@@ -60,7 +60,8 @@ class DataCollectorNode(object):
         self._com_marker_publisher.publish(com)
         for cp_calculator in self._cp_calculators:
             cp_calculator.calculate_cp(com)
-        self.send_udp(data.actual.positions)
+        if (self.output_host != ""):
+            self.send_udp(data.actual.positions)
 
     def imc_state_callback(self, data):
         rospy.logdebug('received IMC message current is ' + str(data.current))
@@ -104,7 +105,6 @@ class DataCollectorNode(object):
             pressure_sole_msg.pressure_right = values[22:38]
             pressure_sole_msg.total_force_right = values[38]
             self._pressure_sole_publisher.publish(pressure_sole_msg)
-            print(timedifference)
 
 
 def main():
@@ -115,5 +115,6 @@ def main():
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
     feet = ['ankle_plate_left', 'ankle_plate_right']
     cp_calculators = [CPCalculator(tf_buffer, foot) for foot in feet]
-    DataCollectorNode(center_of_mass_calculator, cp_calculators, "192.168.8.144", "192.168.8.137", 8888, 9999)
+   # DataCollectorNode(center_of_mass_calculator, cp_calculators, "192.168.8.144", "192.168.8.137", 8888, 9999)
+    DataCollectorNode(center_of_mass_calculator, cp_calculators)
     rospy.spin()

@@ -1,3 +1,7 @@
 <launch>
-    <node name="march_data_collector" pkg="march_data_collector" type="march_data_collector" output="screen"/>
+    <arg name="host_ip" default="" doc="The ip-adress to which the Moticon sends pressure sole data"/>
+    <arg name="moticon_ip" default="" doc="The ip-adress with Moticon software running on it."/>
+    <node name="march_data_collector" pkg="march_data_collector" type="march_data_collector" output="screen" />
+        <param name="host_ip" value="$(arg host_ip)" />
+        <param name="moticon_ip" value="$(arg moticon_ip)" />
 </launch>
