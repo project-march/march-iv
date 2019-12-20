@@ -8,12 +8,10 @@ from march_state_machine.control_flow import control_flow
 class StoppableState(FeedbackActionState):
     def __init__(self, gait_name, subgait_name):
         self.subgait_name = subgait_name
-        outcomes = ['succeeded', 'preempted', 'aborted', 'stopped']
 
         super(StoppableState, self).__init__('/march/gait/perform', GaitNameAction,
                                              GaitNameGoal(name=gait_name, subgait_name=self.subgait_name),
-                                             outcomes=outcomes,
-                                             input_keys=['stop_pressed'], output_keys=['stop_pressed'])
+                                             outcomes=['succeeded', 'preempted', 'aborted', 'stopped'])
 
     def execute(self, userdata):
         result = super(StoppableState, self).execute(userdata)

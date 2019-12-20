@@ -12,10 +12,8 @@ class IdleState(smach.State):
     Listens to instructions from the input device and reacts if they are known transitions.
     """
 
-    def __init__(self, outcomes=None):
-        if outcomes is None:
-            outcomes = []
-        super(IdleState, self).__init__(outcomes=outcomes)
+    def __init__(self, outcomes):
+        super(IdleState, self).__init__(outcomes)
 
         self._result_gait = None
         self._trigger_event = threading.Event()
@@ -50,7 +48,7 @@ class IdleState(smach.State):
 
     def _gait_cb(self, gait):
         if gait in self.get_registered_outcomes():
-            rospy.loginfo('Accepted {0}'.format(gait))
+            rospy.logdebug('Accepted {0}'.format(gait))
             self._result_gait = gait
             control_flow.gait_accepted()
             self._trigger_event.set()

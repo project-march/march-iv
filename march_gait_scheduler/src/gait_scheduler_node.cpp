@@ -123,7 +123,7 @@ int main(int argc, char** argv)
   ROS_DEBUG("Wait on joint trajectory action server");
   while (ros::ok() && !follow_joint_trajectory_action->waitForServer(ros::Duration(5.0)))
   {
-    ROS_INFO_STREAM("Waiting for " << follow_joint_trajectory_topic << " to come up");
+    ROS_DEBUG_STREAM("Waiting for " << follow_joint_trajectory_topic << " to come up");
   }
   follow_joint_trajectory_action->waitForServer();
   ROS_DEBUG("Connected to joint trajectory action server");

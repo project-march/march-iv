@@ -1,7 +1,6 @@
 import rospy
-from std_msgs.msg import Bool
 
-from march_shared_resources.msg import GaitInstruction
+from march_shared_resources.msg import GaitInstruction, GaitInstructionResponse
 
 
 class ControlFlow:
@@ -10,11 +9,12 @@ class ControlFlow:
         self._stopped = False
         self._paused = False
         self._gait = None
-        self._input_device_instruction_subscriber = rospy.Subscriber('/march/input_device/instruction', GaitInstruction,
-                                                                     self.callback_input_device_instruction)
-        self._input_device_instruction_response_publisher = rospy.Publisher('/march/input_device/instruction_response',
-                                                                            Bool,
-                                                                            queue_size=20)
+        self._instruction_subscriber = rospy.Subscriber('/march/input_device/instruction',
+                                                        GaitInstruction,
+                                                        self.callback_input_device_instruction)
+        self._instruction_response_publisher = rospy.Publisher('/march/input_device/instruction_response',
+                                                               GaitInstructionResponse,
+                                                               queue_size=20)
         self._stopped_cb = None
         self._gait_selected_cb = None
 
@@ -56,11 +56,21 @@ class ControlFlow:
         self._stopped = False
 
     def gait_accepted(self):
-        self._input_device_instruction_response_publisher.publish(True)
+        response = GaitInstructionResponse()
+        response.result = GaitInstructionResponse.GAIT_ACCEPTED
+        self._instruction_response_publisher.publish(response)
         self.reset_gait()
 
     def gait_rejected(self):
-        self._input_device_instruction_response_publisher.publish(False)
+        response = GaitInstructionResponse()
+        response.result = GaitInstructionResponse.GAIT_REJECTED
+        self._instruction_response_publisher.publish(response)
+        self.reset_gait()
+
+    def gait_finished(self):
+        response = GaitInstructionResponse()
+        response.result = GaitInstructionResponse.GAIT_FINISHED
+        self._instruction_response_publisher.publish(response)
         self.reset_gait()
 
     def callback_input_device_instruction(self, msg):
