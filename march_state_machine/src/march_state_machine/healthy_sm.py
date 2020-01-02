@@ -3,6 +3,7 @@ import smach
 from std_srvs.srv import Empty, EmptyRequest
 
 from .gaits import ramp_down_sm
+from .gaits import tilted_path_sideways_sm
 from .state_machines.slope_state_machine import SlopeStateMachine
 from .state_machines.step_state_machine import StepStateMachine
 from .state_machines.walk_state_machine import WalkStateMachine
@@ -108,6 +109,9 @@ def create():
                                                 subgaits=['left_open', 'right_close']),
                                transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
 
+        smach.StateMachine.add('GAIT TP SIDEWAYS', tilted_path_sideways_sm.create(),
+                               transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN'})
+
         # Idle states
         smach.StateMachine.add('SITTING', IdleState(outcomes=['gait_stand', 'preempted']),
                                transitions={'gait_stand': 'GAIT STAND'})
@@ -123,6 +127,7 @@ def create():
                                                                'gait_ramp_door_slope_up', 'gait_ramp_door_slope_down',
                                                                'gait_tilted_path_straight_start_right',
                                                                'gait_tilted_path_straight_start_left',
+                                                               'gait_tilted_path_first_start',
                                                                'preempted']),
                                transitions={'gait_sit': 'GAIT SIT', 'gait_walk': 'GAIT WALK',
                                             'gait_single_step_small': 'GAIT SINGLE STEP SMALL',
@@ -140,6 +145,7 @@ def create():
                                             'gait_ramp_door_slope_up': 'GAIT RD SLOPE UP',
                                             'gait_ramp_door_slope_down': 'GAIT RD RAMP DOWN',
                                             'gait_tilted_path_straight_start_right': 'GAIT TP STRAIGHT START RIGHT',
-                                            'gait_tilted_path_straight_start_left': 'GAIT TP STRAIGHT START LEFT'})
+                                            'gait_tilted_path_straight_start_left': 'GAIT TP STRAIGHT START LEFT',
+                                            'gait_tilted_path_first_start': 'GAIT TP SIDEWAYS'})
 
     return sm_healthy
