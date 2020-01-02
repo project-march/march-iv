@@ -15,7 +15,7 @@ def create():
                                                                            'preempted']),
                                transitions={'gait_tilted_path_second_start': 'GAIT TP STRAIGHT SECOND'})
 
-        smach.StateMachine.add('GAIT TP STRAIGHT SECOND', StepStateMachine('tilted_path_first_start',
+        smach.StateMachine.add('GAIT TP STRAIGHT SECOND', StepStateMachine('tilted_path_second_start',
                                                                            subgaits=['left_open', 'right_close']))
 
     return sm_tilted_path_sideways
