@@ -127,5 +127,12 @@ class HealthyStateMachine(smach.StateMachine):
         :rtype march_shared_resources.srv.PossibleGaitsResponse
         """
         non_gaits = ['succeeded', 'failed', 'preempted', 'aborted']
-        gaits = [k for k in self._current_transitions.keys() if k not in non_gaits] if self.is_running() else []
+        gaits = []
+        if self.is_running():
+            gaits = [k for k in self._current_transitions.keys() if k not in non_gaits]
+            # If no possible gaits are on this level, try one state machine deeper
+            if not gaits:
+                if self._current_state._current_transitions:
+                    gaits = [k for k in self._current_state._current_transitions.keys() if k not in non_gaits]
+
         return {'gaits': gaits}
