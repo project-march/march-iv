@@ -20,7 +20,7 @@ ScheduleGaitActionServer* schedule_gait_action_server = nullptr;
 actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction>* follow_joint_trajectory_action;
 Scheduler* scheduler = nullptr;
 
-void doneCallback(const actionlib::SimpleClientGoalState& state,
+void doneCallback(const actionlib::SimpleClientGoalState& /* state */,
                   const control_msgs::FollowJointTrajectoryResultConstPtr& result)
 {
   if (!schedule_gait_action_server->isActive() || scheduler->gaitDone)
@@ -96,7 +96,7 @@ void scheduleGaitCallback(const march_shared_resources::GaitGoalConstPtr& goal)
  * @param config the config file with all the parameters
  * @param level A bitmask
  */
-void schedulerConfigCallback(march_gait_scheduler::SchedulerConfig& config, uint32_t level)
+void schedulerConfigCallback(march_gait_scheduler::SchedulerConfig& config, uint32_t /* level */)
 {
   scheduler->GAIT_SUCCEEDED_OFFSET = ros::Duration(config.gait_succeeded_offset);
 }
