@@ -14,6 +14,10 @@ from march_shared_resources.msg import ImcErrorState
 from .com_calculator import CoMCalculator
 from .cp_calculator import CPCalculator
 
+import pandas as pd
+import numpy as np
+import esppy
+
 
 class DataCollectorNode(object):
 
@@ -38,11 +42,17 @@ class DataCollectorNode(object):
 
         self._imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
 
+        esp = esppy.ESP('http://145.94.199.203:9900')
+
+
+
     def temperature_callback(self, data, joint):
         rospy.logdebug('Temperature' + joint + ' is ' + str(data.temperature))
 
     def trajectory_state_callback(self, data):
         rospy.logdebug('received trajectory state' + str(data.desired))
+        joint_angles = data.actual
+
         com = self._com_calculator.calculate_com()
         self._com_marker_publisher.publish(com)
         for cp_calculator in self._cp_calculators:
@@ -72,6 +82,7 @@ class DataCollectorNode(object):
             self._imu_broadcaster.sendTransform(transform)
 
 
+
 def main():
     rospy.init_node('data_collector', anonymous=True)
 
@@ -83,4 +94,5 @@ def main():
     cp_calculators = [CPCalculator(tf_buffer, foot) for foot in feet]
 
     DataCollectorNode(center_of_mass_calculator, cp_calculators)
+
     rospy.spin()
