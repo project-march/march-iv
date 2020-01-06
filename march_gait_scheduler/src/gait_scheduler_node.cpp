@@ -51,11 +51,6 @@ void feedbackCallback(const control_msgs::FollowJointTrajectoryFeedbackConstPtr&
   if (scheduler->getEndTimeCurrentGait().toSec() - feedback->header.stamp.toSec() <
       scheduler->GAIT_SUCCEEDED_OFFSET.toSec())
   {
-    if (scheduler->getEndTimeCurrentGait().toSec() - feedback->header.stamp.toSec() < 0)
-    {
-      ROS_ERROR("Negative difference");
-      return;
-    }
     if (!schedule_gait_action_server->isActive() || scheduler->gaitDone)
     {
       ROS_DEBUG("Gait already done or action already ended");
