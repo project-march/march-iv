@@ -14,9 +14,18 @@ from march_shared_resources.msg import ImcErrorState
 from .com_calculator import CoMCalculator
 from .cp_calculator import CPCalculator
 
-import pandas as pd
-import numpy as np
-import esppy
+# standard imports
+from ctypes import *
+import os
+import sys
+import platform
+import logging
+dfesphome = os.environ["DFESP_HOME"]
+sys.path.append(dfesphome + '/lib')
+import pubsubApi
+import modelingApi
+
+
 
 
 class DataCollectorNode(object):
@@ -42,9 +51,38 @@ class DataCollectorNode(object):
 
         self._imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
 
-        esp = esppy.ESP('http://145.94.199.203:9900')
+        ret = pubsubApi.Init(modelingApi.ll_Off, None)
+        if ret == 0:
+           rospy.logwarn(" Could not initialize pubsub library")
 
+        logger = logging.getLogger()
+        logger.addHandler(modelingApi.getLoggingHandler())
+        rospy.logwarn(" Here4")
 
+        url = 'dfESP://145.94.199.203:9900/March_test/March_cq/March'
+        schemaurl = url + '?get=schema'
+        stringv = pubsubApi.QueryMeta(schemaurl)
+        rospy.logwarn(" Here3")
+        if stringv == None:
+            rospy.logwarn('Could not get ESP source window schema')
+            pubsubApi.Shutdown()
+        schema = modelingApi.StringVGet(stringv, 0)
+        rospy.logwarn(" Here2")
+        if schema == None:
+            rospy.logwarn('Could not get ESP schema from query response')
+            pubsubApi.Shutdown()
+        rospy.logwarn(" Here1")
+        #rospy.loginfo(schema)
+        rospy.logwarn(" Here")
+
+    def pubErrCbFunc(failure, code, ctx):
+        # don't output anything for client busy
+        if failure == pubsubApi.pubsubFail_APIFAIL and code == pubsubApi.pubsubCode_CLIENTEVENTSQUEUED:
+            return
+
+        failMsg = pubsubApi.DecodeFailure(failure)
+        codeMsg = pubsubApi.DecodeFailureCode(code)
+        print('Client services error: ' + failMsg + codeMsg)
 
     def temperature_callback(self, data, joint):
         rospy.logdebug('Temperature' + joint + ' is ' + str(data.temperature))

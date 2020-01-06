@@ -1,0 +1,45 @@
+<engine>
+ <description>
+  Sample XML configuration file for the following ESP model:
+  Orders[src + csv read connector]  ====> TotalVolume[aggr]
+
+  so we:
+  1. automatically start populating the Orders window
+  from the orders.csv file using a built-in file/socket
+  connector.
+
+  2. aggregate the orders by security, and compute the total
+  volume traded for the aggregate security.
+
+  to test this model one can:
+
+  subscribe to the final TotalVolume window to see the
+  computed data when we start the trades data flowing:
+  $DFESP_HOME/bin/subscribe_client dfESP://localhost:55555/orders_proj/orders_cq/TotalVolume?snapshot=true
+
+  NOTE: The subscription must be started after the model starts.
+  Also as soon as the model starts the built in file/socket
+  connector begins processing data from orders.csv.
+ </description>
+ <projects>
+  <project name='March_test' pubsub='auto' threads='4'>
+   <contqueries>
+    <contquery name='March_cq' trace='TotalVolume'>
+     <windows>
+      <window-source name='March'>
+       <schema>
+        <fields>
+         <field name='ID' type='int32' key='true'/>
+         <field name='symbol' type='string'/>
+         <field name='actual' type='int32'/>
+         <field name='tStamp_secs' type='int64'/>
+         <field name='tStamp_msecs' type='int32'/>
+        </fields>
+       </schema>
+      </window-source>
+     </windows>
+    </contquery>
+   </contqueries>
+  </project>
+ </projects>
+</engine>
