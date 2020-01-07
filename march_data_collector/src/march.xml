@@ -24,20 +24,61 @@
  <projects>
   <project name='March_test' pubsub='auto' threads='4'>
    <contqueries>
-    <contquery name='March_cq' trace='TotalVolume'>
+    <contquery name='March_cq'>
      <windows>
-      <window-source name='March'>
+      <window-source name='March' autogen-key='true' insert-only='true'>
        <schema>
         <fields>
-         <field name='ID' type='int32' key='true'/>
-<!--         <field name='symbol' type='string'/>-->
-<!--         <field name='actual' type='int32'/>-->
+         <field name='SEQUENCE' type='int64' key='true' />
+<!--         <field name='time' type='stamp'/>-->
+         <field name='symbol' type='string'/>
+         <field name='actual' type='int32'/>
 <!--         <field name='tStamp_secs' type='int64'/>-->
 <!--         <field name='tStamp_msecs' type='int32'/>-->
         </fields>
        </schema>
       </window-source>
+<!--   <window-aggregate name='aggregateWindow'>-->
+<!--       <description>-->
+<!--        This is an aggregate window with aggregation expressions.-->
+<!--        One expression is the summation of quantity. The other expression-->
+<!--        is the maximum of price.-->
+<!--       </description>-->
+<!--       <schema>-->
+<!--        <fields>-->
+<!--         <field name='symbol' type='string' key='true'/>-->
+<!--         <field name='totalQuant' type='int32'/>-->
+<!--&lt;!&ndash;         <field name='maxPrice' type='double'/>&ndash;&gt;-->
+<!--        </fields>-->
+<!--       </schema>-->
+<!--       <output>-->
+<!--        <field-expr>ESP_aSum(actual)</field-expr>-->
+<!--&lt;!&ndash;        <field-expr>ESP_aMax(price)</field-expr>&ndash;&gt;-->
+<!--       </output>-->
+<!--     </window-aggregate>-->
+<!--      <window-copy name='copy_win'>-->
+<!--       <description>-->
+<!--        This is a copy window.  The copy window will receive all of the events-->
+<!--        from the source window.  Events are only retained for 300 seconds.  The-->
+<!--        retention time is calculated using the time field in the event.-->
+<!--       </description>-->
+<!--       <retention field='time' type='bytime_sliding'>300 seconds</retention>-->
+<!--       <connectors>-->
+<!--        <connector class='fs' name='sub'>-->
+<!--         <properties>-->
+<!--          <property name='type'>sub</property>-->
+<!--          <property name='fstype'>csv</property>-->
+<!--          <property name='fsname'>result.out</property>-->
+<!--          <property name='snapshot'>true</property>-->
+<!--          <property name='dateformat'>%Y-%m-%d %H:%M:%S</property>-->
+<!--         </properties>-->
+<!--        </connector>-->
+<!--       </connectors>-->
+<!--      </window-copy>-->
      </windows>
+<!--     <edges>-->
+<!--      <edge source='March' target='copy_win'/>-->
+<!--     </edges>-->
     </contquery>
    </contqueries>
   </project>
