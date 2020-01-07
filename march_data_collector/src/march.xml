@@ -30,10 +30,10 @@
        <schema>
         <fields>
          <field name='ID' type='int32' key='true'/>
-         <field name='symbol' type='string'/>
-         <field name='actual' type='int32'/>
-         <field name='tStamp_secs' type='int64'/>
-         <field name='tStamp_msecs' type='int32'/>
+<!--         <field name='symbol' type='string'/>-->
+<!--         <field name='actual' type='int32'/>-->
+<!--         <field name='tStamp_secs' type='int64'/>-->
+<!--         <field name='tStamp_msecs' type='int32'/>-->
         </fields>
        </schema>
       </window-source>
