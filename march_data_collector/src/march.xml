@@ -30,9 +30,16 @@
        <schema>
         <fields>
          <field name='SEQUENCE' type='int64' key='true' />
-<!--         <field name='time' type='stamp'/>-->
+         <field name='time' type='stamp'/>
          <field name='symbol' type='string'/>
-         <field name='actual' type='int32'/>
+         <field name='actual1' type='double'/>
+         <field name='actual2' type='double'/>
+         <field name='actual3' type='double'/>
+         <field name='actual4' type='double'/>
+         <field name='actual5' type='double'/>
+         <field name='actual6' type='double'/>
+         <field name='actual7' type='double'/>
+         <field name='actual8' type='double'/>
 <!--         <field name='tStamp_secs' type='int64'/>-->
 <!--         <field name='tStamp_msecs' type='int32'/>-->
         </fields>
@@ -56,29 +63,29 @@
 <!--&lt;!&ndash;        <field-expr>ESP_aMax(price)</field-expr>&ndash;&gt;-->
 <!--       </output>-->
 <!--     </window-aggregate>-->
-<!--      <window-copy name='copy_win'>-->
-<!--       <description>-->
-<!--        This is a copy window.  The copy window will receive all of the events-->
-<!--        from the source window.  Events are only retained for 300 seconds.  The-->
-<!--        retention time is calculated using the time field in the event.-->
-<!--       </description>-->
-<!--       <retention field='time' type='bytime_sliding'>300 seconds</retention>-->
-<!--       <connectors>-->
-<!--        <connector class='fs' name='sub'>-->
-<!--         <properties>-->
-<!--          <property name='type'>sub</property>-->
-<!--          <property name='fstype'>csv</property>-->
-<!--          <property name='fsname'>result.out</property>-->
-<!--          <property name='snapshot'>true</property>-->
-<!--          <property name='dateformat'>%Y-%m-%d %H:%M:%S</property>-->
-<!--         </properties>-->
-<!--        </connector>-->
-<!--       </connectors>-->
-<!--      </window-copy>-->
+      <window-copy name='copy_win'>
+       <description>
+        This is a copy window.  The copy window will receive all of the events
+        from the source window.  Events are only retained for 300 seconds.  The
+        retention time is calculated using the time field in the event.
+       </description>
+       <retention field='time' type='bytime_sliding'>300 seconds</retention>
+       <connectors>
+        <connector class='fs' name='sub'>
+         <properties>
+          <property name='type'>sub</property>
+          <property name='fstype'>csv</property>
+          <property name='fsname'>result.out</property>
+          <property name='snapshot'>true</property>
+          <property name='dateformat'>%Y-%m-%d %H:%M:%S</property>
+         </properties>
+        </connector>
+       </connectors>
+      </window-copy>
      </windows>
-<!--     <edges>-->
-<!--      <edge source='March' target='copy_win'/>-->
-<!--     </edges>-->
+     <edges>
+      <edge source='March' target='copy_win'/>
+     </edges>
     </contquery>
    </contqueries>
   </project>

@@ -59,13 +59,6 @@ class DataCollectorNode(object):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.host = "localhost"
         self.port = 32000
-        # sock.sendto(msg.encode('utf-8'), (host, port))
-
-
-
-
-
-
 
 
 
@@ -81,10 +74,8 @@ class DataCollectorNode(object):
         rospy.logdebug('received trajectory state' + str(data.desired))
         joint_angles = data.actual.positions
         angle_str = " ".join([str(angle) for angle in joint_angles])
-        msg = " ".join(["joinst_angles", str(data.header.stamp.secs), angle_str])
-
+        msg = " ".join(["joinst_angles", angle_str])
         self.send_udp(msg)
-
 
         com = self._com_calculator.calculate_com()
         self._com_marker_publisher.publish(com)
