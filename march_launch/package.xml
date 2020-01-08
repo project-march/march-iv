@@ -17,7 +17,7 @@
     <exec_depend>rqt_gui_py</exec_depend>
     <exec_depend>march_description</exec_depend>
     <exec_depend>march_gait_scheduler</exec_depend>
-    <exec_depend>march_gait_scheduler</exec_depend>
+    <exec_depend>march_gain_scheduling</exec_depend>
     <exec_depend>march_gait_selection</exec_depend>
     <exec_depend>march_safety</exec_depend>
     <exec_depend>march_sound_scheduler</exec_depend>
