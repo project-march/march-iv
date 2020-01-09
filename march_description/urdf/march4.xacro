@@ -748,6 +748,6 @@
     </transmission>
 
     <gazebo>
-        <plugin name="com_controller" filename="libcom_controller.so"/>
+        <plugin name="com_controller" filename="libmarch_gazebo_plugins.so"/>
     </gazebo>
 </robot>
