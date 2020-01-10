@@ -6,6 +6,7 @@
     <arg name="unpause" default="$(eval not gazebo_ui)" doc="Unpause simulation when controller starts."/>
     <arg name="fixed" default="true" doc="Fixes the exoskeleton in the world"/>
     <arg name="gait_directory" default="training-v" doc="Gait files directory to use"/>
+    <arg name="input-device" default="false" doc="Launches ros serial node to connect with input device."/>
 
     <include file="$(find march_launch)/launch/march.launch" pass_all_args="true">
         <arg name="configuration" value="simulation"/>
