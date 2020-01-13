@@ -20,7 +20,7 @@ class SetpointTest(unittest.TestCase):
     def test_velocity_repr(self):
         self.assertEqual(str(self.setpoint),
                          "Time: 0, Position: 1, Velocity: 2",
-                         "Velocity limit not initialised correctly.")
+                         "String representation not build correctly.")
 
 
 if __name__ == '__main__':

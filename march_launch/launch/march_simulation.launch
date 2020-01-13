@@ -5,6 +5,7 @@
     <arg name="rosbag" default="false" doc="Enables rosbag record node."/>
     <arg name="unpause" default="$(eval not gazebo_ui)" doc="Unpause simulation when controller starts."/>
     <arg name="fixed" default="true" doc="Fixes the exoskeleton in the world"/>
+    <arg name="ground_gait" default="false" doc="Exoskeleton will ground gait in simulation if true."/>
     <arg name="gait_directory" default="training-v" doc="Gait files directory to use"/>
 
     <include file="$(find march_launch)/launch/march.launch" pass_all_args="true">
