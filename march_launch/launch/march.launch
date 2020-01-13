@@ -2,14 +2,19 @@
     <arg name="configuration" default="exoskeleton" doc="Configuration on launching the 'simulation' or 'exoskeleton'."/>
     <arg name="headless" default="false" doc="Launches no GUI when true."/>
     <arg name="hardware_interface" default="true" doc="Launches the hardware interface when config is 'exoskeleton."/>
+
     <arg name="rviz" default="false" doc="Launches RViz."/>
     <arg name="state_machine_viewer" default="false" doc="Launches the SMACH viewer."/>
     <arg name="rqt_input" default="true" doc="Launches the march rqt input device."/>
     <arg name="gazebo_ui" default="false" doc="Launches the Gazebo UI."/>
+
     <arg name="ground_gait" default="false" doc="Exoskeleton will ground gait in simulation if true."/>
     <arg name="wireless" default="false" doc="Enables wireless connection to the input device."/>
     <arg name="unpause" default="true" doc="Unpause simulation when controller starts."/>
     <arg name="fixed" default="true" doc="Fixes the exoskeleton in the world"/>
+
+    <arg name="input-device" default="false" doc="Launches ros serial node to connect with input device."/>
+    <arg name="wireless" default="false" doc="Enables wireless connection to the input device."/>
 
     <arg name="gait_directory" default="training-v" doc="Gait files directory to use"/>
 
@@ -49,9 +54,6 @@
     </group>
 
     <group if="$(eval configuration == 'exoskeleton')">
-        <include file="$(find march_launch)/launch/serial_connection.launch">
-            <arg name="wireless" value="$(arg wireless)"/>
-        </include>
         <include file="$(find march_hardware_interface)/launch/hardware.launch" if="$(arg hardware_interface)">
             <arg name="robot" value="march4"/>
         </include>
@@ -64,4 +66,8 @@
             <arg name="ground_gait" value="$(arg ground_gait)"/>
         </include>
     </group>
+
+    <include file="$(find march_launch)/launch/serial_connection.launch" if="$(arg input-device)">
+        <arg name="wireless" value="$(arg wireless)"/>
+    </include>
 </launch>
