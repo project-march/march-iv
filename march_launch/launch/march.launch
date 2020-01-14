@@ -8,9 +8,9 @@
     <arg name="rqt_input" default="true" doc="Launches the march rqt input device."/>
     <arg name="gazebo_ui" default="false" doc="Launches the Gazebo UI."/>
 
-    <arg name="ground_gait" default="false" doc="Exoskeleton will ground gait in simulation if true."/>
+    <arg name="ground_gait" default="false" doc="Exoskeleton will ground gait in gazebo_ui if true."/>
     <arg name="unpause" default="true" doc="Unpause simulation when controller starts."/>
-    <arg name="fixed" default="true" doc="Fixes the exoskeleton in the world"/>
+    <arg name="fixed" default="true" doc="Fixes the exoskeleton in the world in rviz"/>
 
     <arg name="input-device" default="false" doc="Launches ros serial node to connect with input device."/>
     <arg name="wireless" default="false" doc="Enables wireless connection to the input device."/>
