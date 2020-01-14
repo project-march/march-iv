@@ -2,9 +2,9 @@ import actionlib
 import rospy
 
 from march_shared_classes.exceptions.general_exceptions import MsgTypeError
+from march_shared_classes.exceptions.gait_exceptions import *
 from march_shared_resources import msg
 from march_shared_resources.msg import GaitAction, GaitGoal, GaitNameAction
-
 
 SERVER_TIMEOUT = 5
 RESPONSE_TIMEOUT = 1
@@ -23,7 +23,7 @@ class PerformGaitAction(object):
             rospy.logdebug('Waiting for /march/gait/schedule to come up')
 
     def target_gait_callback(self, subgait_goal_msg):
-        """Set a new target subgait over the action server."""
+        """Set a new target subgait over the action server march/gait/schedule."""
         rospy.logdebug('Trying to schedule subgait {gn} {sn}'
                        .format(gn=subgait_goal_msg.name, sn=subgait_goal_msg.subgait_name))
 
@@ -44,6 +44,44 @@ class PerformGaitAction(object):
         self.action_server.set_aborted('Gait {gn} does not exist in parsed gaits'
                                        .format(gn=subgait_goal_msg.name))
         return False
+
+    def add_transition_trajectory(self, current_gait, new_gait, last_subgait):
+        current_gait_object = self.gait_selection[current_gait]
+        new_gait_object = self.gait_selection[new_gait]
+
+        if current_gait_object is None:
+            raise GaitError(msg='{gn} not found in parsed gait names from gait selection'
+                            .format(gn=current_gait))
+
+        if new_gait_object is None:
+            raise GaitError(msg='{gn} not found in parsed gait names from gait selection'
+                            .format(gn=new_gait))
+
+        if current_gait_object.to_subgaits_names != new_gait_object.to_subgaits_names:
+            raise GaitError(msg='To_subgait list do not match between gait: {cg} and gait: {ng}'
+                            .format(cg=current_gait, ng=new_gait))
+
+        if current_gait_object.from_subgaits_names != new_gait_object.from_subgaits_names:
+            raise GaitError(msg='From_subgait list do not match between gait: {cg} and gait: {ng}'
+                            .format(cg=current_gait, ng=new_gait))
+
+        new_subgait_index = current_gait_object.to_subgaits_names.index(last_subgait)
+
+        old_subgait_object = current_gait_object[last_subgait]
+        new_subgait_object = new_gait_object.to_subgaits_names[new_subgait_index]
+
+        if old_subgait_object is None:
+            raise SubgaitNameNotFound(msg='Subgait {sg} not found in to_subgaits of gait {gn}'
+                                      .format(sg=last_subgait, gn=current_gait))
+
+        if new_subgait_object is None:
+            raise SubgaitNameNotFound(msg='Subgait {sg} not found in from_subgaits of gait {gn}'
+                                      .format(sg=last_subgait, gn=current_gait))
+
+        for joint_new_gait in new_subgait_object.joints:
+            old_subgait_joint = old_subgait_object[joint_new_gait.name]
+            joint_last_setpoint = old_subgait_joint.setpoints[-1]
+            old_subgait_joint.setpoints.insert(0, joint_last_setpoint)
 
     def schedule_gait(self, gait_name, subgait):
         """Construct the goal message and send."""

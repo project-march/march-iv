@@ -48,3 +48,16 @@ class NonValidGaitContent(GaitError):
             msg = 'The given gait: {gn} has incorrect information'.format(gn=gait_name)
 
         super(NonValidGaitContent, self).__init__(msg)
+
+
+class NonMarchingGaitContent(GaitError):
+    def __init__(self, msg=None):
+        """Class to raise an error when given gait has incorrect content .
+
+        :param msg:
+            The message to display.
+        """
+        if msg is None:
+            msg = 'Given gaits do not have matching content'
+
+        super(NonMarchingGaitContent, self).__init__(msg)
