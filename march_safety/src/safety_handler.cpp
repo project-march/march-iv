@@ -4,8 +4,7 @@
 #include <string>
 
 SafetyHandler::SafetyHandler(ros::NodeHandle* n, ros::Publisher* error_publisher,
-                             ros::Publisher* gait_instruction_publisher,
-                             sound_play::SoundClient& sound_client)
+                             ros::Publisher* gait_instruction_publisher, sound_play::SoundClient& sound_client)
   : n_(n)
   , error_publisher_(error_publisher)
   , gait_instruction_publisher_(gait_instruction_publisher)
