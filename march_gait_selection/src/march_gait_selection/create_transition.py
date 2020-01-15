@@ -1,4 +1,4 @@
-from march_shared_classes.exceptions.gait_exceptions import *
+from march_shared_classes.exceptions.gait_exceptions import GaitError, SubgaitNameNotFound
 from march_shared_classes.gait.subgait import Subgait
 
 
@@ -78,8 +78,7 @@ class TransitionSubgait:
         for position_list, velocity_list in zip(positions, velocities):
             point = {'positions': position_list,
                      'velocities': velocity_list,
-                     'time_from_start': {'secs': 0,
-                                         'nsecs': transition_time}
+                     'time_from_start': {'secs': 0, 'nsecs': transition_time},
                      }
             transition_time += interval_time
             points.append(point)

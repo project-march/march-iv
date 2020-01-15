@@ -25,8 +25,5 @@ install(DIRECTORY launch
 
 ## Add folders to be run by python nosetests
 if (CATKIN_ENABLE_TESTING)
-    find_package(rostest REQUIRED)
-    add_rostest(test/launch/gait_selection.test)
-
-    catkin_add_nosetests(test)
+    catkin_add_nosetests(test/run_tests.py)
 endif()
