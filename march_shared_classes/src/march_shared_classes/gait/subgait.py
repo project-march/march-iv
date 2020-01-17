@@ -158,6 +158,7 @@ class Subgait(object):
         """Convert class attribute values back to ROS msg (necessary for publisher)."""
         subgait_msg = march_msg.Subgait()
 
+        subgait_msg.name = self.subgait_name
         subgait_msg.gait_type = self.gait_type
         subgait_msg.trajectory = self._to_joint_trajectory_msg()
         subgait_msg.setpoints = self.to_setpoints()
