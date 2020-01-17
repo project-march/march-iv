@@ -2,13 +2,18 @@
     <arg name="configuration" default="exoskeleton" doc="Configuration on launching the 'simulation' or 'exoskeleton'."/>
     <arg name="headless" default="false" doc="Launches no GUI when true."/>
     <arg name="hardware_interface" default="true" doc="Launches the hardware interface when config is 'exoskeleton."/>
+
     <arg name="rviz" default="false" doc="Launches RViz."/>
     <arg name="state_machine_viewer" default="false" doc="Launches the SMACH viewer."/>
     <arg name="rqt_input" default="true" doc="Launches the march rqt input device."/>
     <arg name="gazebo_ui" default="false" doc="Launches the Gazebo UI."/>
-    <arg name="wireless" default="false" doc="Enables wireless connection to the input device."/>
+
+    <arg name="ground_gait" default="false" doc="Exoskeleton will ground gait in gazebo_ui if true."/>
     <arg name="unpause" default="true" doc="Unpause simulation when controller starts."/>
-    <arg name="fixed" default="true" doc="Fixes the exoskeleton in the world"/>
+    <arg name="fixed" default="true" doc="Fixes the exoskeleton in the world in rviz"/>
+
+    <arg name="input-device" default="false" doc="Launches ros serial node to connect with input device."/>
+    <arg name="wireless" default="false" doc="Enables wireless connection to the input device."/>
 
     <arg name="gait_directory" default="training-v" doc="Gait files directory to use"/>
 
@@ -34,7 +39,7 @@
 
         <include file="$(find march_safety)/launch/march_safety.launch"/>
 
-        <include file="$(find march_sound_scheduler)/launch/march_sound_scheduler.launch"/>
+        <node name="sound_play" pkg="sound_play" type="soundplay_node.py"/>
 
         <include file="$(find march_gait_selection)/launch/march_gait_selection.launch">
             <arg name="gait_directory" value="$(arg gait_directory)"/>
@@ -48,9 +53,6 @@
     </group>
 
     <group if="$(eval configuration == 'exoskeleton')">
-        <include file="$(find march_launch)/launch/serial_connection.launch">
-            <arg name="wireless" value="$(arg wireless)"/>
-        </include>
         <include file="$(find march_hardware_interface)/launch/hardware.launch" if="$(arg hardware_interface)">
             <arg name="robot" value="march4"/>
         </include>
@@ -60,6 +62,11 @@
         <include file="$(find march_simulation)/launch/march_world.launch">
             <arg name="gazebo_ui" value="$(eval not headless and gazebo_ui)"/>
             <arg name="fixed" value="$(arg fixed)"/>
+            <arg name="ground_gait" value="$(arg ground_gait)"/>
         </include>
     </group>
+
+    <include file="$(find march_launch)/launch/serial_connection.launch" if="$(arg input-device)">
+        <arg name="wireless" value="$(arg wireless)"/>
+    </include>
 </launch>

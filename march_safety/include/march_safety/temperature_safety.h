@@ -10,7 +10,6 @@
 #include <sensor_msgs/Temperature.h>
 
 #include <march_shared_resources/Error.h>
-#include <march_shared_resources/Sound.h>
 
 #include "march_safety/safety_type.h"
 #include "march_safety/safety_handler.h"
