@@ -21,7 +21,6 @@ public:
 private:
   void inputDeviceAliveCallback(const std_msgs::TimeConstPtr& msg);
 
-  ros::NodeHandle n_;
   SafetyHandler* safety_handler_;
   ros::Duration connection_timeout_;
   ros::Time time_last_alive_;

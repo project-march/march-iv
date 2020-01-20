@@ -1,5 +1,6 @@
+from PyQt5.QtCore import pyqtSignal, QObject
 import rospy
-from PyQt5.QtCore import QObject, pyqtSignal
+
 from march_launch.Color import Color
 
 
@@ -25,7 +26,7 @@ class SoftwareCheck(QObject):
         return False
 
     def perform(self):
-        raise NotImplementedError("Please implement method 'perform()' on the subclass")
+        raise NotImplementedError('Please implement method "perform()" on the subclass')
 
     def pass_check(self):
         self.passed = True
@@ -39,7 +40,7 @@ class SoftwareCheck(QObject):
         try:
             value = rospy.get_param(key)
         except KeyError:
-            self.log("Could not find key " + str(key), Color.Error)
+            self.log('Could not find key ' + str(key), Color.Error)
             if fail_on_exception:
                 self.fail_check()
             return

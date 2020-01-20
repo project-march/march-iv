@@ -12,7 +12,7 @@ struct CallbackCounter
   {
   }
 
-  void cb_action(const control_msgs::FollowJointTrajectoryGoalConstPtr& goal)
+  void cb_action(const control_msgs::FollowJointTrajectoryGoalConstPtr& /* goal */)
   {
     count++;
   }

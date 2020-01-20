@@ -9,10 +9,9 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <depend>march_shared_classes</depend>
   <depend>march_shared_resources</depend>
   <depend>std_msgs</depend>
-
-  <build_depend>roslint</build_depend>
 
   <exec_depend>rospy</exec_depend>
   <exec_depend>rospy_message_converter</exec_depend>

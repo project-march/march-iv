@@ -1,13 +1,12 @@
+from python_qt_binding.QtWidgets import QMessageBox
 import rospy
 
-from Color import Color
-from SoftwareCheckThread import SoftwareCheckThread
-from python_qt_binding.QtWidgets import QMessageBox
-
-from checks.GitBranchCheck import GitBranchCheck
-from checks.GaitFileDirectoryCheck import GaitFileDirectoryCheck
-from checks.URDFCheck import URDFCheck
-from checks.SlaveCountCheck import SlaveCountCheck
+from .checks.GaitFileDirectoryCheck import GaitFileDirectoryCheck
+from .checks.GitBranchCheck import GitBranchCheck
+from .checks.SlaveCountCheck import SlaveCountCheck
+from .checks.URDFCheck import URDFCheck
+from .Color import Color
+from .SoftwareCheckThread import SoftwareCheckThread
 
 
 class CheckRunner:
@@ -21,21 +20,21 @@ class CheckRunner:
     def run_check_by_name(self, name):
         check = self.get_check(name)
         if check is None:
-            self.log("Check with name " + name + " does not exist", Color.Error)
+            self.log('Check with name ' + name + ' does not exist', Color.Error)
 
         return self.run_check(check)
 
     def run_check(self, check):
-        self.log("--------------------------------------", Color.Info)
+        self.log('--------------------------------------', Color.Info)
 
         if self.thread is not None:
-            self.log("Already running another check", Color.Warning)
+            self.log('Already running another check', Color.Warning)
 
         if check is None:
-            self.log("Check does not exist", Color.Error)
+            self.log('Check does not exist', Color.Error)
             return
 
-        self.log("Starting check " + str(check.name) + ": " + str(check.description), Color.Info)
+        self.log('Starting check ' + str(check.name) + ': ' + str(check.description), Color.Info)
 
         start = rospy.get_rostime()
         self.thread = SoftwareCheckThread(check)
@@ -46,7 +45,7 @@ class CheckRunner:
                 rospy.sleep(0.1)
 
             else:
-                self.log("Check " + str(check.name) + " timed out after " + str(check.timeout) + "s", Color.Error)
+                self.log('Check ' + str(check.name) + ' timed out after ' + str(check.timeout) + 's', Color.Error)
                 self.thread.exit()
                 self.thread = None
 
@@ -61,9 +60,9 @@ class CheckRunner:
         check.reset()
 
         if result:
-            self.log("Check " + str(check.name) + " was succesful!", Color.Debug)
+            self.log('Check ' + str(check.name) + ' was succesful!', Color.Debug)
         else:
-            self.log("Check " + str(check.name) + " has failed", Color.Error)
+            self.log('Check ' + str(check.name) + ' has failed', Color.Error)
 
         return result
 
@@ -79,5 +78,5 @@ class CheckRunner:
 
     @staticmethod
     def validate_manually():
-        reply = QMessageBox.question(None, 'Message', "Did the test pass?", QMessageBox.Yes, QMessageBox.No)
+        reply = QMessageBox.question(None, 'Message', 'Did the test pass?', QMessageBox.Yes, QMessageBox.No)
         return reply == QMessageBox.Yes

@@ -4,5 +4,5 @@
         <param name="gait_directory" value="test/correct_walking_gait"/>
     </node>
 
-    <test test-name="gait_selection_tests" pkg="march_gait_selection" type="TestGaitSelection.py"/>
+<!--    <test test-name="gait_selection_tests" pkg="march_gait_selection" type="TestGaitSelection.py"/>-->
 </launch>

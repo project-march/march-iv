@@ -1,6 +1,8 @@
 <launch>
     <arg name="hardware_interface" default="true" doc="Launches the hardware_interface."/>
     <arg name="wireless" default="false" doc="Enables wireless connection to the input device."/>
+    <arg name="gait_directory" default="training-v" doc="Gait files directory to use"/>
+    <arg name="input-device" default="true" doc="Launches ros serial node to connect with input device."/>
 
     <include file="$(find march_launch)/launch/march.launch" pass_all_args="true">
         <arg name="configuration" value="exoskeleton"/>

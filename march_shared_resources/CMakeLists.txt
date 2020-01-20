@@ -14,18 +14,19 @@ add_message_files(
     AfterLimitJointCommand.msg
     Error.msg
     GaitInstruction.msg
+    GaitInstructionResponse.msg
     Graph.msg
     HighVoltageNet.msg
     ImcErrorState.msg
     LowVoltageNet.msg
     PowerDistributionBoardState.msg
     Setpoint.msg
-    Sound.msg
     Subgait.msg
 )
 
 add_service_files(
     FILES
+    PossibleGaits.srv
     StringTrigger.srv
     Trigger.srv
 )

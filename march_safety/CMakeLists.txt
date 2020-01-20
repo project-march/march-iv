@@ -6,8 +6,8 @@ add_compile_options(-std=c++11 -Wall -Wextra)
 find_package(catkin REQUIRED COMPONENTS
     march_shared_resources
     roscpp
-    roslint
     sensor_msgs
+    sound_play
     std_msgs
     urdf
 )
@@ -19,19 +19,11 @@ catkin_package(
     march_shared_resources
     roscpp
     sensor_msgs
+    sound_play
     std_msgs
     urdf
 )
 
-# Roslinter
-set(ROSLINT_CPP_OPTS "--linelength=120")
-
-file(GLOB_RECURSE lintfiles
-    "include/*.h"
-    "src/*.cpp"
-)
-
-roslint_cpp(${lintfiles})
 include_directories(
     include
     ${catkin_INCLUDE_DIRS}
@@ -57,7 +49,7 @@ install(TARGETS ${PROJECT_NAME}
 install(TARGETS ${PROJECT_NAME}_node
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-install(DIRECTORY launch
+install(DIRECTORY launch sound
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 

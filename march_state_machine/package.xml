@@ -14,13 +14,12 @@
   <depend>controller_manager_msgs</depend>
   <depend>march_shared_resources</depend>
 
-  <build_depend>roslint</build_depend>
-
   <build_export_depend>smach_viewer</build_export_depend>
 
   <exec_depend>rospy</exec_depend>
   <exec_depend>executive_smach</exec_depend>
+  <exec_depend>python-psutil</exec_depend>
+  <exec_depend>smach_viewer</exec_depend>
 
   <test_depend>rostest</test_depend>
-  <test_depend>rosunit</test_depend>
 </package>

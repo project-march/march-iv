@@ -29,17 +29,20 @@ env:
     - CCACHE_DIR=$HOME/.ccache # enables C/C++ caching in industrial_ci
     - BUILDER=colcon
     - CATKIN_LINT=pedantic
-    - DOWNSTREAM_WORKSPACE=dependencies.rosinstall
-    - AFTER_BUILD_TARGET_WORKSPACE='builder_run_build "$target_ws/install" "$target_ws" --cmake-target-skip-unavailable --cmake-target roslint'
+    - DOWNSTREAM_WORKSPACE=.rosinstall
 
 jobs:
   include:
-    - name: "Kinetic"
-      env: ROS_DISTRO=kinetic
     - name: "Melodic"
       env: ROS_DISTRO=melodic
     - name: "clang-format"
       env: ROS_DISTRO=melodic CLANG_FORMAT_CHECK=file
+    - name: "flake8"
+      language: python
+      python: 2.7
+      install:
+        - pip install flake8 pep8-naming flake8-blind-except flake8-string-format flake8-builtins flake8-commas flake8-quotes flake8-print flake8-docstrings flake8-import-order flake8-colors
+      script: flake8
 
 # clone and run industrial_ci
 install:

@@ -16,8 +16,7 @@
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
   <depend>urdf</depend>
-
-  <build_depend>roslint</build_depend>
+  <depend>sound_play</depend>
 
   <test_depend>rostest</test_depend>
   <test_depend>code_coverage</test_depend>

@@ -9,4 +9,4 @@ Setpoint[] setpoints
 
 trajectory_msgs/JointTrajectory trajectory
 duration duration
-Sound[] sounds
+string[] sounds
