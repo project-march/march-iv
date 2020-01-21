@@ -10,8 +10,12 @@ int8 PAUSE = 2
 int8 CONTINUE = 3
 int8 ROCKER_SWITCH = 4
 
+# Possible rocker switch output
+int8 INCREMENT = 1
+int8 DECREMENT = -1
+
 # If the type is a GAIT this is the name of the gait.
 string gait_name
 
-# If the type is a ROCKER SWITCH this is would be increment or decrement
-int8 rocket_switch
+# If the instruction type is ROCKER SWITCH increment or decrement the value
+int8 rocker_switch
