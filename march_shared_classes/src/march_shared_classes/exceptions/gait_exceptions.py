@@ -61,3 +61,16 @@ class NonMarchingGaitContent(GaitError):
             msg = 'Given gaits do not have matching content'
 
         super(NonMarchingGaitContent, self).__init__(msg)
+
+
+class TransitionError(Exception):
+    def __init__(self, msg=None):
+        """Class to raise an error when transition between two subgaits has an error .
+
+        :param msg:
+            The message to display.
+        """
+        if msg is None:
+            msg = 'Subgaits can not transition'
+
+        super(TransitionError, self).__init__(msg)
