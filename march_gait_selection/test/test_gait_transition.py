@@ -4,55 +4,62 @@ import unittest
 
 import rostest
 
-from march_gait_selection.create_transition import TransitionSubgait
 from march_gait_selection.GaitSelection import GaitSelection
+from march_gait_selection.transition_gait.create_transition import TransitionSubgait
 from march_shared_classes.gait.gait import Gait
 
 PKG = 'march_gait_selection'
 DIR = 'test/testing_gait_files'
 
-last_gait_name = 'walk_medium'
-new_gait_name = 'walk_small'
+old_gait_name = 'walk_small'
+new_gait_name = 'walk_medium'
 
-last_subgait_name = 'left_swing'
-new_subgait_name = 'right_swing'
+before_subgait_name = 'left_swing'
+subgait_name = 'right_swing'
+after_subgait_name = 'left_close'
 
 
 class TestTransitionTrajectory(unittest.TestCase):
     def setUp(self):
         self.gait_selection = GaitSelection(PKG, DIR)
+        self.transition_gait = TransitionSubgait(self.gait_selection)
 
     def test_valid_gait_information(self):
-        last_gait = False if self.gait_selection[last_gait_name] is None else True
+        last_gait = False if self.gait_selection[old_gait_name] is None else True
         new_gait = False if self.gait_selection[new_gait_name] is None else True
 
-        self.assertTrue(last_gait, msg='{gn} gait could not be found in map'.format(gn=last_gait_name))
+        self.assertTrue(last_gait, msg='{gn} gait could not be found in map'.format(gn=old_gait_name))
         self.assertTrue(new_gait, msg='{gn} gait could not be found in map'.format(gn=new_gait_name))
 
-        last_subgait = False if self.gait_selection[last_gait_name][last_subgait_name] is None else True
-        new_subgait = False if self.gait_selection[new_gait_name][new_subgait_name] is None else True
+        before_subgait = False if self.gait_selection[old_gait_name][before_subgait_name] is None else True
+        after_subgait = False if self.gait_selection[new_gait_name][after_subgait_name] is None else True
 
-        self.assertTrue(last_subgait, msg='{sg} subgait could not be found in gait {gn}'
-                        .format(sg=last_subgait_name, gn=last_gait_name))
-        self.assertTrue(new_subgait, msg='{sg} subgait could not be found in gait {gn}'
-                        .format(sg=new_subgait_name, gn=new_gait_name))
+        self.assertTrue(before_subgait, msg='{sg} subgait could not be found in gait {gn}'
+                        .format(sg=before_subgait_name, gn=old_gait_name))
+        self.assertTrue(after_subgait, msg='{sg} subgait could not be found in gait {gn}'
+                        .format(sg=after_subgait_name, gn=new_gait_name))
+
+        subgait_small = False if self.gait_selection[old_gait_name][subgait_name] is None else True
+        subgait_medium = False if self.gait_selection[new_gait_name][subgait_name] is None else True
+
+        self.assertTrue(subgait_small, msg='{sg} subgait could not be found in gait {gn}'
+                        .format(sg=subgait_name, gn=old_gait_name))
+        self.assertTrue(subgait_medium, msg='{sg} subgait could not be found in gait {gn}'
+                        .format(sg=subgait_name, gn=new_gait_name))
 
     def test_valid_transition_medium_to_small(self):
-        last_gait = self.gait_selection[last_gait_name]
-        new_gait = self.gait_selection[new_gait_name]
+        subgait_ms = self.transition_gait.create_transition_subgait(old_gait_name, new_gait_name, subgait_name)
 
-        last_subgait = last_gait[last_subgait_name]
-        new_subgait = new_gait[new_subgait_name]
+        before_subgait = self.gait_selection[old_gait_name][before_subgait_name]
+        after_subgait = self.gait_selection[new_gait_name][after_subgait_name]
 
-        transition_subgait_ms = TransitionSubgait.create_transition_subgait(self.gait_selection, last_gait_name,
-                                                                            new_gait_name, last_subgait_name)
+        subgaits = [before_subgait, subgait_ms, after_subgait]
 
-        subgaits = [last_subgait, transition_subgait_ms, new_subgait]
-
-        from_subgait_names = ['start', last_subgait_name, 'transition_subgait', new_subgait_name]
-        to_subgait_names = [last_subgait_name, 'transition_subgait', new_subgait_name, 'end']
+        from_subgait_names = ['start', before_subgait_name, 'transition_subgait', after_subgait_name]
+        to_subgait_names = [before_subgait_name, 'transition_subgait', after_subgait_name, 'end']
 
         Gait('transition', subgaits, from_subgait_names, to_subgait_names)
+        self.assertFalse(True)
 
 
 if __name__ == '__main__':
