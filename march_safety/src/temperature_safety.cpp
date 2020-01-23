@@ -9,7 +9,7 @@
 
 TemperatureSafety::TemperatureSafety(ros::NodeHandle* n, SafetyHandler* safety_handler,
                                      std::vector<std::string> joint_names)
-  : n_(n), safety_handler_(safety_handler), joint_names_(joint_names)
+  : n_(n), safety_handler_(safety_handler), joint_names_(std::move(joint_names))
 {
   ros::param::get("~default_temperature_threshold", this->default_temperature_threshold_);
   ros::param::get("~temperature_thresholds_warning", this->warning_temperature_thresholds_map_);

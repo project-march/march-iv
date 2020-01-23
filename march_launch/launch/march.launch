@@ -9,6 +9,7 @@
     <arg name="gazebo_ui" default="false" doc="Launches the Gazebo UI."/>
 
     <arg name="ground_gait" default="false" doc="Exoskeleton will ground gait in gazebo_ui if true."/>
+    <arg name="obstacle" default="none" doc="Obstacle to load in the simulation."/>
     <arg name="unpause" default="true" doc="Unpause simulation when controller starts."/>
     <arg name="fixed" default="true" doc="Fixes the exoskeleton in the world in rviz"/>
 
@@ -39,7 +40,7 @@
 
         <include file="$(find march_safety)/launch/march_safety.launch"/>
 
-        <include file="$(find march_sound_scheduler)/launch/march_sound_scheduler.launch"/>
+        <node name="sound_play" pkg="sound_play" type="soundplay_node.py"/>
 
         <include file="$(find march_gait_selection)/launch/march_gait_selection.launch">
             <arg name="gait_directory" value="$(arg gait_directory)"/>
@@ -63,6 +64,7 @@
             <arg name="gazebo_ui" value="$(eval not headless and gazebo_ui)"/>
             <arg name="fixed" value="$(arg fixed)"/>
             <arg name="ground_gait" value="$(arg ground_gait)"/>
+            <arg name="obstacle" value="$(arg obstacle)"/>
         </include>
     </group>
 
