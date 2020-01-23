@@ -1,9 +1,7 @@
-
 import rospy
 
 from march_shared_classes.exceptions.gait_exceptions import GaitError, SubgaitNameNotFound
 from march_shared_classes.gait.subgait import Subgait
-
 
 SUBGAIT_NAME = 'transition_subgait'
 GAIT_NAME = 'transition'
@@ -57,8 +55,72 @@ class TransitionSubgait(object):
         return self._new_subgait(self._robot, subgait_dict)
 
     @staticmethod
-    def _new_subgait(robot, subgait_dictionary):
-        return Subgait.from_dict(robot, subgait_dictionary, GAIT_NAME, SUBGAIT_NAME, VERSION)
+    def _scale_subgait_duration(old_subgait, new_subgait):
+        for old_joint in old_subgait.joints:
+            new_joint = new_subgait.get_joint(old_joint.name)
+            new_joint_setpoints = new_joint.setpoints
+
+            scaled_old_setpoints = []
+            for setpoints_index in range(len(new_joint_setpoints)):
+                new_setpoint = new_joint[setpoints_index]
+
+                if new_setpoint.time == 0:
+                    scaled_old_setpoints.append(old_joint[0])
+                else:
+                    scaled_setpoint = old_joint.get_interpolated_setpoint(new_setpoint.time)
+                    scaled_old_setpoints.append(scaled_setpoint)
+
+            old_joint.setpoints = scaled_old_setpoints
+
+        return old_subgait, new_subgait
+
+    @staticmethod
+    def _transition_trajectory(old_subgait, new_subgait):
+        joints = []
+        transition_positions = []
+        transition_velocities = []
+        transition_durations = []
+
+        total_transition_factor = len(new_subgait[0].setpoints)
+        for transition_index in range(total_transition_factor):
+            rospy.logwarn('transition index {ti} with timestamp {ts}'
+                          .format(ti=str(transition_index), ts=str(new_subgait[0][transition_index].time)))
+
+            positions = []
+            velocities = []
+            for old_joint in old_subgait.joints:
+                new_joint = new_subgait.get_joint(old_joint.name)
+
+                if len(old_joint) != len(new_joint):
+                    rospy.logerr('Amount of setpoints is inconsistent between subgait {og} of gait {fg} and {sg}'
+                                 .format(og=old_subgait.subgait_name, fg=old_subgait.gait_name,
+                                         sg=new_subgait.gait_name))
+
+                joints.append(new_joint.name)
+
+                new_setpoint_factor = 1.0 / (total_transition_factor - 1) * transition_index
+                old_setpoint_factor = 1.0 - new_setpoint_factor
+
+                old_setpoint = old_joint[transition_index]
+                new_setpoint = new_joint[transition_index]
+
+                positions.append((old_setpoint.position * old_setpoint_factor)
+                                 + (new_setpoint.position * new_setpoint_factor))
+                velocities.append((old_setpoint.velocity * old_setpoint_factor)
+                                  + (new_setpoint.velocity * new_setpoint_factor))
+
+                trans_pos = (old_setpoint.position * old_setpoint_factor) + \
+                            (new_setpoint.position * new_setpoint_factor)
+
+                rospy.logwarn('old factor: {of} \t new factor {nf} \t old: {op} \t transition: {tp} \t new: {np} '
+                              .format(of=str(old_setpoint_factor), nf=str(new_setpoint_factor),
+                                      op=str(old_setpoint.position), tp=str(trans_pos), np=str(new_setpoint.position)))
+
+            transition_positions.append(positions)
+            transition_velocities.append(velocities)
+            transition_durations.append(new_setpoint.time)
+
+        return joints, transition_positions, transition_velocities, transition_durations
 
     @staticmethod
     def _to_subgait_dictionary(joints, positions_list, velocity_list, durations):
@@ -74,8 +136,8 @@ class TransitionSubgait(object):
                      }
             points.append(point)
 
-            rospy.logwarn('TIMESTAMP: ' + str({'secs': ros_duration.secs, 'nsecs': ros_duration.nsecs}))
-            rospy.logwarn('POSITION: ' + str(positions))
+            rospy.logwarn('Transition timestamp: ' + str({'secs': ros_duration.secs, 'nsecs': ros_duration.nsecs}))
+            rospy.logwarn('Transition position: ' + str(positions))
 
         trajectory['joint_names'] = joints
         trajectory['points'] = points
@@ -83,65 +145,5 @@ class TransitionSubgait(object):
         return {'trajectory': trajectory, 'duration': {'secs': ros_duration.secs, 'nsecs': ros_duration.nsecs}}
 
     @staticmethod
-    def _scale_subgait_duration(old_subgait, new_subgait):
-        for old_joint in old_subgait.joints:
-            new_joint = new_subgait.get_joint(old_joint.name)
-
-            if len(old_joint) != len(new_joint):
-                rospy.logwarn('Amount of setpoints is inconsistent between subgait {og} of gait {fg} and {sg}'
-                              .format(og=old_subgait.subgait_name, fg=old_subgait.gait_name, sg=new_subgait.gait_name))
-
-            for rev_setpoint_index in reversed(range(len(new_joint))):
-                try:
-                    old_setpoint = old_joint[rev_setpoint_index]
-                    new_setpoint = new_joint[rev_setpoint_index]
-
-                    if old_setpoint.time != 0 and new_setpoint.time != 0:
-                        old_setpoint.position = old_setpoint.position / old_setpoint.time * new_setpoint.time
-                        old_setpoint.velocity = old_setpoint.velocity / old_setpoint.time * new_setpoint.time
-                        old_setpoint.time = new_setpoint.time
-
-                except IndexError:
-                    pass
-
-        return old_subgait, new_subgait
-
-    @staticmethod
-    def _transition_trajectory(old_subgait, new_subgait):
-        joints = []
-        transition_positions = []
-        transition_velocities = []
-        transition_durations = []
-
-        total_transition_factor = len(new_subgait[0].setpoints)
-        for transition_index in range(total_transition_factor):
-            new_setpoint = None
-
-            positions = []
-            velocities = []
-
-            for old_joint in old_subgait.joints:
-                new_joint = new_subgait.get_joint(old_joint.name)
-                joints.append(new_joint.name)
-
-                new_setpoint_factor = 1 / total_transition_factor * transition_index
-                old_setpoint_factor = 1 - new_setpoint_factor
-
-                try:
-                    old_setpoint = old_joint[transition_index]
-                    new_setpoint = new_joint[transition_index]
-
-                    positions.append((old_setpoint.position * old_setpoint_factor)
-                                     + (new_setpoint.position * new_setpoint_factor))
-                    velocities.append((old_setpoint.velocity * old_setpoint_factor)
-                                      + (new_setpoint.velocity * new_setpoint_factor))
-                except IndexError:
-                    new_setpoint = new_joint[transition_index]
-                    positions.append(new_setpoint.position)
-                    velocities.append(new_setpoint.velocity)
-
-            transition_positions.append(positions)
-            transition_velocities.append(velocities)
-            transition_durations.append(new_setpoint.time)
-
-        return joints, transition_positions, transition_velocities, transition_durations
+    def _new_subgait(robot, subgait_dictionary):
+        return Subgait.from_dict(robot, subgait_dictionary, GAIT_NAME, SUBGAIT_NAME, VERSION)

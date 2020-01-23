@@ -11,8 +11,8 @@ from march_shared_classes.gait.gait import Gait
 PKG = 'march_gait_selection'
 DIR = 'test/testing_gait_files'
 
-old_gait_name = 'walk_small'
-new_gait_name = 'walk_medium'
+old_gait_name = 'walk_medium'
+new_gait_name = 'walk_small'
 
 before_subgait_name = 'left_swing'
 subgait_name = 'right_swing'
