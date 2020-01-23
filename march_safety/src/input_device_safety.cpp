@@ -7,7 +7,7 @@ InputDeviceSafety::InputDeviceSafety(ros::NodeHandle* n, SafetyHandler* safety_h
 {
   int milliseconds;
   ros::param::get("~input_device_connection_timeout", milliseconds);
-  double send_errors_interval_param;
+  int send_errors_interval_param;
   ros::param::get("~send_errors_interval", send_errors_interval_param);
   this->send_errors_interval_ = send_errors_interval_param;
   this->connection_timeout_ = ros::Duration(milliseconds / 1000.0);
