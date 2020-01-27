@@ -56,21 +56,19 @@ class TransitionSubgait(object):
 
     @staticmethod
     def _scale_subgait_duration(old_subgait, new_subgait):
+        timestamps = sorted(set(old_subgait.get_unique_timestamps() + new_subgait.get_unique_timestamps()))
+
         for old_joint in old_subgait.joints:
             new_joint = new_subgait.get_joint(old_joint.name)
-            new_joint_setpoints = new_joint.setpoints
 
-            scaled_old_setpoints = []
-            for setpoints_index in range(len(new_joint_setpoints)):
-                new_setpoint = new_joint[setpoints_index]
+            old_joint_setpoints = []
+            new_joint_setpoints = []
+            for timestamp in timestamps:
+                old_joint_setpoints.append(old_joint.get_interpolated_setpoint(timestamp))
+                new_joint_setpoints.append(new_joint.get_interpolated_setpoint(timestamp))
 
-                if new_setpoint.time == 0:
-                    scaled_old_setpoints.append(old_joint[0])
-                else:
-                    scaled_setpoint = old_joint.get_interpolated_setpoint(new_setpoint.time)
-                    scaled_old_setpoints.append(scaled_setpoint)
-
-            old_joint.setpoints = scaled_old_setpoints
+            old_joint.setpoints = old_joint_setpoints
+            new_joint.setpoints = new_joint_setpoints
 
         return old_subgait, new_subgait
 
