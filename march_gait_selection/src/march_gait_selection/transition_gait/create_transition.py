@@ -3,6 +3,7 @@ import rospy
 from march_shared_classes.exceptions.gait_exceptions import GaitError, SubgaitNameNotFound
 from march_shared_classes.gait.subgait import Subgait
 
+
 SUBGAIT_NAME = 'transition_subgait'
 GAIT_NAME = 'transition'
 VERSION = 'default'
@@ -14,6 +15,20 @@ class TransitionSubgait(object):
         self._robot = gait_selection.robot
 
     def create_transition_subgait(self, old_gait_name, new_gait_name, new_subgait_name, old_subgait_name=None):
+        """Create a new transition subgait object between two given sub-gaits.
+
+        :param old_gait_name:
+            The name of the old (or current) gait
+        :param new_gait_name:
+            The name of the new gait which must be executed after the old gait
+        :param new_subgait_name:
+            Name of the subgait in which the transition will occur
+        :param old_subgait_name:
+            Possible to give an custom old subgait name, if not the same gait name will be used as new_subgait_name
+
+        :return:
+            A populated Subgait object which holds the data to transition between given gaits using the subgait
+        """
         old_gait = self._gait_selection[old_gait_name]
         new_gait = self._gait_selection[new_gait_name]
 
@@ -56,6 +71,16 @@ class TransitionSubgait(object):
 
     @staticmethod
     def _scale_subgait_duration(old_subgait, new_subgait):
+        """Scale the subgaits to have matching setpoints and corresponding timestamps.
+
+        :param old_subgait:
+            The subgait which the transition is starting from
+        :param new_subgait:
+            The subgait which the transition will result in.
+
+        :return:
+            Same subgaits but with matching amount of setpoints and matching timestamps
+        """
         timestamps = sorted(set(old_subgait.get_unique_timestamps() + new_subgait.get_unique_timestamps()))
 
         for old_joint in old_subgait.joints:
@@ -74,6 +99,16 @@ class TransitionSubgait(object):
 
     @staticmethod
     def _transition_trajectory(old_subgait, new_subgait):
+        """Calculate a transition trajectory which starts at the old gait and ends with the endpoints of the new gait.
+
+        :param old_subgait:
+            The subgait which the transition is starting from
+        :param new_subgait:
+            The subgait which the transition will result in.
+
+        :returns:
+             list of joints, velocities and positions corresponding to every joint at given timestamps and duration
+        """
         joints = []
         transition_positions = []
         transition_velocities = []
@@ -122,6 +157,20 @@ class TransitionSubgait(object):
 
     @staticmethod
     def _to_subgait_dictionary(joints, positions_list, velocity_list, durations):
+        """Format data to create a Subgait class object later on.
+
+        :param joints:
+            List of the used joints in the same order as in the setpoints
+        :param positions_list:
+            List of joint positions corresponding to the timestamps
+        :param velocity_list:
+            List of joint velocities corresponding to the timestamps
+        :param durations:
+            List of durations of the setpoints
+
+        :return:
+            Dictionary in specific format used to create a Subgait object (format matching .subgait files)
+        """
         ros_duration = None
         trajectory = {}
 
@@ -144,4 +193,14 @@ class TransitionSubgait(object):
 
     @staticmethod
     def _new_subgait(robot, subgait_dictionary):
+        """Create a subgait object using a subgait dictionary of a .subgait or generated dictionary.
+
+        :param robot:
+            The robot to execute the gaits
+        :param subgait_dictionary:
+            The data of the subgait packed in the .subgait file format
+
+        :return:
+            A populated Subgait object
+        """
         return Subgait.from_dict(robot, subgait_dictionary, GAIT_NAME, SUBGAIT_NAME, VERSION)
