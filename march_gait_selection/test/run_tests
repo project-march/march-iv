@@ -1,0 +1,11 @@
+#!/usr/bin/env python
+import rostest
+
+from nosetests.test_gait_transition import TestTransitionTrajectory
+
+
+PKG = 'march_gait_selection'
+
+
+if __name__ == '__main__':
+    rostest.rosrun(PKG, 'test_transition', TestTransitionTrajectory)

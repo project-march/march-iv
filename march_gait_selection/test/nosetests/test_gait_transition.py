@@ -59,7 +59,6 @@ class TestTransitionTrajectory(unittest.TestCase):
         to_subgait_names = [before_subgait_name, 'transition_subgait', after_subgait_name, 'end']
 
         Gait('transition', subgaits, from_subgait_names, to_subgait_names)
-        self.assertFalse(True)
 
 
 if __name__ == '__main__':
