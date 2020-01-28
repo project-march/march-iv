@@ -37,6 +37,7 @@ install(DIRECTORY test/launch
         )
 
 if (CATKIN_ENABLE_TESTING)
-        find_package(rostest REQUIRED)
+        enable_testing()
+        find_package(catkin COMPONENTS rostest)
         add_rostest(test/launch/testing_gait_selection.test)
 endif()
