@@ -26,66 +26,133 @@
    <contqueries>
     <contquery name='March_cq'>
      <windows>
-      <window-source name='March' autogen-key='true' insert-only='true'>
+      <window-source name='sourceWindowJoint' autogen-key='true' insert-only='true' >
        <schema>
         <fields>
          <field name='SEQUENCE' type='int64' key='true' />
          <field name='time' type='stamp'/>
-         <field name='symbol' type='string'/>
-         <field name='actual1' type='double'/>
-         <field name='actual2' type='double'/>
-         <field name='actual3' type='double'/>
-         <field name='actual4' type='double'/>
-         <field name='actual5' type='double'/>
-         <field name='actual6' type='double'/>
-         <field name='actual7' type='double'/>
-         <field name='actual8' type='double'/>
+<!--         <field name='symbol' type='string'/>-->
+<!--         <field name='secsEpoch' type='double'/>-->
+         <field name='joint_angles' type='array(dbl)'/>
 <!--         <field name='tStamp_secs' type='int64'/>-->
 <!--         <field name='tStamp_msecs' type='int32'/>-->
         </fields>
        </schema>
+       <connectors>
+               <connector class='fs' name='sub'>
+                <properties>
+                 <property name='type'>sub</property>
+                 <property name='fstype'>csv</property>
+                 <property name='fsname'>result.out</property>
+                 <property name='snapshot'>true</property>
+                 <property name='dateformat'>%Y-%m-%d %H:%M:%S</property>
+                </properties>
+               </connector>
+              </connectors>
       </window-source>
-<!--   <window-aggregate name='aggregateWindow'>-->
-<!--       <description>-->
-<!--        This is an aggregate window with aggregation expressions.-->
-<!--        One expression is the summation of quantity. The other expression-->
-<!--        is the maximum of price.-->
-<!--       </description>-->
+      <window-source name='sourceWindowTemperature' autogen-key='true' insert-only='true' >
+       <schema>
+        <fields>
+         <field name='SEQUENCE' type='int64' key='true' />
+         <field name='time' type='stamp'/>
+         <!--         <field name='symbol' type='string'/>-->
+         <!--         <field name='secsEpoch' type='double'/>-->
+         <field name='temperature' type='double'/>
+         <!--         <field name='tStamp_secs' type='int64'/>-->
+         <!--         <field name='tStamp_msecs' type='int32'/>-->
+        </fields>
+       </schema>
+      </window-source>
+<!--            <window-compute pubsub="true" name="computeWindow">-->
+<!--             <expr-initialize>-->
+<!--              <udfs>-->
+<!--      &lt;!&ndash;         <udf name="Compare" type="array(dbl)"><![CDATA[private string p private real array return_array private string comparison private integer i&ndash;&gt;-->
+<!--      &lt;!&ndash;          p = parameter(1); return_array=parameter(2); comparison=parameter(3);&ndash;&gt;-->
+<!--      &lt;!&ndash;          IF (p!=comparison) THEN  begin&ndash;&gt;-->
+<!--      &lt;!&ndash;           FOR i = 1 TO 10 STEP 1&ndash;&gt;-->
+<!--      &lt;!&ndash;            return_array.set(i, 0);&ndash;&gt;-->
+<!--      &lt;!&ndash;           end;&ndash;&gt;-->
+<!--      &lt;!&ndash;           return return_array;   ]]></udf>&ndash;&gt;-->
+<!--      &lt;!&ndash;         <udf name="Compare" type="array(dbl)"><![CDATA[private string p private real array return_array private string comparison private integer i&ndash;&gt;-->
+<!--      &lt;!&ndash;          p = parameter(1); return_array=parameter(2); comparison=parameter(3);&ndash;&gt;-->
+<!--      &lt;!&ndash;           return return_array;   ]]></udf>&ndash;&gt;-->
+<!--               <udf name="Compare" type="array(dbl)"><![CDATA[private real array return_array; return return_array]]></udf>-->
+<!--              </udfs>-->
+<!--             </expr-initialize>-->
+<!--             <schema>-->
+<!--              <fields>-->
+<!--               <field name="SEQUENCE" type="int64" key="true"/>-->
+<!--               <field name='time' type='stamp'/>-->
+<!--               <field name="joint_angles" type="array(dbl)" />-->
+<!--               <field name="temperature" type="array(dbl)" />-->
+<!--              </fields>-->
+<!--             </schema>-->
+<!--             <output>-->
+<!--              <field-expr><![CDATA[time]]></field-expr>-->
+<!--              <field-expr><![CDATA[Compare(symbol, values, 'joint_angles')]]></field-expr>-->
+<!--              <field-expr><![CDATA[Compare(symbol, values, 'temperature')]]></field-expr>-->
+<!--             </output>-->
+<!--            </window-compute>-->
+<!--      </window-source>-->
+<!--      <window-join name='joinWindow'>-->
+<!--       <join type="inner">-->
+<!--        <conditions>-->
+<!--         <fields left='time' right='time' />-->
+<!--        </conditions>-->
+<!--       </join>-->
+<!--       <output>-->
+<!--        <field-selection name='joint_angles' source='l_joint_angles'/>-->
+<!--        <field-selection name='temperature' source='r_temperature'/>-->
+<!--       </output>-->
+<!--       <connectors>-->
+<!--        <connector class='fs' name='sub'>-->
+<!--         <properties>-->
+<!--          <property name='type'>sub</property>-->
+<!--          <property name='fstype'>csv</property>-->
+<!--          <property name='fsname'>result.out</property>-->
+<!--          <property name='snapshot'>true</property>-->
+<!--          <property name='dateformat'>%Y-%m-%d %H:%M:%S</property>-->
+<!--         </properties>-->
+<!--        </connector>-->
+<!--       </connectors>-->
+<!--      </window-join>-->
+
+
+<!--   <window-copy name='copyWindow' index='pi_HASH'>-->
+<!--    <retention field='time' type='bytime_sliding'>1 seconds</retention>-->
+<!--    </window-copy>-->
+<!--      <window-aggregate name='aggregateWindow' index='pi_HASH'>-->
 <!--       <schema>-->
 <!--        <fields>-->
-<!--         <field name='symbol' type='string' key='true'/>-->
-<!--         <field name='totalQuant' type='int32'/>-->
-<!--&lt;!&ndash;         <field name='maxPrice' type='double'/>&ndash;&gt;-->
+<!--         <field name="SEQUENCE" type="int64" key="true"/>-->
+<!--         <field name='time' type='stamp'/>-->
+<!--         <field name='joint_angles' type='array(dbl)'/>-->
+<!--         <field name='temperature' type="array(dbl)" />-->
 <!--        </fields>-->
 <!--       </schema>-->
 <!--       <output>-->
-<!--        <field-expr>ESP_aSum(actual)</field-expr>-->
-<!--&lt;!&ndash;        <field-expr>ESP_aMax(price)</field-expr>&ndash;&gt;-->
+<!--        <field-expr>ESP_aLast(time)</field-expr>-->
+<!--        <field-expr>ESP_aAve(joint_angles)</field-expr>-->
+<!--        <field-expr>ESP_aAve(temperature)</field-expr>-->
 <!--       </output>-->
-<!--     </window-aggregate>-->
-      <window-copy name='copy_win'>
-       <description>
-        This is a copy window.  The copy window will receive all of the events
-        from the source window.  Events are only retained for 300 seconds.  The
-        retention time is calculated using the time field in the event.
-       </description>
-       <retention field='time' type='bytime_sliding'>300 seconds</retention>
-       <connectors>
-        <connector class='fs' name='sub'>
-         <properties>
-          <property name='type'>sub</property>
-          <property name='fstype'>csv</property>
-          <property name='fsname'>result.out</property>
-          <property name='snapshot'>true</property>
-          <property name='dateformat'>%Y-%m-%d %H:%M:%S</property>
-         </properties>
-        </connector>
-       </connectors>
-      </window-copy>
+<!--       <connectors>-->
+<!--        <connector class='fs' name='sub'>-->
+<!--         <properties>-->
+<!--          <property name='type'>sub</property>-->
+<!--          <property name='fstype'>csv</property>-->
+<!--          <property name='fsname'>result1.out</property>-->
+<!--          <property name='snapshot'>true</property>-->
+<!--          <property name='dateformat'>%Y-%m-%d %H:%M:%S</property>-->
+<!--         </properties>-->
+<!--        </connector>-->
+<!--       </connectors>-->
+<!--      </window-aggregate>-->
      </windows>
-     <edges>
-      <edge source='March' target='copy_win'/>
-     </edges>
+<!--     <edges>-->
+<!--      <edge source='sourceWindowJoint' target='joinWindow'/>-->
+<!--      <edge source='sourceWindowTemperature' target='joinWindow'/>-->
+<!--&lt;!&ndash;      <edge source='copyWindow' target='aggregateWindow' />&ndash;&gt;-->
+<!--     </edges>-->
     </contquery>
    </contqueries>
   </project>
