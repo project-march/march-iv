@@ -4,35 +4,35 @@
       <contqueries>
         <contquery name="March_cq">
           <windows>
-<!--            <window-join name="joinWindow">-->
-<!--              <join type="inner">-->
-<!--                <conditions>-->
-<!--                  <fields left="time" right="time" />-->
-<!--                </conditions>-->
-<!--              </join>-->
-<!--              <output>-->
-<!--                <field-selection name="time" source="l_time" />-->
-<!--                <field-selection name="joint_angles" source="l_jonit_angles" />-->
-<!--                <field-selection name="temperature_left_hip_aa" source="r_temperature_left_hip_aa" />-->
-<!--                <field-selection name="temperature_right_hip_aa" source="r_temperature_right_hip_aa" />-->
-<!--                <field-selection name="temperature_left_hip_fe" source="r_temperature_left_hip_fe" />-->
-<!--                <field-selection name="temperature_right_hip_fe" source="r_temperature_right_hip_fe" />-->
-<!--                <field-selection name="temperature_left_ankle" source="r_temperature_left_ankle" />-->
-<!--                <field-selection name="temperature_right_ankle" source="r_temperature_right_ankle" />-->
-<!--                <field-selection name="temperature_left_knee" source="r_temperature_left_knee" />-->
-<!--                <field-selection name="temperature_right_knee" source="r_temperature_right_knee" />-->
-<!--              </output>-->
-<!--              <connectors>-->
-<!--                <connector class="fs" name="sub" type="subscribe">-->
-<!--                  <properties>-->
-<!--                    <property name="dateformat">%Y-%m-%d %H:%M:%S</property>-->
-<!--                    <property name="fsname">temperature_complete.csv</property>-->
-<!--                    <property name="fstype">csv</property>-->
-<!--                    <property name="snapshot">true</property>-->
-<!--                  </properties>-->
-<!--                </connector>-->
-<!--              </connectors>-->
-<!--            </window-join>-->
+            <window-join name="joinWindow">
+              <join type="leftouter">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="joint_angles" source="l_joint_angles" />
+                <field-selection name="temperature_left_hip_aa" source="r_temperature_left_hip_aa" />
+                <field-selection name="temperature_right_hip_aa" source="r_temperature_right_hip_aa" />
+                <field-selection name="temperature_left_hip_fe" source="r_temperature_left_hip_fe" />
+                <field-selection name="temperature_right_hip_fe" source="r_temperature_right_hip_fe" />
+                <field-selection name="temperature_left_ankle" source="r_temperature_left_ankle" />
+                <field-selection name="temperature_right_ankle" source="r_temperature_right_ankle" />
+                <field-selection name="temperature_left_knee" source="r_temperature_left_knee" />
+                <field-selection name="temperature_right_knee" source="r_temperature_right_knee" />
+              </output>
+              <connectors>
+                <connector class="fs" name="sub" type="subscribe">
+                  <properties>
+                    <property name="dateformat">%Y-%m-%d %H:%M:%S</property>
+                    <property name="fsname">full.csv</property>
+                    <property name="fstype">csv</property>
+                    <property name="snapshot">true</property>
+                  </properties>
+                </connector>
+              </connectors>
+            </window-join>
             <window-join name="joinTemperature">
               <join type="inner">
                 <conditions>
@@ -244,8 +244,8 @@
             <edge role="right" source="joinTemperature_hip_fe" target="joinTemperature_hip" />
             <edge role="left" source="joinTemperature_hip" target="joinTemperature" />
             <edge role="right" source="joinTemperature_ankle_knee" target="joinTemperature" />
-<!--            <edge role="left" source="sourceWindowJoint" target="joinWindow" />-->
-<!--            <edge role="right" source="joinTemperature" target="joinWindow" />-->
+            <edge role="left" source="sourceWindowJoint" target="joinWindow" />
+            <edge role="right" source="joinTemperature" target="joinWindow" />
           </edges>
         </contquery>
       </contqueries>

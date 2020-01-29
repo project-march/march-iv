@@ -158,7 +158,7 @@ class DataCollectorNode(object):
         time = data.header.stamp.secs + data.header.stamp.nsecs * 10**(-9)
         timestr = datetime.datetime.fromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S.%f")
         csv = timestr + ',[' + ";".join([str(value) for value in joint_angles]) + "]"
-        # self.send_to_esp(csv, "sourceWindowJoint")
+        self.send_to_esp(csv, "sourceWindowJoint")
         #
         # com = self._com_calculator.calculate_com()
         # self._com_marker_publisher.publish(com)
