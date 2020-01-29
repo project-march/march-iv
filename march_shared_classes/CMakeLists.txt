@@ -9,7 +9,5 @@ catkin_python_setup()
 catkin_package()
 
 if(CATKIN_ENABLE_TESTING)
-    catkin_add_nosetests(test/limits_test.py)
-    catkin_add_nosetests(test/subgait_test.py)
+    catkin_add_nosetests(test/run_tests.py)
 endif()
-

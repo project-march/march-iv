@@ -65,6 +65,11 @@ class JointTrajectory(object):
         from_setpoint = self.setpoints[-1]
         to_setpoint = joint.setpoints[0]
 
+        #TODO move to different method. Test self only.
+        if from_setpoint.time != self.duration or to_setpoint.time != 0:
+            if from_setpoint.velocity != 0 or to_setpoint.velocity != 0:
+                return False
+
         if from_setpoint.velocity == to_setpoint.velocity and from_setpoint.position == to_setpoint.position:
             return True
 

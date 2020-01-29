@@ -1,5 +1,4 @@
 import unittest
-import rosunit
 
 from march_shared_classes.gait.limits import Limits
 
@@ -16,7 +15,3 @@ class LimitsTest(unittest.TestCase):
 
     def test_velocity_limit(self):
         self.assertEqual(self.limits.velocity, 2, "Velocity limit not initialised correctly.")
-
-
-if __name__ == '__main__':
-    rosunit.unitrun(PKG, 'test_limits', LimitsTest)
