@@ -13,8 +13,8 @@
   <depend>march_shared_resources</depend>
   <depend>march_description</depend>
   <depend>std_msgs</depend>
-  <depend>rospy</depend>
 
+  <exec_depend>rospy</exec_depend>
   <exec_depend>rospy_message_converter</exec_depend>
   <exec_depend>urdfdom_py</exec_depend>
 
