@@ -2,39 +2,30 @@ cmake_minimum_required(VERSION 2.8.3)
 project(march_gait_selection)
 
 find_package(catkin REQUIRED COMPONENTS
-        march_shared_classes
-        march_shared_resources
-        march_description
-        std_msgs
-        )
+    march_shared_classes
+    march_shared_resources
+    march_description
+    std_msgs
+)
 
 catkin_python_setup()
 
-catkin_package(
-        CATKIN_DEPENDS
-        march_shared_classes
-        march_shared_resources
-        march_description
-        std_msgs
+catkin_package(CATKIN_DEPENDS
+    march_shared_classes
+    march_shared_resources
+    march_description
+    std_msgs
 )
 
-catkin_install_python(PROGRAMS scripts/${PROJECT_NAME}_node
-        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-        )
+catkin_install_python(PROGRAMS scripts/${PROJECT_NAME}_node test/run_tests
+    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
-catkin_install_python(PROGRAMS test/run_tests
-        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-        )
-
-install(DIRECTORY launch
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-        )
-
-install(DIRECTORY test/launch
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
-        )
+install(DIRECTORY launch test/launch
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
 
 if (CATKIN_ENABLE_TESTING)
-        find_package(rostest REQUIRED)
-        add_rostest(test/launch/testing_gait_selection.test)
+    find_package(rostest REQUIRED)
+    add_rostest(test/launch/testing_gait_selection.test)
 endif()
