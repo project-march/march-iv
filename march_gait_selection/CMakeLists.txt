@@ -16,6 +16,7 @@ catkin_package(
         CATKIN_DEPENDS
         march_shared_classes
         march_shared_resources
+        rospy
         std_msgs
 )
 
