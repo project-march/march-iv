@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(march_gait_selection)
 
-
-find_package(
-        catkin REQUIRED COMPONENTS
+find_package(catkin REQUIRED COMPONENTS
         march_shared_classes
         march_shared_resources
         march_description
@@ -37,7 +35,6 @@ install(DIRECTORY test/launch
         )
 
 if (CATKIN_ENABLE_TESTING)
-        enable_testing()
-        find_package(catkin COMPONENTS rostest)
+        find_package(rostest REQUIRED)
         add_rostest(test/launch/testing_gait_selection.test)
 endif()
