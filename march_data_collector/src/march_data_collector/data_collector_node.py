@@ -26,11 +26,6 @@ import pubsubApi
 import modelingApi
 import datetime
 
-import lxml.etree as etree
-
-
-
-import socket
 
 
 
@@ -44,22 +39,10 @@ class DataCollectorNode(object):
                        'right_hip_fe', 'right_knee', 'right_ankle']
 
 
-        # self._imu_broadcaster = tf2_ros.TransformBroadcaster()
-        # self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
-        #
-        self._temperature_subscriber = [rospy.Subscriber('/march/temperature/' + joint,
-                                                         Temperature,
-                                                         self.temperature_callback, joint) for joint in joint_names]
-
-        self._trajectory_state_subscriber = rospy.Subscriber('/march/controller/trajectory/state',
-                                                             JointTrajectoryControllerState,
-                                                             self.trajectory_state_callback)
-
-        # self._imc_state_subscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback)
-        #
-        self._imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
-        #below should match with the source windows in the xml file
-        sourceWindows = ["jointSourceWindow", ["TemperatureWindow_" + joint for joint in joint_names], "IMUsource"]
+        # below should match with the source windows in the xml file
+        sourceWindows = ["sourceWindowJoint"] + ["sourceWindowTemperature_" + joint for joint in joint_names]
+        print("source windows according to ros\n")
+        print(sourceWindows)
 
         def pubErrCbFunc(failure, code, ctx):
             # don't output anything for client busy
@@ -81,14 +64,18 @@ class DataCollectorNode(object):
         basic_url = 'dfESP://localhost:9901'
         project = basic_url + '/March_test'
         contquery = project + '/March_cq'
-        jointwindow = contquery + '/sourceWindowJoint'
 
-        # create the following dictionaries schemaptr, publisher
+        stringv = pubsubApi.QueryMeta(project+"?get=windows_sourceonly")
+        sourceWindow_esp = [modelingApi.StringVGet(stringv, i) for i in range(0, modelingApi.StringVSize(stringv))]
+        print("source windows ESP\n")
+        print(sourceWindow_esp)
+        print(set(sourceWindows)-set(sourceWindow_esp))
+
 
         self.esp_publishers = {}
         for source in sourceWindows:
-            window_url = contquery + "/" + source +"?get=schema"
-            stringv = pusubApi.QueryMeta(window_url)
+            window_url = contquery + "/" + source
+            stringv = pubsubApi.QueryMeta(window_url+"?get=schema")
             if stringv == None:
                 rospy.logwarn('Could not get ESP source window schema for window ' +source)
                 continue
@@ -99,13 +86,13 @@ class DataCollectorNode(object):
             if schema == None:
                 rospy.logwarn('Could not get ESP schema from query response for source ' + source)
                 continue
-            schemaptr = modelingApi.SchemaCreate(source, self.schema)
+            schemaptr = modelingApi.SchemaCreate(source, schema)
 
             if schemaptr == None:
                 rospy.logwarn('Could not build ESP source window schema for source ' + source)
                 continue
 
-            pub = pubsubApi.PublisherStart(jointwindow, pubErrFunc, None)
+            pub = pubsubApi.PublisherStart(window_url, pubErrFunc, None)
             if pub == None:
                 rospy.logwarn('Could not create ESP publisher client for source' + source)
                 continue
@@ -119,43 +106,34 @@ class DataCollectorNode(object):
 
             self.esp_publishers[source] = (pub, schemaptr)
 
-
-
-
-
-
-
-
-
-
-
-
+        print(self.esp_publishers)
         modelingApi.StringVFree(stringv)
 
 
+        # self._imu_broadcaster = tf2_ros.TransformBroadcaster()
+        # self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
+        #
+        self._temperature_subscriber = [rospy.Subscriber('/march/temperature/' + joint,
+                                                         Temperature,
+                                                         self.temperature_callback, joint) for joint in joint_names]
 
+        self._trajectory_state_subscriber = rospy.Subscriber('/march/controller/trajectory/state',
+                                                             JointTrajectoryControllerState,
+                                                             self.trajectory_state_callback)
 
+        # self._imc_state_subscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback)
+        #
+        self._imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
 
-
-        values = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
-        csv = 'i,n,1'
-        # timestr = datetime.datetime.fromtimestamp(float(datachannels[1])).strftime("%Y-%m-%d %H:%M:%S")
-        timestr = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
-        # print(timestr)
-
-
-        # csv = 'i, n, 1,' +timestr
 
 
         # pubsubApi.Stop(pub, 1)
         # pubsubApi.Shutdown()
 
 
-    def send_udp(self, msg):
-        self.sock.sendto(msg.encode('utf-8'), (self.host, self.port))
-
     def send_to_esp(self, csv, source):
         rospy.loginfo(csv)
+        csv = 'i, n, 1,' + csv
         pub, schemaptr = self.esp_publishers[source]
         event = modelingApi.EventCreate2(schemaptr, csv, "%Y-%m-%d %H:%M:%S")
         eventVector = modelingApi.EventVCreate()
@@ -167,19 +145,20 @@ class DataCollectorNode(object):
         modelingApi.EventBlockDestroy(eventBlock)
 
 
-    # def temperature_callback(self, data, joint):
-    #     # rospy.logwarn("Temperature")
-    #     msg = " ".join(["temperature",str(data.header.stamp.secs + data.header.stamp.nsecs * 10 **(-9)), str(data.temperature)])
-    #     self.send_udp(msg)
+    def temperature_callback(self, data, joint):
+        # rospy.logwarn("Temperature")
+        time = data.header.stamp.secs + data.header.stamp.nsecs * 10**(-9)
+        timestr = datetime.datetime.fromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S.%f")
+        csv = timestr + ',' + str(data.temperature)
+        self.send_to_esp(csv, "sourceWindowTemperature_" + joint)
 
 
     def trajectory_state_callback(self, data):
-        rospy.logwarn('received trajectory state' + str(data.desired))
         joint_angles = data.actual.positions
         time = data.header.stamp.secs + data.header.stamp.nsecs * 10**(-9)
         timestr = datetime.datetime.fromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S.%f")
-        csv = 'i, n, 1,' + timestr + ',[' + ";".join([str(value) for value in joint_angles]) + "]"
-        self.send_to_esp(csv)
+        csv = timestr + ',[' + ";".join([str(value) for value in joint_angles]) + "]"
+        # self.send_to_esp(csv, "sourceWindowJoint")
         #
         # com = self._com_calculator.calculate_com()
         # self._com_marker_publisher.publish(com)
