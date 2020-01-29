@@ -1,0 +1,53 @@
+#this file represents the controller being used
+march:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+  controller:
+    trajectory:
+      type: "effort_controllers/JointTrajectoryController"
+      joints:
+        - left_ankle
+        - left_hip_aa
+        - left_hip_fe
+        - left_knee
+        - right_ankle
+        - right_hip_aa
+        - right_hip_fe
+        - right_knee
+
+      gains: # Required because we're controlling an effort interface
+        # The pid values are working, but they seem to be heavily dependent
+        # on the max effort values (in the march_world.launch file) for reasons unknown.
+        left_ankle: {p: 1000,  d: 10, i: 0, i_clamp: 0}
+        left_hip_aa: {p: 1000,  d: 10, i: 0, i_clamp: 0}
+        left_hip_fe: {p: 1000,  d: 10, i: 0, i_clamp: 0}
+        left_knee: {p: 1000,  d: 10, i: 0, i_clamp: 0}
+        right_ankle: {p: 1000,  d: 10, i: 0, i_clamp: 0}
+        right_hip_aa: {p: 1000,  d: 10, i: 0, i_clamp: 0}
+        right_hip_fe: {p: 1000,  d: 10, i: 0, i_clamp: 0}
+        right_knee: {p: 1000,  d: 10, i: 0, i_clamp: 0}
+
+      state_publish_rate:  25            # Override default
+      action_monitor_rate: 30            # Override default
+      stop_trajectory_duration: 0        # Override default
+
+      constraints:
+        left_ankle:
+          trajectory: 0.25
+        left_hip_aa:
+          trajectory: 0.2
+        left_hip_fe:
+          trajectory: 0.2
+        left_knee:
+          trajectory: 0.2
+        right_ankle:
+          trajectory: 0.25
+        right_hip_aa:
+          trajectory: 0.2
+        right_hip_fe:
+          trajectory: 0.2
+        right_knee:
+          trajectory: 0.2
