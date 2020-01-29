@@ -8,8 +8,5 @@
                     max_effort_rotary:=200.0 max_effort_linear:=40.0
                     ground_gait:=false" />
 
-    <!-- Upload the controller configuration -->
-    <rosparam file="$(find march_gait_selection)/test/testing_gait_files/march4.yaml" command="load"/>
-
     <test test-name=" test_gait_selection" pkg="march_gait_selection" type="run_tests"/>
 </launch>
