@@ -62,18 +62,24 @@ class JointTrajectory(object):
         :returns:
             True if ending and starting point are identical else False
         """
+        self._validate_boundary_points()
+
         from_setpoint = self.setpoints[-1]
         to_setpoint = joint.setpoints[0]
-
-        #TODO move to different method. Test self only.
-        if from_setpoint.time != self.duration or to_setpoint.time != 0:
-            if from_setpoint.velocity != 0 or to_setpoint.velocity != 0:
-                return False
 
         if from_setpoint.velocity == to_setpoint.velocity and from_setpoint.position == to_setpoint.position:
             return True
 
         return False
+
+    def _validate_boundary_points(self):
+        """Validate the starting and ending of this joint are at t = 0 and t = duration, or that their speed is zero.
+
+        :returns:
+            False if the starting/ending point is (not at 0/duration) and (has nonzero speed), True otherwise
+        """
+        return (self.setpoints[0].time == 0 or self.setpoints[0].velocity == 0) and \
+               (self.setpoints[0].time == self.duration or self.setpoints[0].velocity == 0)
 
     def get_interpolated_setpoint(self, time):
         # If we have a setpoint this exact time there is no need to interpolate.
