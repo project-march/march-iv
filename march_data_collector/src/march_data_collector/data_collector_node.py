@@ -13,9 +13,10 @@ from visualization_msgs.msg import Marker
 from .com_calculator import CoMCalculator
 from .cp_calculator import CPCalculator
 
+
 class DataCollectorNode(object):
 
-    def __init__(self,  com_calculator, cp_calculators):
+    def __init__(self, com_calculator, cp_calculators):
         self._com_calculator = com_calculator
         self._cp_calculators = cp_calculators
         self._imu_broadcaster = tf2_ros.TransformBroadcaster()
@@ -63,8 +64,5 @@ def main():
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
     feet = ['ankle_plate_left', 'ankle_plate_right']
     cp_calculators = [CPCalculator(tf_buffer, foot) for foot in feet]
-
     DataCollectorNode(center_of_mass_calculator, cp_calculators)
-
-    # get launch param for esp and then also launch ESP
     rospy.spin()

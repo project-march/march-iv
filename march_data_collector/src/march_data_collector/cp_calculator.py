@@ -40,8 +40,8 @@ class CPCalculator(object):
             try:
                 multiplier = sqrt(com_mark.pose.position.z / self.g)
             except ValueError:
-                rospy.logwarn_throttle(1, "Cannot calculate capture point, because center of mass height is smaller "
-                                          "than 0")
+                rospy.logwarn_throttle(1, 'Cannot calculate capture point, because center of mass height is smaller '
+                                          'than 0')
                 return self.marker
 
             x_cp = trans.transform.translation.x + x_dot * multiplier
