@@ -144,7 +144,7 @@
                 <field-selection name="temperature_right_knee" source="r_temperature" />
               </output>
             </window-join>
-            <window-source autogen-key="true" insert-only="true" name="sourceWindowTemperature_left_ankle">
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_left_ankle">
               <schema>
                 <fields>
                   <field key="true" name="SEQUENCE" type="int64" />
@@ -153,7 +153,7 @@
                 </fields>
               </schema>
             </window-source>
-            <window-source autogen-key="true" insert-only="true" name="sourceWindowTemperature_left_hip_aa">
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_left_hip_aa">
               <schema>
                 <fields>
                   <field key="true" name="SEQUENCE" type="int64" />
@@ -172,7 +172,7 @@
                 </connector>
               </connectors>
             </window-source>
-            <window-source autogen-key="true" insert-only="true" name="sourceWindowTemperature_left_hip_fe">
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_left_hip_fe">
               <schema>
                 <fields>
                   <field key="true" name="SEQUENCE" type="int64" />
@@ -181,7 +181,7 @@
                 </fields>
               </schema>
             </window-source>
-            <window-source autogen-key="true" insert-only="true" name="sourceWindowTemperature_left_knee">
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_left_knee">
               <schema>
                 <fields>
                   <field key="true" name="SEQUENCE" type="int64" />
@@ -190,7 +190,7 @@
                 </fields>
               </schema>
             </window-source>
-            <window-source autogen-key="true" insert-only="true" name="sourceWindowTemperature_right_ankle">
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_right_ankle">
               <schema>
                 <fields>
                   <field key="true" name="SEQUENCE" type="int64" />
@@ -199,7 +199,7 @@
                 </fields>
               </schema>
             </window-source>
-            <window-source autogen-key="true" insert-only="true" name="sourceWindowTemperature_right_hip_aa">
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_right_hip_aa">
               <schema>
                 <fields>
                   <field key="true" name="SEQUENCE" type="int64" />
@@ -208,7 +208,7 @@
                 </fields>
               </schema>
             </window-source>
-            <window-source autogen-key="true" insert-only="true" name="sourceWindowTemperature_right_hip_fe">
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_right_hip_fe">
               <schema>
                 <fields>
                   <field key="true" name="SEQUENCE" type="int64" />
@@ -217,7 +217,7 @@
                 </fields>
               </schema>
             </window-source>
-            <window-source autogen-key="true" insert-only="true" name="sourceWindowTemperature_right_knee">
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_right_knee">
               <schema>
                 <fields>
                   <field key="true" name="SEQUENCE" type="int64" />
@@ -226,7 +226,7 @@
                 </fields>
               </schema>
             </window-source>
-              <window-source autogen-key="true" insert-only="true" name="sourceWindowJoint">
+              <window-source autogen-key="true" insert-only="true" name="sourceJoint">
                   <schema>
                       <fields>
                           <field key="true" name="SEQUENCE" type="int64" />
@@ -248,7 +248,7 @@
                   </connector>
                 </connectors>
               </window-source>
-          <window-source autogen-key="true" insert-only="true" name="sourceWindowIMU">
+          <window-source autogen-key="true" insert-only="true" name="sourceIMU">
             <schema>
               <fields>
                 <field key="true" name="SEQUENCE" type="int64" />
@@ -269,7 +269,7 @@
               </connector>
             </connectors>
           </window-source>
-            <window-source autogen-key="true" insert-only="true" name="sourceWindowIMC">
+            <window-source autogen-key="true" insert-only="true" name="sourceIMC">
               <schema>
                 <fields>
                   <field key="true" name="SEQUENCE" type="int64" />
@@ -289,7 +289,7 @@
                 </connector>
               </connectors>
             </window-source>
-          <window-source autogen-key="true" insert-only="true" name="sourceWindowGait">
+          <window-source autogen-key="true" insert-only="true" name="sourceGait">
             <schema>
               <fields>
                 <field key="true" name="SEQUENCE" type="int64" />
@@ -310,7 +310,7 @@
               </connector>
             </connectors>
           </window-source>
-            <window-source autogen-key="true" insert-only="true" name="sourceWindowCom">
+            <window-source autogen-key="true" insert-only="true" name="sourceCom">
               <schema>
                 <fields>
                   <field key="true" name="SEQUENCE" type="int64" />
@@ -322,7 +322,7 @@
                 <connector class="fs" name="sub" type="subscribe">
                   <properties>
                     <property name="dateformat">%Y-%m-%d %H:%M:%S</property>
-                    <property name="fsname">gait.csv</property>
+                    <property name="fsname">com.csv</property>
                     <property name="fstype">csv</property>
                     <property name="snapshot">true</property>
                   </properties>
@@ -345,26 +345,26 @@
             </window-join>
           </windows>
           <edges>
-            <edge role="left" source="sourceWindowTemperature_left_ankle" target="joinTemperature_ankle" />
-            <edge role="right" source="sourceWindowTemperature_right_ankle" target="joinTemperature_ankle" />
-            <edge role="left" source="sourceWindowTemperature_left_hip_aa" target="joinTemperature_hip_aa" />
-            <edge role="right" source="sourceWindowTemperature_right_hip_aa" target="joinTemperature_hip_aa" />
-            <edge role="left" source="sourceWindowTemperature_left_hip_fe" target="joinTemperature_hip_fe" />
-            <edge role="right" source="sourceWindowTemperature_right_hip_fe" target="joinTemperature_hip_fe" />
-            <edge role="left" source="sourceWindowTemperature_left_knee" target="joinTemperature_knee" />
-            <edge role="right" source="sourceWindowTemperature_right_knee" target="joinTemperature_knee" />
+            <edge role="left" source="sourceTemperature_left_ankle" target="joinTemperature_ankle" />
+            <edge role="right" source="sourceTemperature_right_ankle" target="joinTemperature_ankle" />
+            <edge role="left" source="sourceTemperature_left_hip_aa" target="joinTemperature_hip_aa" />
+            <edge role="right" source="sourceTemperature_right_hip_aa" target="joinTemperature_hip_aa" />
+            <edge role="left" source="sourceTemperature_left_hip_fe" target="joinTemperature_hip_fe" />
+            <edge role="right" source="sourceTemperature_right_hip_fe" target="joinTemperature_hip_fe" />
+            <edge role="left" source="sourceTemperature_left_knee" target="joinTemperature_knee" />
+            <edge role="right" source="sourceTemperature_right_knee" target="joinTemperature_knee" />
             <edge role="left" source="joinTemperature_ankle" target="joinTemperature_ankle_knee" />
             <edge role="right" source="joinTemperature_knee" target="joinTemperature_ankle_knee" />
             <edge role="left" source="joinTemperature_hip_aa" target="joinTemperature_hip" />
             <edge role="right" source="joinTemperature_hip_fe" target="joinTemperature_hip" />
             <edge role="left" source="joinTemperature_hip" target="joinTemperature" />
             <edge role="right" source="joinTemperature_ankle_knee" target="joinTemperature" />
-            <edge role="left" source="sourceWindowJoint" target="joinWindow2" />
-            <edge role="right" source="sourceWindowIMU" target="joinWindow2" />
-            <edge role="left" source="sourceWindowIMC" target="joinWindow3" />
+            <edge role="left" source="sourceJoint" target="joinWindow2" />
+            <edge role="right" source="sourceIMU" target="joinWindow2" />
+            <edge role="left" source="sourceIMC" target="joinWindow3" />
             <edge role="right" source="joinWindow2" target="joinWindow3" />
-            <edge role="left" source="sourceWindowGait" target="joinWindow4" />
-            <edge role="right" source="sourceWindowCom" target="joinWindow4" />
+            <edge role="left" source="sourceGait" target="joinWindow4" />
+            <edge role="right" source="sourceCom" target="joinWindow4" />
           </edges>
         </contquery>
       </contqueries>

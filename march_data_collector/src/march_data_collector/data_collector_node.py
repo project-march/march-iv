@@ -16,6 +16,8 @@ from .cp_calculator import CPCalculator
 class DataCollectorNode(object):
 
     def __init__(self,  com_calculator, cp_calculators):
+        self._com_calculator = com_calculator
+        self._cp_calculators = cp_calculators
         self._imu_broadcaster = tf2_ros.TransformBroadcaster()
         self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
 
@@ -46,12 +48,11 @@ class DataCollectorNode(object):
 
             self._imu_broadcaster.sendTransform(transform)
 
-    def trajectory_state_callback(self, data):
+    def trajectory_state_callback(self, _):
         com = self._com_calculator.calculate_com()
         self._com_marker_publisher.publish(com)
         for cp_calculator in self._cp_calculators:
             cp_calculator.calculate_cp(com)
-
 
 
 def main():

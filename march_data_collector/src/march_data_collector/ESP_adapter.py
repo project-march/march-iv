@@ -36,18 +36,16 @@ class ESPAdapter:
             sys.exit()
 
         # below should match with the source windows in the march.xml file
-        sourceWindows = {"sourceWindowJoint", "sourceWindowIMU", "sourceWindowIMC, sourceWindowGait, sourceWindowCom"}\
-                        | set(["sourceWindowTemperature_" + joint for joint in joint_names])
+        source_windows = {"sourceJoint", "sourceIMU", "sourceIMC", "sourceGait", "sourceCom"}\
+                        | set(["sourceTemperature_" + joint for joint in joint_names])
 
-        def pubErrCbFunc(failure, code, ctx):
+        def pub_err_cb_func(failure, code, _):
             if failure == pubsubApi.pubsubFail_APIFAIL and code == pubsubApi.pubsubCode_CLIENTEVENTSQUEUED:
                 return
 
-            failMsg = pubsubApi.DecodeFailure(failure)
-            codeMsg = pubsubApi.DecodeFailureCode(code)
-            print('Client services error: ' + failMsg + codeMsg)
-
-        pubErrFunc = pubsubApi.ERRCBFUNC(pubErrCbFunc)
+            fail_msg = pubsubApi.DecodeFailure(failure)
+            code_msg = pubsubApi.DecodeFailureCode(code)
+            rospy.logerr('Client services error: ' + fail_msg + code_msg)
 
         logger = logging.getLogger()
         logger.addHandler(modelingApi.getLoggingHandler())
@@ -60,51 +58,50 @@ class ESPAdapter:
         contquery = project + '/March_cq'
 
         stringv = pubsubApi.QueryMeta(project+"?get=windows_sourceonly")
-        if stringv == None:
+        if stringv is None:
             #something failed do more debugging
             projects_ptr = pubsubApi.QueryMeta(basic_url + "?get=projects")
-            if projects_ptr == None:
+            if projects_ptr is None:
                 rospy.logerr("Cannot connect to ESP server, is it running?\n killing ESP adapter")
             else:
                 queries_ptr = pubsubApi.QueryMeta(project + "?get=projects")
-                if queries_ptr == None:
+                if queries_ptr is None:
                     rospy.logerr("Cannot connect to the desired project on the ESP server.\n killing ESP adapter")
-                    rospy.loginfo("Possible projects are:\n" + str(convert_stringV(projects_ptr, True)))
+                    rospy.loginfo("Possible projects are:\n" + str(convert_stringv(projects_ptr, True)))
                 else:
                     rospy.logerr("Cannot connect to the desired continious query on the ESP server.\n killing ESP adapter")
-                    rospy.loginfo("Possible continious queries are:\n" + str(convert_stringV(queries_ptr, True)))
+                    rospy.loginfo("Possible continious queries are:\n" + str(convert_stringv(queries_ptr, True)))
             sys.exit()
 
-        sourceWindow_esp = set([modelingApi.StringVGet(stringv, i) for i in range(0, modelingApi.StringVSize(stringv))])
-        modelingApi.StringVFree(stringv)
-        missing_windows = sourceWindows - sourceWindow_esp
+        source_windows_esp = set(convert_stringv(stringv, True))
+        missing_windows = source_windows - source_windows_esp
+        sources = source_windows & source_windows_esp
 
-        sources = sourceWindows & sourceWindow_esp
         if len(missing_windows) != 0:
             rospy.logwarn("Source windows missing in ESP model: " + str(missing_windows))
-        rospy.logdebug("Configuring sourceWindows ESP for the following sources:\n " + str(sources))
+        rospy.logdebug("Configuring source windows ESP for the following sources:\n " + str(sources))
         for source in sources:
             window_url = contquery + "/" + source
             stringv = pubsubApi.QueryMeta(window_url+"?get=schema")
 
-            if stringv == None:
+            if stringv is None:
                 rospy.logwarn('Could not get ESP source window schema for window ' +source)
                 modelingApi.StringVFree(stringv)
                 continue
 
             schema = modelingApi.StringVGet(stringv, 0)
 
-            if schema == None:
+            if schema is None:
                 rospy.logwarn('Could not get ESP schema from query response for source ' + source)
                 continue
 
             schemaptr = modelingApi.SchemaCreate(source, schema)
-            if schemaptr == None:
+            if schemaptr is None:
                 rospy.logwarn('Could not build ESP source window schema for source ' + source)
                 continue
 
-            pub = pubsubApi.PublisherStart(window_url, pubErrFunc, None)
-            if pub == None:
+            pub = pubsubApi.PublisherStart(window_url, pubsubApi.ERRCBFUNC(pub_err_cb_func), None)
+            if pub is None:
                 rospy.logwarn('Could not create ESP publisher client for source' + source)
                 continue
 
@@ -118,25 +115,25 @@ class ESPAdapter:
 
 
     def create_subscriber(self, source):
-        if source == "sourceWindowJoint":
+        if source == "sourceJoint":
             return rospy.Subscriber('/march/controller/trajectory/state', JointTrajectoryControllerState,
                                     self.trajectory_state_callback, source)
 
-        if source.startswith("sourceWindowTemperature_"):
-            joint = source[len("sourceWindowTemperature_"):]
+        if source.startswith("sourceTemperature_"):
+            joint = source[len("sourceTemperature_"):]
             return rospy.Subscriber('/march/temperature/' + joint, Temperature, self.temperature_callback, source)
 
-        if source=="sourceWindowIMU":
+        if source=="sourceIMU":
             return rospy.Subscriber('/march/imu', Imu, self.imu_callback, source)
 
-        if source=="sourceWindowIMC":
+        if source=="sourceIMC":
             return rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback, source)
 
-        if source=="sourceWindowGait":
-            return rospy.Subscriber('/march/gait/schedule/goal', GaitNameActionGoal, self.gait_callback)
+        if source=="sourceGait":
+            return rospy.Subscriber('/march/gait/schedule/goal', GaitNameActionGoal, self.gait_callback, source)
 
-        if source=="sourceWindowCom":
-            return rospy.Subscriber('/march/com_marker', Marker, self.com_callback)
+        if source=="sourceCom":
+            return rospy.Subscriber('/march/com_marker', Marker, self.com_callback, source)
 
 
     def send_to_esp(self, csv, source):
@@ -146,13 +143,14 @@ class ESPAdapter:
         except KeyError:
             rospy.loginfo_throttle(3, "Receiving data for " + source + ", but cannot send to ESP, "
                                                                        "because the source window is not configured.")
+            return False
         event = modelingApi.EventCreate2(schemaptr, csv, "%Y-%m-%d %H:%M:%S")
-        eventVector = modelingApi.EventVCreate()
-        modelingApi.EventVPushback(eventVector, event)
-        eventBlock = modelingApi.EventBlockNew1(eventVector, modelingApi.ebt_NORMAL)
-        ret = pubsubApi.PublisherInject(pub, eventBlock)
-        modelingApi.EventBlockDestroy(eventBlock)
-        return ret
+        event_vector = modelingApi.EventVCreate()
+        modelingApi.EventVPushback(event_vector, event)
+        event_block = modelingApi.EventBlockNew1(event_vector, modelingApi.ebt_NORMAL)
+        ret = pubsubApi.PublisherInject(pub, event_block)
+        modelingApi.EventBlockDestroy(event_block)
+        return ret == 1
 
     def temperature_callback(self, data, source):
         timestr = get_time_str(data.header.stamp)
@@ -184,7 +182,7 @@ class ESPAdapter:
         motor_voltage_str = '[' + ";".join([str(value) for value in data.motor_voltage]) + ']'
         timestr = get_time_str(data.header.stamp)
 
-        csv = ",".join([timestr, motor_voltage_str,motor_current_str ])
+        csv = ",".join([timestr, motor_voltage_str,motor_current_str])
         self.send_to_esp(csv, source)
 
     def gait_callback(self, data, source):
@@ -202,18 +200,18 @@ def get_time_str(timestamp):
     return datetime.datetime.fromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S.%f")
 
 def quaternion_to_str(quaternion):
-    list = [str(quaternion.x), str(quaternion.y), str(quaternion.z), str(quaternion.w)]
-    return "[" + ";".join(list) + "]"
+    ls = [str(quaternion.x), str(quaternion.y), str(quaternion.z), str(quaternion.w)]
+    return "[" + ";".join(ls) + "]"
 
 def vector_to_str(quaternion):
-    list = [str(quaternion.x), str(quaternion.y), str(quaternion.z)]
-    return "[" + ";".join(list) + "]"
+    ls = [str(quaternion.x), str(quaternion.y), str(quaternion.z)]
+    return "[" + ";".join(ls) + "]"
 
-def convert_stringV(stringV, free):
-    list = [modelingApi.StringVGet(stringV, i) for i in range(0, modelingApi.StringVSize(stringV))]
+def convert_stringv(stringv, free):
+    ls = [modelingApi.StringVGet(stringv, i) for i in range(0, modelingApi.StringVSize(stringv))]
     if free:
-        modelingApi.StringVFree(stringV)
-    return list
+        modelingApi.StringVFree(stringv)
+    return ls
 
 def main():
     rospy.init_node('esp_adapter', anonymous=True)
