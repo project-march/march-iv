@@ -14,7 +14,7 @@ class TransitionSubgait(Subgait):
                  subgait_name='Transition_subgait', version='Default',
                  description='The subgait used to transition between two subgaits'):
 
-        Subgait.__init__(self, joints, duration, gait_type, gait_name, subgait_name, version, description)
+        super(TransitionSubgait, self).__init__(joints, duration, gait_type, gait_name, subgait_name, version, description)
 
     @classmethod
     def from_subgait_names(cls, gait_selection, old_gait_name, new_gait_name, new_subgait_name, old_subgait_name=None):
@@ -34,10 +34,10 @@ class TransitionSubgait(Subgait):
         :return:
             A populated TransitionSubgait object which holds the data to transition between given gaits
         """
-        old_subgait, new_subgait = cls._get_subgaits(gait_selection, old_gait_name, new_gait_name,
-                                                     new_subgait_name, old_subgait_name)
+        old_subgait, new_subgait = cls._get_copy_of_subgaits(gait_selection, old_gait_name, new_gait_name,
+                                                             new_subgait_name, old_subgait_name)
 
-        old_subgait, new_subgait = cls._scale_timestamps_subgaits(old_subgait, new_subgait)
+        old_subgait = cls._scale_timestamps_subgaits(old_subgait, new_subgait.duration)
 
         old_subgait, new_subgait = cls._equalize_amount_of_setpoints(old_subgait, new_subgait)
 
@@ -50,7 +50,7 @@ class TransitionSubgait(Subgait):
         return transition_subgait
 
     @staticmethod
-    def _get_subgaits(gait_selection, old_gait_name, new_gait_name, new_subgait_name, old_subgait_name):
+    def _get_copy_of_subgaits(gait_selection, old_gait_name, new_gait_name, new_subgait_name, old_subgait_name):
         """Use the subgait names and the parsed subgaits in the gait selection object to get the subgait objects."""
         old_gait = gait_selection[old_gait_name]
         new_gait = gait_selection[new_gait_name]
@@ -104,16 +104,15 @@ class TransitionSubgait(Subgait):
         return old_subgait, new_subgait
 
     @staticmethod
-    def _scale_timestamps_subgaits(old_subgait, new_subgait):
+    def _scale_timestamps_subgaits(old_subgait, new_duration):
         """Scale all the setpoint to match the duration in both subgaits."""
         old_duration = old_subgait.duration
-        new_duration = new_subgait.duration
 
         for joint in old_subgait.joints:
             for setpoint in joint.setpoints:
-                setpoint.time = setpoint.time / old_duration * new_duration
+                setpoint.time = setpoint.time * new_duration / old_duration
 
-        return old_subgait, new_subgait
+        return old_subgait
 
     @staticmethod
     def _transition_joints(robot, old_subgait, new_subgait):
@@ -157,7 +156,7 @@ class TransitionSubgait(Subgait):
                               urdf_joint.safety_controller.soft_upper_limit,
                               urdf_joint.limit.velocity)
 
-        raise TransitionError('No robot selected for create the transition gait')
+        raise TransitionError('Robot does not contain joint {joint}'.format(joint=joint_name))
 
     @staticmethod
     def _validate_transition_gait(old_subgait, transition_subgait, new_subgait):

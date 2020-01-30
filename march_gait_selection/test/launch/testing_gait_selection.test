@@ -2,11 +2,7 @@
     <arg name="robot" default="march4" doc="The robot to run. Can be: march3, march4, test_joint_rotational."/>
 
     <param name="robot_description"
-           command="$(find xacro)/xacro --inorder '$(find march_description)/urdf/$(arg robot).xacro'
-                    k_velocity_value_rotary:=60.0 k_velocity_value_linear:=60.0
-                    k_position_value_rotary:=50.0 k_position_value_linear:=50.0
-                    max_effort_rotary:=200.0 max_effort_linear:=40.0
-                    ground_gait:=false" />
+           command="$(find xacro)/xacro --inorder '$(find march_description)/urdf/$(arg robot).xacro' "/>
 
     <test test-name=" test_gait_selection" pkg="march_gait_selection" type="run_tests"/>
 </launch>
