@@ -17,16 +17,8 @@ class JointTrajectoryTest(unittest.TestCase):
 
     # get_setpoints_unzipped tests
     def test_get_setpoints_unzipped_time(self):
-        time, position, velocity = self.joint_trajectory.get_setpoints_unzipped()
-        self.assertEqual(time, [t for t in self.times])
-
-    def test_get_setpoints_unzipped_position(self):
-        time, position, velocity = self.joint_trajectory.get_setpoints_unzipped()
-        self.assertEqual(position, [2 * t for t in self.times])
-
-    def test_get_setpoints_unzipped_velocity(self):
-        time, position, velocity = self.joint_trajectory.get_setpoints_unzipped()
-        self.assertEqual(velocity, [t / 2 for t in self.times])
+        output = self.joint_trajectory.get_setpoints_unzipped()
+        self.assertEqual(output, (self.times, [2 * t for t in self.times], [t / 2 for t in self.times]))
 
      # validate_joint_transition() tests
     def test_valid_joint_transition(self):
