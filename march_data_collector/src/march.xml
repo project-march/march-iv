@@ -5,7 +5,7 @@
         <contquery name="March_cq">
           <windows>
             <window-join name="joinWindow">
-              <join type="leftouter">
+              <join type="inner">
                 <conditions>
                   <fields left="time" right="time" />
                 </conditions>
