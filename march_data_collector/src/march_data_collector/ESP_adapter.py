@@ -5,8 +5,9 @@ import rospy
 
 from control_msgs.msg import JointTrajectoryControllerState
 from sensor_msgs.msg import Imu, Temperature
+from geometry_msgs.msg import Quaternion
 
-from march_shared_resources.msg import ImcErrorState
+from march_shared_resources.msg import ImcErrorState, Error
 
 
 try:
@@ -25,14 +26,15 @@ class ESPAdapter():
         joint_names = ['left_hip_aa', 'left_hip_fe', 'left_knee', 'left_ankle', 'right_hip_aa',
                        'right_hip_fe', 'right_knee', 'right_ankle']
 
-
+        print("before connect")
         ret = pubsubApi.Init(modelingApi.ll_Off, None)
         if ret == 0:
             rospy.logwarn(" Could not initialize pubsub library")
             #delete the object in some kind
+        print("after connect")
 
         # below should match with the source windows in the xml file
-        sourceWindows = {"sourceWindowJoint"} | set(["sourceWindowTemperature_" + joint for joint in joint_names])
+        sourceWindows = {"sourceWindowJoint", "sourceWindowIMU", "sourceWindowIMC"} | set(["sourceWindowTemperature_" + joint for joint in joint_names])
 
         def pubErrCbFunc(failure, code, ctx):
             # don't output anything for client busy
@@ -71,7 +73,7 @@ class ESPAdapter():
             stringv = pubsubApi.QueryMeta(window_url+"?get=schema")
             if stringv == None:
                 rospy.logwarn('Could not get ESP source window schema for window ' +source)
-                modelingApi.StringvFree(stringv)
+                modelingApi.StringVFree(stringv)
                 continue
 
             schema = modelingApi.StringVGet(stringv, 0)
@@ -99,63 +101,81 @@ class ESPAdapter():
             #create subscriber here
             self.subscribers[source] = self.create_subscriber(source)
 
-        print("finished init")
-        #check whether the creation of source connection succeeded
-
-
-        # self._imu_broadcaster = tf2_ros.TransformBroadcaster()
-        # self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
-        #
-        # self._temperature_subscriber = [ for joint in joint_names]
-
-        # self._trajectory_state_subscriber =
-
-        # self._imc_state_subscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback)
-        #
-        # self._imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
-
-
 
     def create_subscriber(self, source):
         if source == "sourceWindowJoint":
             return rospy.Subscriber('/march/controller/trajectory/state', JointTrajectoryControllerState,
-                                    self.trajectory_state_callback)
+                                    self.trajectory_state_callback, source)
 
         if source.startswith("sourceWindowTemperature_"):
             joint = source[len("sourceWindowTemperature_"):]
-            return rospy.Subscriber('/march/temperature/' + joint, Temperature, self.temperature_callback, joint)
+            return rospy.Subscriber('/march/temperature/' + joint, Temperature, self.temperature_callback, (joint, source))
+
+        if source=="sourceWindowIMU":
+            return rospy.Subscriber('/march/imu', Imu, self.imu_callback, source)
+
+        if source=="sourceWindowIMC":
+            return rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback, source)
 
 
     def send_to_esp(self, csv, source):
-        rospy.loginfo(csv)
         csv = 'i, n, 1,' + csv
         pub, schemaptr = self.esp_publishers[source]
         event = modelingApi.EventCreate2(schemaptr, csv, "%Y-%m-%d %H:%M:%S")
         eventVector = modelingApi.EventVCreate()
         modelingApi.EventVPushback(eventVector, event)
         eventBlock = modelingApi.EventBlockNew1(eventVector, modelingApi.ebt_NORMAL)
-
-        ret = pubsubApi.PublisherInject(pub, eventBlock)
-        print ("Return value inject = " +str(ret))
+        pubsubApi.PublisherInject(pub, eventBlock)
         modelingApi.EventBlockDestroy(eventBlock)
+        return self.count
 
-    def temperature_callback(self, data, joint):
+    def temperature_callback(self, data, (source , joint)):
         # rospy.logwarn("Temperature")
-        time = data.header.stamp.secs + data.header.stamp.nsecs * 10**(-9)
-        timestr = datetime.datetime.fromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S.%f")
+        timestr = self.get_time_str(data.header.stamp)
         csv = timestr + ',' + str(data.temperature)
-        self.send_to_esp(csv, "sourceWindowTemperature_" + joint)
+        self.send_to_esp(csv, source)
 
 
-    def trajectory_state_callback(self, data):
-        joint_angles = data.actual.positions
-        time = data.header.stamp.secs + data.header.stamp.nsecs * 10**(-9)
-        timestr = datetime.datetime.fromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S.%f")
-        csv = timestr + ',[' + ";".join([str(value) for value in joint_angles]) + "]"
-        self.send_to_esp(csv, "sourceWindowJoint")
+    def trajectory_state_callback(self, data, source):
+        actual_positions_str = '[' + ";".join([str(value) for value in data.actual.positions]) + ']'
+        actual_velocity_str = '[' + ";".join([str(value) for value in data.actual.velocities]) + ']'
+        desired_positions_str = '[' + ";".join([str(value) for value in data.desired.positions]) + ']'
+        desired_velocity_str = '[' + ";".join([str(value) for value in data.desired.velocities]) + ']'
+        timestr = self.get_time_str(data.header.stamp)
+        csv = ",".join([timestr, actual_positions_str, actual_velocity_str, desired_positions_str, desired_velocity_str])
+        self.send_to_esp(csv, source)
+
+    def imu_callback(self, data, source):
+        orienatation_str = self.quatnerion_to_str(data.orientation)
+        angular_velocity_str = self.vector_to_str(data.angular_velocity)
+        linear_acceleration_str = self.vector_to_str(data.linear_acceleration)
+
+        timestr = self.get_time_str(data.header.stamp)
+        csv = ",".join([timestr, orienatation_str, angular_velocity_str, linear_acceleration_str])
+        self.send_to_esp(csv, source)
+
+    def imc_state_callback(self, data, source):
+        motor_current_str = '[' + ";".join([str(value) for value in data.motor_current]) + ']'
+        motor_voltage_str = '[' + ";".join([str(value) for value in data.motor_voltage]) + ']'
+
+        timestr = self.get_time_str(data.header.stamp)
+        csv = ",".join([timestr, motor_voltage_str,motor_current_str ])
+        self.send_to_esp(csv, source)
+
+    def get_time_str(self, timestamp):
+        time = timestamp.secs + timestamp.nsecs * 10**(-9)
+        return datetime.datetime.fromtimestamp(time).strftime("%Y-%m-%d %H:%M:%S.%f")
+
+    def quatnerion_to_str(self, quaternion):
+        list = [str(quaternion.x), str(quaternion.y), str(quaternion.z), str(quaternion.w)]
+        return "[" + ";".join(list) + "]"
+
+    def vector_to_str(self, quaternion):
+        list = [str(quaternion.x), str(quaternion.y), str(quaternion.z)]
+        return "[" + ";".join(list) + "]"
+
 
 def main():
     rospy.init_node('esp_adapter', anonymous=True)
     ESPAdapter()
-    print("here")
     rospy.spin()
