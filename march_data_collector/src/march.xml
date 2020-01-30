@@ -4,38 +4,6 @@
       <contqueries>
         <contquery name="March_cq">
           <windows>
-<!--            <window-join name="joinWindow">-->
-<!--              <join type="inner">-->
-<!--                <conditions>-->
-<!--                  <fields left="time" right="time" />-->
-<!--                </conditions>-->
-<!--              </join>-->
-<!--              <output>-->
-<!--                <field-selection name="time" source="l_time" />-->
-<!--                <field-selection name="actual_positions" source="l_actual_positions" />-->
-<!--                <field-selection name="actual_velocities" source="l_actual_velocities" />-->
-<!--                <field-selection name="desired_positions" source="l_desired_positions" />-->
-<!--                <field-selection name="desired_velocities" source="l_desired_velocities" />-->
-<!--                <field-selection name="temperature_left_hip_aa" source="r_temperature_left_hip_aa" />-->
-<!--                <field-selection name="temperature_right_hip_aa" source="r_temperature_right_hip_aa" />-->
-<!--                <field-selection name="temperature_left_hip_fe" source="r_temperature_left_hip_fe" />-->
-<!--                <field-selection name="temperature_right_hip_fe" source="r_temperature_right_hip_fe" />-->
-<!--                <field-selection name="temperature_left_ankle" source="r_temperature_left_ankle" />-->
-<!--                <field-selection name="temperature_right_ankle" source="r_temperature_right_ankle" />-->
-<!--                <field-selection name="temperature_left_knee" source="r_temperature_left_knee" />-->
-<!--                <field-selection name="temperature_right_knee" source="r_temperature_right_knee" />-->
-<!--              </output>-->
-<!--              <connectors>-->
-<!--                <connector class="fs" name="sub" type="subscribe">-->
-<!--                  <properties>-->
-<!--                    <property name="dateformat">%Y-%m-%d %H:%M:%S</property>-->
-<!--                    <property name="fsname">full.csv</property>-->
-<!--                    <property name="fstype">csv</property>-->
-<!--                    <property name="snapshot">true</property>-->
-<!--                  </properties>-->
-<!--                </connector>-->
-<!--              </connectors>-->
-<!--           </window-join>-->
             <window-join name="joinWindow2">
               <join type="inner">
                 <conditions>
@@ -321,6 +289,60 @@
                 </connector>
               </connectors>
             </window-source>
+          <window-source autogen-key="true" insert-only="true" name="sourceWindowGait">
+            <schema>
+              <fields>
+                <field key="true" name="SEQUENCE" type="int64" />
+                <field key="false" name="time" type="stamp" />
+                <field key="false" name="gait_name" type="string" />
+                <field key="false" name="subgait_name" type="string" />
+                <field key="false" name="version" type="string" />
+              </fields>
+            </schema>
+            <connectors>
+              <connector class="fs" name="sub" type="subscribe">
+                <properties>
+                  <property name="dateformat">%Y-%m-%d %H:%M:%S</property>
+                  <property name="fsname">gait.csv</property>
+                  <property name="fstype">csv</property>
+                  <property name="snapshot">true</property>
+                </properties>
+              </connector>
+            </connectors>
+          </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceWindowCom">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="com_position" type="array(dbl)" />
+                </fields>
+              </schema>
+              <connectors>
+                <connector class="fs" name="sub" type="subscribe">
+                  <properties>
+                    <property name="dateformat">%Y-%m-%d %H:%M:%S</property>
+                    <property name="fsname">gait.csv</property>
+                    <property name="fstype">csv</property>
+                    <property name="snapshot">true</property>
+                  </properties>
+                </connector>
+              </connectors>
+            </window-source>
+            <window-join name="joinWindow4">
+              <join type="inner">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="gait_name" source="l_gait_name" />
+                <field-selection name="subgait_name" source="l_subgait_name" />
+                <field-selection name="version" source="l_version" />
+                <field-selection name="com_position" source="r_com_position" />
+              </output>
+            </window-join>
           </windows>
           <edges>
             <edge role="left" source="sourceWindowTemperature_left_ankle" target="joinTemperature_ankle" />
@@ -337,12 +359,12 @@
             <edge role="right" source="joinTemperature_hip_fe" target="joinTemperature_hip" />
             <edge role="left" source="joinTemperature_hip" target="joinTemperature" />
             <edge role="right" source="joinTemperature_ankle_knee" target="joinTemperature" />
-<!--            <edge role="left" source="sourceWindowJoint" target="joinWindow" />-->
-<!--            <edge role="right" source="joinTemperature" target="joinWindow" />-->
             <edge role="left" source="sourceWindowJoint" target="joinWindow2" />
             <edge role="right" source="sourceWindowIMU" target="joinWindow2" />
             <edge role="left" source="sourceWindowIMC" target="joinWindow3" />
             <edge role="right" source="joinWindow2" target="joinWindow3" />
+            <edge role="left" source="sourceWindowGait" target="joinWindow4" />
+            <edge role="right" source="sourceWindowCom" target="joinWindow4" />
           </edges>
         </contquery>
       </contqueries>

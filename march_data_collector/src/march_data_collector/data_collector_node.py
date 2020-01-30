@@ -12,18 +12,10 @@ from visualization_msgs.msg import Marker
 
 from .com_calculator import CoMCalculator
 from .cp_calculator import CPCalculator
-from .ESP_adapter import ESPAdapter
-
-from ctypes import *
 
 class DataCollectorNode(object):
 
     def __init__(self,  com_calculator, cp_calculators):
-        # joint_names = rospy.get_param('/march/joint_names')
-        joint_names = ['left_hip_aa', 'left_hip_fe', 'left_knee', 'left_ankle', 'right_hip_aa',
-                       'right_hip_fe', 'right_knee', 'right_ankle']
-
-
         self._imu_broadcaster = tf2_ros.TransformBroadcaster()
         self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
 
