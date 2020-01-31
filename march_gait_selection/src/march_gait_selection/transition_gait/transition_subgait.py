@@ -1,5 +1,6 @@
 from copy import deepcopy
 
+from march_gait_selection.GaitSelection import GaitSelection
 from march_shared_classes.exceptions.gait_exceptions import GaitError, SubgaitNameNotFound, TransitionError
 from march_shared_classes.gait.gait import Gait
 from march_shared_classes.gait.joint_trajectory import JointTrajectory
@@ -55,6 +56,9 @@ class TransitionSubgait(Subgait):
     @staticmethod
     def _get_copy_of_subgaits(gait_selection, old_gait_name, new_gait_name, new_subgait_name, old_subgait_name):
         """Use the subgait names and the parsed subgaits in the gait selection object to get the subgait objects."""
+        if not isinstance(gait_selection, GaitSelection):
+            raise GaitError(msg='No valid gait selection module was parsed to the create the transition subgait')
+
         old_gait = gait_selection[old_gait_name]
         new_gait = gait_selection[new_gait_name]
 
