@@ -1,7 +1,24 @@
-<!--change march4 to the necessary use of the package i.e. when using the test_joint use the corresponding folder instead.-->
+<!--When used by exo call this after launching march.launch, when using test joint use the correct march_type-->
 <launch>
-    <arg name="march_type" default="march4"/>
+    <arg name="configuration" default="None"/>
+    <arg name="linear" default="true"/>
+    <arg name="slope" default="10.0"/>
+
+    <group if="$(eval configuration == 'test_joint_rotational')">
+        <include file="$(find march_gait_selection)/launch/march_gait_selection.launch">
+                    <arg name="robot" value="$(arg configuration)"/>
+        <node name="gait_scheduler_node" pkg="march_gait_scheduler" type="march_gait_scheduler_node" output="screen" required="true"/>
+        <include file="$(find march_rqt_input_device)/launch/march_rqt_input_device.launch" if="$(eval not headless and rqt_input)">
+                    <arg name="ping_safety_node" value="true"/>
+        <include file="$(find march_hardware_interface)/launch/hardware.launch">
+            <arg name="robot" value="$(arg configuration)"/>
+        </include>
+    </group>
+
     <node name="gain_scheduling_node" pkg="march_gain_scheduling" type="march_gain_scheduling_node" output="screen">
-        <rosparam command="load" file="$(find march_gain_scheduling)/config/$(arg march_type)/gains_per_gait_type.yaml"/>
+        <rosparam command="load" file="$(find march_gain_scheduling)/config/$(arg configuration)/gains_per_gait_type.yaml"/>
+        <param name="linearize_gain_scheduling" type="bool" value="$(arg linear)"/>
+        <param name="linear_slope" type="double" value="$(arg slope)"/>
     </node>
 </launch>
+

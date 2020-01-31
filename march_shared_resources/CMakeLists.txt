@@ -21,12 +21,12 @@ add_message_files(
     LowVoltageNet.msg
     PowerDistributionBoardState.msg
     Setpoint.msg
-    Sound.msg
     Subgait.msg
 )
 
 add_service_files(
     FILES
+    PossibleGaits.srv
     StringTrigger.srv
     Trigger.srv
 )
