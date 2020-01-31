@@ -4,8 +4,9 @@ from std_srvs.srv import Empty, EmptyRequest
 
 from march_shared_resources.srv import PossibleGaits
 
-from .gaits import ramp_down_sm
-from .gaits import tilted_path_sideways_sm
+from .gaits import slope_down_sm
+from .gaits import tilted_path_sideways_end_sm
+from .gaits import tilted_path_sideways_start_sm
 from .state_machines.slope_state_machine import SlopeStateMachine
 from .state_machines.step_state_machine import StepStateMachine
 from .state_machines.walk_state_machine import WalkStateMachine
@@ -76,7 +77,7 @@ class HealthyStateMachine(smach.StateMachine):
 
         # RD stands for Ramp and Door
         self.add_state('GAIT RD SLOPE UP', SlopeStateMachine('ramp_door_slope_up'), 'STANDING')
-        self.add_state('GAIT RD RAMP DOWN', ramp_down_sm.create(), 'STANDING')
+        self.add_state('GAIT RD SLOPE DOWN', slope_down_sm.create(), 'STANDING')
 
         # TP stands for Tilted Path
         self.add_state('GAIT TP STRAIGHT START RIGHT', StepStateMachine('tilted_path_straight_start_right'), 'STANDING')
@@ -85,7 +86,8 @@ class HealthyStateMachine(smach.StateMachine):
                                         subgaits=['left_open', 'right_close']),
                        'STANDING')
 
-        self.add_state('GAIT TP SIDEWAYS', tilted_path_sideways_sm.create(), 'STANDING')
+        self.add_state('GAIT TP SIDEWAYS START', tilted_path_sideways_start_sm.create(), 'STANDING')
+        self.add_state('GAIT TP SIDEWAYS END', tilted_path_sideways_end_sm.create(), 'STANDING')
 
         self.add('SITTING', IdleState(outcomes=['gait_stand', 'preempted']),
                  transitions={'gait_stand': 'GAIT STAND'})
@@ -100,6 +102,7 @@ class HealthyStateMachine(smach.StateMachine):
                                                  'gait_tilted_path_straight_start_right',
                                                  'gait_tilted_path_straight_start_left',
                                                  'gait_tilted_path_first_start',
+                                                 'gait_tilted_path_first_end',
                                                  'preempted']),
                  transitions={'gait_sit': 'GAIT SIT', 'gait_walk': 'GAIT WALK',
                               'gait_single_step_small': 'GAIT SINGLE STEP SMALL',
@@ -115,10 +118,11 @@ class HealthyStateMachine(smach.StateMachine):
                               'gait_rough_terrain_high_step': 'GAIT RT HIGH STEP',
                               'gait_rough_terrain_middle_steps': 'GAIT RT MIDDLE STEPS',
                               'gait_ramp_door_slope_up': 'GAIT RD SLOPE UP',
-                              'gait_ramp_door_slope_down': 'GAIT RD RAMP DOWN',
+                              'gait_ramp_door_slope_down': 'GAIT RD SLOPE DOWN',
                               'gait_tilted_path_straight_start_right': 'GAIT TP STRAIGHT START RIGHT',
                               'gait_tilted_path_straight_start_left': 'GAIT TP STRAIGHT START LEFT',
-                              'gait_tilted_path_first_start': 'GAIT TP SIDEWAYS'})
+                              'gait_tilted_path_first_start': 'GAIT TP SIDEWAYS START',
+                              'gait_tilted_path_first_end': 'GAIT TP SIDEWAYS END'})
         self.close()
 
     def add_state(self, label, state, succeeded):
