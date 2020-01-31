@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import rosunit
 
+from .joint_trajectory_test import JointTrajectoryTest
 from .limits_test import LimitsTest
 from .setpoint_test import SetpointTest
-from .joint_trajectory_test import JointTrajectoryTest
 
 PKG = 'march_shared_classes'
 

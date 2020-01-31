@@ -8,10 +8,10 @@ class LimitsTest(unittest.TestCase):
         self.limits = Limits(0, 1, 2)
 
     def test_lower_limit(self):
-        self.assertEqual(self.limits.lower, 0, "Lower limit not initialised correctly.")
+        self.assertEqual(self.limits.lower, 0, 'Lower limit not initialised correctly.')
 
     def test_upper_limit(self):
-        self.assertEqual(self.limits.upper, 1, "Upper limit not initialised correctly.")
+        self.assertEqual(self.limits.upper, 1, 'Upper limit not initialised correctly.')
 
     def test_velocity_limit(self):
-        self.assertEqual(self.limits.velocity, 2, "Velocity limit not initialised correctly.")
+        self.assertEqual(self.limits.velocity, 2, 'Velocity limit not initialised correctly.')

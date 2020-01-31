@@ -81,6 +81,16 @@ class JointTrajectory(object):
         return (self.setpoints[0].time == 0 or self.setpoints[0].velocity == 0) and \
                (self.setpoints[0].time == self.duration or self.setpoints[0].velocity == 0)
 
+    def interpolate_setpoints(self):
+        time, position, velocity = self.get_setpoints_unzipped()
+        yi = []
+        for i in range(0, len(time)):
+            yi.append([position[i], velocity[i]])
+
+        bpoly = BPoly.from_derivatives(time, yi)
+        indices = np.linspace(0, self.duration, self.duration * 100)
+        return [indices, bpoly(indices)]
+
     def get_interpolated_setpoint(self, time):
         # If we have a setpoint this exact time there is no need to interpolate.
         for setpoint in self.setpoints:
@@ -96,16 +106,6 @@ class JointTrajectory(object):
                 return self.setpoint_class(time, position, velocity)
         rospy.logerr('Could not interpolate setpoint at time {0}'.format(time))
         return self.setpoint_class(0, 0, 0)
-
-    def interpolate_setpoints(self):
-        time, position, velocity = self.get_setpoints_unzipped()
-        yi = []
-        for i in range(0, len(time)):
-            yi.append([position[i], velocity[i]])
-
-        bpoly = BPoly.from_derivatives(time, yi)
-        indices = np.linspace(0, self.duration, self.duration * 100)
-        return [indices, bpoly(indices)]
 
     def __getitem__(self, index):
         return self.setpoints[index]
