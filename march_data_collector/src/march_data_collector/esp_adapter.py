@@ -35,18 +35,6 @@ class ESPAdapter:
             rospy.logerr('Could not initialize pubsub library. \n killing ESP adapater')
             sys.exit()
 
-        # below should match with the source windows in the march.xml file
-        source_windows = {'sourceJoint', 'sourceIMU', 'sourceIMC', 'sourceGait', 'sourceCom'} | \
-            set(['sourceTemperature_' + joint for joint in joint_names])
-
-        def pub_err_cb_func(failure, code, _):
-            if failure == pubsubApi.pubsubFail_APIFAIL and code == pubsubApi.pubsubCode_CLIENTEVENTSQUEUED:
-                return
-
-            fail_msg = pubsubApi.DecodeFailure(failure)
-            code_msg = pubsubApi.DecodeFailureCode(code)
-            rospy.logerr('Client services error: ' + fail_msg + code_msg)
-
         logger = logging.getLogger()
         logger.addHandler(modelingApi.getLoggingHandler())
 
@@ -55,8 +43,8 @@ class ESPAdapter:
 
         basic_url = 'dfESP://localhost:9901'
         project = basic_url + '/March_test'
-        contquery = project + '/March_cq'
-
+        self.contquery = project + '/March_cq'
+        print(project)
         stringv = pubsubApi.QueryMeta(project + '?get=windows_sourceonly')
         if stringv is None:
             projects_ptr = pubsubApi.QueryMeta(basic_url + '?get=projects')
@@ -73,66 +61,64 @@ class ESPAdapter:
                     rospy.loginfo('Possible continious queries are:\n' + str(convert_stringv(queries_ptr, True)))
             sys.exit()
 
-        source_windows_esp = set(convert_stringv(stringv, True))
-        missing_windows = source_windows - source_windows_esp
-        sources = source_windows & source_windows_esp
+        self.source_windows_esp = set(convert_stringv(stringv, True))
 
-        if len(missing_windows) != 0:
-            rospy.logwarn('Source windows missing in ESP model: ' + str(missing_windows))
-        rospy.logdebug('Configuring source windows ESP for the following sources:\n ' + str(sources))
-        for source in sources:
-            window_url = contquery + '/' + source
-            stringv = pubsubApi.QueryMeta(window_url + '?get=schema')
+        for joint in joint_names:
+            self.configure_source('sourceTemperature_' + joint, '/march/temperature/', Temperature,
+                                  self.temperature_callback)
 
-            if stringv is None:
-                rospy.logwarn('Could not get ESP source window schema for window ' + source)
-                modelingApi.StringVFree(stringv)
-                continue
+        self.configure_source('sourceJoint', '/march/controller/trajectory/state', JointTrajectoryControllerState,
+                              self.trajectory_state_callback)
+        self.configure_source('sourceIMU', '/march/imu', Imu, self.imu_callback)
 
-            schema = modelingApi.StringVGet(stringv, 0)
+        self.configure_source('sourceIMC', '/march/imc_states', ImcErrorState, self.imc_state_callback)
+        self.configure_source('sourceGait', '/march/gait/schedule/goal', GaitNameActionGoal, self.gait_callback)
+        self.configure_source('sourceCom', '/march/com_marker', Marker, self.com_callback)
 
-            if schema is None:
-                rospy.logwarn('Could not get ESP schema from query response for source ' + source)
-                continue
+    def pub_err_cb_func(self, failure, code, _):
+        if failure == pubsubApi.pubsubFail_APIFAIL and code == pubsubApi.pubsubCode_CLIENTEVENTSQUEUED:
+            return
 
-            schemaptr = modelingApi.SchemaCreate(source, schema)
-            if schemaptr is None:
-                rospy.logwarn('Could not build ESP source window schema for source ' + source)
-                continue
+        fail_msg = pubsubApi.DecodeFailure(failure)
+        code_msg = pubsubApi.DecodeFailureCode(code)
+        rospy.logerr('Client services error: ' + fail_msg + code_msg)
 
-            pub = pubsubApi.PublisherStart(window_url, pubsubApi.ERRCBFUNC(pub_err_cb_func), None)
-            if pub is None:
-                rospy.logwarn('Could not create ESP publisher client for source' + source)
-                continue
+    def configure_source(self, source, topic, type, callback):
+        if source not in self.source_windows_esp:
+            rospy.logwarn('There is no ESP source window for the following source: ' + source)
+            return
 
-            ret = pubsubApi.Connect(pub)
-            if ret != 1:
-                logger.error('Could not connect ESP publisher client for source ' + source)
-                continue
+        window_url = self.contquery + '/' + source
+        stringv = pubsubApi.QueryMeta(window_url + '?get=schema')
 
-            self.esp_publishers[source] = (pub, schemaptr)
-            self.subscribers[source] = self.create_subscriber(source)
+        if stringv is None:
+            rospy.logwarn('Could not get ESP source window schema for window ' + source)
+            modelingApi.StringVFree(stringv)
+            return
 
-    def create_subscriber(self, source):
-        if source == 'sourceJoint':
-            return rospy.Subscriber('/march/controller/trajectory/state', JointTrajectoryControllerState,
-                                    self.trajectory_state_callback, source)
+        schema = modelingApi.StringVGet(stringv, 0)
 
-        if source.startswith('sourceTemperature_'):
-            joint = source[len('sourceTemperature_'):]
-            return rospy.Subscriber('/march/temperature/' + joint, Temperature, self.temperature_callback, source)
+        if schema is None:
+            rospy.logwarn('Could not get ESP schema from query response for source ' + source)
+            return
 
-        if source == 'sourceIMU':
-            return rospy.Subscriber('/march/imu', Imu, self.imu_callback, source)
+        schemaptr = modelingApi.SchemaCreate(source, schema)
+        if schemaptr is None:
+            rospy.logwarn('Could not build ESP source window schema for source ' + source)
+            return
 
-        if source == 'sourceIMC':
-            return rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback, source)
+        pub = pubsubApi.PublisherStart(window_url, pubsubApi.ERRCBFUNC(self.pub_err_cb_func), None)
+        if pub is None:
+            rospy.logwarn('Could not create ESP publisher client for source' + source)
+            return
 
-        if source == 'sourceGait':
-            return rospy.Subscriber('/march/gait/schedule/goal', GaitNameActionGoal, self.gait_callback, source)
+        ret = pubsubApi.Connect(pub)
+        if ret != 1:
+            rospy.logwarn('Could not connect ESP publisher client for source ' + source)
+            return
 
-        if source == 'sourceCom':
-            return rospy.Subscriber('/march/com_marker', Marker, self.com_callback, source)
+        self.esp_publishers[source] = (pub, schemaptr)
+        self.subscribers[source] = rospy.Subscriber(topic, type, callback, source)
 
     def send_to_esp(self, csv, source):
         csv = 'i, n, 1,' + csv
@@ -167,12 +153,12 @@ class ESPAdapter:
         self.send_to_esp(csv, source)
 
     def imu_callback(self, data, source):
-        orienatation_str = quaternion_to_str(data.orientation)
+        orientation_str = quaternion_to_str(data.orientation)
         angular_velocity_str = vector_to_str(data.angular_velocity)
         linear_acceleration_str = vector_to_str(data.linear_acceleration)
         timestr = get_time_str(data.header.stamp)
 
-        csv = ','.join([timestr, orienatation_str, angular_velocity_str, linear_acceleration_str])
+        csv = ','.join([timestr, orientation_str, angular_velocity_str, linear_acceleration_str])
         self.send_to_esp(csv, source)
 
     def imc_state_callback(self, data, source):
@@ -204,8 +190,8 @@ def quaternion_to_str(quaternion):
     return '[' + ';'.join(ls) + ']'
 
 
-def vector_to_str(quaternion):
-    ls = [str(quaternion.x), str(quaternion.y), str(quaternion.z)]
+def vector_to_str(vector):
+    ls = [str(vector.x), str(vector.y), str(vector.z)]
     return '[' + ';'.join(ls) + ']'
 
 
