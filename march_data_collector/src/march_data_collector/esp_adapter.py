@@ -15,8 +15,8 @@ try:
     sys.path.append(os.environ['DFESP_HOME'] + '/lib')
     import pubsubApi
     import modelingApi
-except ImportError as e:
-    rospy.logerr('\n Probably ESP is not installed on this machine \n' + str(e))
+except (ImportError, KeyError) as e:
+    print('Error while loading libraries for ESP.\nProbably ESP is not installed on this machine.')
     sys.exit()
 
 
@@ -44,7 +44,6 @@ class ESPAdapter:
         basic_url = 'dfESP://localhost:9901'
         project = basic_url + '/March_test'
         self.contquery = project + '/March_cq'
-        print(project)
         stringv = pubsubApi.QueryMeta(project + '?get=windows_sourceonly')
         if stringv is None:
             projects_ptr = pubsubApi.QueryMeta(basic_url + '?get=projects')
