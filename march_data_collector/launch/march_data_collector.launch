@@ -1,3 +1,5 @@
 <launch>
+    <arg name="esp" default="false" doc="Whether to launch the esp adapter"/>
     <node name="march_data_collector" pkg="march_data_collector" type="march_data_collector" output="screen"/>
+    <node if="$(arg esp)" name="esp_adapter" pkg="march_data_collector" type="esp_adapter" output="screen"/>
 </launch>
