@@ -16,7 +16,7 @@ try:
     import pubsubApi
     import modelingApi
 except (ImportError, KeyError) as e:
-    print('Error while loading libraries for ESP.\nProbably ESP is not installed on this machine.')
+    rospy.logerr('Error while loading libraries for ESP.\nProbably ESP is not installed on this machine.')
     sys.exit()
 
 
@@ -82,7 +82,7 @@ class ESPAdapter:
         code_msg = pubsubApi.DecodeFailureCode(code)
         rospy.logerr('Client services error: ' + fail_msg + code_msg)
 
-    def configure_source(self, source, topic, type, callback):
+    def configure_source(self, source, topic, msg_type, callback):
         if source not in self.source_windows_esp:
             rospy.logwarn('There is no ESP source window for the following source: ' + source)
             return
@@ -117,7 +117,7 @@ class ESPAdapter:
             return
 
         self.esp_publishers[source] = (pub, schemaptr)
-        self.subscribers[source] = rospy.Subscriber(topic, type, callback, source)
+        self.subscribers[source] = rospy.Subscriber(topic, msg_type, callback, source)
 
     def send_to_esp(self, csv, source):
         csv = 'i, n, 1,' + csv
