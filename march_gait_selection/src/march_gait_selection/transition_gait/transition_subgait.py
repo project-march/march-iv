@@ -14,11 +14,12 @@ class TransitionSubgait(Subgait):
                  subgait_name='Transition_subgait', version='Default',
                  description='The subgait used to transition between two subgaits'):
 
-        super(TransitionSubgait, self).__init__(joints, duration, gait_type, gait_name, subgait_name, version, description)
+        super(TransitionSubgait, self).__init__(joints, duration, gait_type, gait_name,
+                                                subgait_name, version, description)
 
     @classmethod
     def from_subgait_names(cls, gait_selection, old_gait_name, new_gait_name, new_subgait_name, old_subgait_name=None):
-        """Create a new transition subgait object between two given sub-gaits.
+        """Create a new transition subgait object between two given subgaits.
 
         :param gait_selection:
             The gait selection object which holds all the information about the gaits and subgaits
@@ -45,7 +46,9 @@ class TransitionSubgait(Subgait):
         transition_duration = new_subgait.duration
 
         transition_subgait = cls(transition_joints, transition_duration)
+
         cls._validate_transition_gait(old_subgait, transition_subgait, new_subgait)
+        cls._validate_transition_trajectory(old_subgait, transition_subgait, new_subgait)
 
         return transition_subgait
 
@@ -85,25 +88,6 @@ class TransitionSubgait(Subgait):
         return old_subgait, new_subgait
 
     @staticmethod
-    def _equalize_amount_of_setpoints(old_subgait, new_subgait):
-        """Equalize the subgaits to have matching amount of setpoints on all the timestamps."""
-        timestamps = sorted(set(old_subgait.get_unique_timestamps() + new_subgait.get_unique_timestamps()))
-
-        for old_joint in old_subgait.joints:
-            new_joint = new_subgait.get_joint(old_joint.name)
-
-            old_joint_setpoints = []
-            new_joint_setpoints = []
-            for timestamp in timestamps:
-                old_joint_setpoints.append(old_joint.get_interpolated_setpoint(timestamp))
-                new_joint_setpoints.append(new_joint.get_interpolated_setpoint(timestamp))
-
-            old_joint.setpoints = old_joint_setpoints
-            new_joint.setpoints = new_joint_setpoints
-
-        return old_subgait, new_subgait
-
-    @staticmethod
     def _scale_timestamps_subgaits(old_subgait, new_duration):
         """Scale all the setpoint to match the duration in both subgaits."""
         old_duration = old_subgait.duration
@@ -113,6 +97,25 @@ class TransitionSubgait(Subgait):
                 setpoint.time = setpoint.time * new_duration / old_duration
 
         return old_subgait
+
+    @staticmethod
+    def _equalize_amount_of_setpoints(old_subgait, new_subgait):
+        """Equalize the subgaits to have matching amount of setpoints on all the timestamps."""
+        unique_timestamps = TransitionSubgait._get_all_unique_timestamps(old_subgait, new_subgait)
+
+        for old_joint in old_subgait:
+            new_joint = new_subgait.get_joint(old_joint.name)
+
+            old_joint_setpoints = []
+            new_joint_setpoints = []
+            for timestamp in unique_timestamps:
+                old_joint_setpoints.append(old_joint.get_interpolated_setpoint(timestamp))
+                new_joint_setpoints.append(new_joint.get_interpolated_setpoint(timestamp))
+
+            old_joint.setpoints = old_joint_setpoints
+            new_joint.setpoints = new_joint_setpoints
+
+        return old_subgait, new_subgait
 
     @staticmethod
     def _transition_joints(robot, old_subgait, new_subgait):
@@ -131,17 +134,13 @@ class TransitionSubgait(Subgait):
             setpoints = []
             number_setpoints = len(new_subgait[0].setpoints)
             for transition_index in range(number_setpoints):
-                new_setpoint_factor = transition_index / (number_setpoints - 1.0)
-                old_setpoint_factor = 1.0 - new_setpoint_factor
+                factor = transition_index / (number_setpoints - 1.0)
 
                 old_setpoint = old_joint[transition_index]
                 new_setpoint = new_joint[transition_index]
 
-                position = (old_setpoint.position * old_setpoint_factor) + (new_setpoint.position * new_setpoint_factor)
-                velocity = (old_setpoint.velocity * old_setpoint_factor) + (new_setpoint.velocity * new_setpoint_factor)
-                time = new_setpoint.time
-
-                setpoints.append(Setpoint(time, position, velocity))
+                transition_setpoint = TransitionSubgait._transition_setpoint(old_setpoint, new_setpoint, factor)
+                setpoints.append(transition_setpoint)
 
             joints.append(JointTrajectory(joint_name, limits, setpoints, old_joint.duration))
 
@@ -159,13 +158,53 @@ class TransitionSubgait(Subgait):
         raise TransitionError('Robot does not contain joint {joint}'.format(joint=joint_name))
 
     @staticmethod
-    def _validate_transition_gait(old_subgait, transition_subgait, new_subgait):
+    def _transition_setpoint(old_setpoint, new_setpoint, new_factor):
+        """Create a transition setpoint with the use of the old setpoint, new setpoint and transition factor."""
+        old_factor = 1.0 - new_factor
 
+        position = (old_setpoint.position * old_factor) + (new_setpoint.position * new_factor)
+        velocity = (old_setpoint.velocity * old_factor) + (new_setpoint.velocity * new_factor)
+
+        return Setpoint(new_setpoint.time, position, velocity)
+
+    @staticmethod
+    def _get_all_unique_timestamps(old_subgait, new_subgait):
+        """Get all the timestamps from the subgaits, eliminate double."""
+        timestamps = sorted(set(old_subgait.get_unique_timestamps() + new_subgait.get_unique_timestamps()))
+        return [round(timestamp, Setpoint.digits) for timestamp in timestamps]
+
+    @staticmethod
+    def _validate_transition_gait(old_subgait, transition_subgait, new_subgait):
+        """Validate the transition point by creating a gait object which checks the trajectories."""
         subgaits = [old_subgait, transition_subgait, new_subgait]
-        from_subgaits = ['start', old_subgait.subgait_name, transition_subgait.subgait_name, new_subgait.subgait_name]
+        from_subgaits = ['start', old_subgait.subgait_name, transition_subgait.subgait_name,
+                         new_subgait.subgait_name]
         to_subgaits = [old_subgait.subgait_name, transition_subgait.subgait_name, new_subgait.subgait_name, 'end']
 
         try:
             Gait('transition', subgaits, from_subgaits, to_subgaits)
         except Exception as error:
             TransitionError('Error when creating transition: {er}'.format(er=error))
+
+    @staticmethod
+    def _validate_transition_trajectory(old_subgait, transition_subgait, new_subgait):
+        """Validate if the calculated trajectory is within the given subgaits."""
+        for transition_joint in transition_subgait.joints:
+            old_joint = old_subgait.get_joint(transition_joint.name)
+            new_joint = new_subgait.get_joint(transition_joint.name)
+
+            for old_setpoint, transition_setpoint, new_setpoint in zip(old_joint, transition_joint, new_joint):
+                if old_setpoint.time != transition_setpoint.time or new_setpoint.time != transition_setpoint.time:
+                    raise TransitionError('The transition timestamps are not equal to the old and new subgait')
+
+                if old_setpoint.position < transition_setpoint.position:
+                    if not transition_setpoint.position <= new_setpoint.position:
+                        raise TransitionError('The transition position {tp} is not between the old {op} and new {np}'
+                                              .format(tp=transition_setpoint.position, op=old_setpoint.position,
+                                                      np=new_setpoint.position))
+
+                if old_setpoint.position > transition_setpoint.position:
+                    if not transition_setpoint.position >= new_setpoint.position:
+                        raise TransitionError('The transition position {tp} is not between the new {np} and old {op}'
+                                              .format(tp=transition_setpoint.position, op=old_setpoint.position,
+                                                      np=new_setpoint.position))
