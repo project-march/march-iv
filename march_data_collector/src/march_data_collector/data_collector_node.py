@@ -30,7 +30,6 @@ class DataCollectorNode(object):
 
     def imu_callback(self, data):
         if data.header.frame_id == 'imu_link':
-            rospy.loginfo(data)
             transform = TransformStamped()
 
             transform.header.stamp = rospy.Time.now()

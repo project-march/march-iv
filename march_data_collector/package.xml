@@ -2,7 +2,7 @@
 <package format="2">
   <name>march_data_collector</name>
   <version>0.0.0</version>
-  <description>Collecting data for further processing</description>
+  <description>Collecting data for further processing including sending to an Events Stream Processing engine</description>
   <maintainer email="software@projectmarch.nl">rutger</maintainer>
   <license>TODO</license>
 

@@ -1,3 +1,9 @@
+# This file contains ESP adapter class which sends data comming on ROS topic to an already running ESP enginge.
+# It is assumed that the pubsub is opened on port 9901. The project is March_test and the continious query is March_cq.
+# The connection is establish trough the libraries modelingApi.py and pubsubApi.py, which come with the installation and
+# are a wrapper for the C Api. Detailed documentation about ESP can be found at
+# https://documentation.sas.com/?cdcId=espcdc&cdcVersion=6.2&docsetId=espov&docsetTarget=home.htm&locale=nl
+
 import datetime
 import logging
 import os
@@ -21,8 +27,10 @@ except (ImportError, KeyError) as e:
 
 
 class ESPAdapter:
+    """Class streams ros messages into an ESP engine."""
 
     def __init__(self):
+
         try:
             joint_names = rospy.get_param('/march/joint_names')
         except KeyError:
@@ -83,6 +91,14 @@ class ESPAdapter:
         rospy.logerr('Client services error: ' + fail_msg + code_msg)
 
     def configure_source(self, source, topic, msg_type, callback):
+        """Configures a connection between a ROS topic and a source window in an event stream processing engine.
+
+        :param source: the name of the source window in the ESP engine
+        :param topic: the topic on which the ROS messages are posted
+        :param msg_type: the type of the ROS messages
+        :param callback: the callback function that can receive the ROS message and create a CSV string for the
+        source window
+        """
         if source not in self.source_windows_esp:
             rospy.logwarn('There is no ESP source window for the following source: ' + source)
             return
@@ -120,6 +136,11 @@ class ESPAdapter:
         self.subscribers[source] = rospy.Subscriber(topic, msg_type, callback, source)
 
     def send_to_esp(self, csv, source):
+        """Sends a csv string to the configured source window. Also adds standard stuff to the start of the csv string.
+
+        :param csv: the csv string containing all data to send to the message
+        :param source: the name of the source window in the ESP engine
+        """
         csv = 'i, n, 1,' + csv
         try:
             pub, schemaptr = self.esp_publishers[source]
@@ -136,11 +157,21 @@ class ESPAdapter:
         return ret == 1
 
     def temperature_callback(self, data, source):
+        """Callback for temperature data. Converts ROS message to csv string to send to the source window.
+
+        :param data: ROS message
+        :param source: the name of the source window in the ESP engine
+        """
         timestr = get_time_str(data.header.stamp)
         csv = timestr + ',' + str(data.temperature)
         self.send_to_esp(csv, source)
 
     def trajectory_state_callback(self, data, source):
+        """Callback for trajectory_state data. Converts ROS message to csv string to send to the source window.
+
+        :param data: ROS message
+        :param source: the name of the source window in the ESP engine
+        """
         actual_positions_str = '[' + ';'.join([str(value) for value in data.actual.positions]) + ']'
         actual_velocity_str = '[' + ';'.join([str(value) for value in data.actual.velocities]) + ']'
         desired_positions_str = '[' + ';'.join([str(value) for value in data.desired.positions]) + ']'
@@ -152,6 +183,11 @@ class ESPAdapter:
         self.send_to_esp(csv, source)
 
     def imu_callback(self, data, source):
+        """Callback for imu data. Converts ROS message to csv string to send to the source window.
+
+        :param data: ROS message
+        :param source: the name of the source window in the ESP engine
+        """
         orientation_str = quaternion_to_str(data.orientation)
         angular_velocity_str = vector_to_str(data.angular_velocity)
         linear_acceleration_str = vector_to_str(data.linear_acceleration)
@@ -161,6 +197,11 @@ class ESPAdapter:
         self.send_to_esp(csv, source)
 
     def imc_state_callback(self, data, source):
+        """Callback for IMotionCube data. Converts ROS message to csv string to send to the source window.
+
+        :param data: ROS message
+        :param source: the name of the source window in the ESP engine
+        """
         motor_current_str = '[' + ';'.join([str(value) for value in data.motor_current]) + ']'
         motor_voltage_str = '[' + ';'.join([str(value) for value in data.motor_voltage]) + ']'
         timestr = get_time_str(data.header.stamp)
@@ -169,32 +210,57 @@ class ESPAdapter:
         self.send_to_esp(csv, source)
 
     def gait_callback(self, data, source):
+        """Callback for gait data. Converts ROS message to csv string to send to the source window.
+
+        :param data: ROS message
+        :param source: the name of the source window in the ESP engine
+        """
         csv = ','.join([get_time_str(data.header.stamp), data.goal.name, data.goal.current_subgait.name,
                        data.goal.current_subgait.version])
         self.send_to_esp(csv, source)
 
     def com_callback(self, data, source):
+        """Callback for center of mass data. Converts ROS message to csv string to send to the source window.
+
+        :param data: ROS message
+        :param source: the name of the source window in the ESP engine
+        """
         com_position_str = quaternion_to_str(data.pose.position)
         csv = ','.join([get_time_str(data.header.stamp), com_position_str])
         self.send_to_esp(csv, source)
 
 
 def get_time_str(timestamp):
+    """Creates str to use in csv string for source window based on timestamp.
+
+    :param data: ROS timestamp message std_msgs/stamp
+    """
     time = timestamp.secs + timestamp.nsecs * 10**(-9)
     return datetime.datetime.fromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S.%f')
 
 
 def quaternion_to_str(quaternion):
-    ls = [str(quaternion.x), str(quaternion.y), str(quaternion.z), str(quaternion.w)]
-    return '[' + ';'.join(ls) + ']'
+    """Converts geometry_msgs/Quaternion to string to use in csv string for source window.
+
+    :param data: quaternion to convert
+    """
+    return '[{x};{y};{z};{w}]'.format(x=quaternion.x, y=quaternion.y, z=quaternion.z, w=quaternion.w)
 
 
 def vector_to_str(vector):
-    ls = [str(vector.x), str(vector.y), str(vector.z)]
-    return '[' + ';'.join(ls) + ']'
+    """Converts geometry_msgs/Vector3 to string to use in csv string for source window.
+
+    :param data: vector to convert
+    """
+    return '[{x};{y};{z}]'.format(x=vector.x, y=vector.y, z=vector.z)
 
 
 def convert_stringv(stringv, free):
+    """Converts a stringV object (integer pointer, which points to a string vector via de API) to a list.
+
+    :param data: stringV object from the modelingApi to convert
+    :param free: whether to free the object afterwards
+    """
     ls = [modelingApi.StringVGet(stringv, i) for i in range(0, modelingApi.StringVSize(stringv))]
     if free:
         modelingApi.StringVFree(stringv)
