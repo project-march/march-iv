@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import rostest
+import rosunit
 
 from nosetests.test_gait_transition import TestTransitionTrajectory
 
@@ -8,4 +8,4 @@ PKG = 'march_gait_selection'
 
 
 if __name__ == '__main__':
-    rostest.rosrun(PKG, 'test_transition', TestTransitionTrajectory)
+    rosunit.unitrun(PKG, 'test_transition', TestTransitionTrajectory)
