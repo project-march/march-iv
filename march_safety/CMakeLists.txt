@@ -29,6 +29,11 @@ include_directories(
     ${catkin_INCLUDE_DIRS}
 )
 
+if(CATKIN_ENABLE_TESTING AND ENABLE_COVERAGE_TESTING)
+    find_package(code_coverage REQUIRED)
+    append_coverage_compiler_flags()
+endif()
+
 add_library(${PROJECT_NAME}
     src/input_device_safety.cpp
     src/safety_handler.cpp
@@ -55,13 +60,7 @@ install(DIRECTORY launch sound
 
 # Add gtest based cpp test target and link libraries
 if(CATKIN_ENABLE_TESTING)
-    find_package(code_coverage REQUIRED)
     find_package(rostest REQUIRED)
-
-    if(ENABLE_COVERAGE_TESTING)
-        include(CodeCoverage)
-        append_coverage_compiler_flags()
-    endif()
 
     add_rostest_gtest(${PROJECT_NAME}_temperature_test
         test/launch/${PROJECT_NAME}_temperature.test
@@ -91,8 +90,12 @@ if(CATKIN_ENABLE_TESTING)
     if(ENABLE_COVERAGE_TESTING)
         set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*")
         add_code_coverage(
-            NAME ${PROJECT_NAME}_coverage
-            DEPENDS tests
+            NAME coverage_report
+            DEPENDENCIES
+            ${PROJECT_NAME}_temperature_test
+            ${PROJECT_NAME}_connection_lost_test
+            ${PROJECT_NAME}_connection_never_started_test
+            ${PROJECT_NAME}_connection_not_lost_test
         )
     endif()
 endif()

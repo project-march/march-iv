@@ -30,6 +30,11 @@ catkin_package(
     trajectory_msgs
 )
 
+if(CATKIN_ENABLE_TESTING AND ENABLE_COVERAGE_TESTING)
+    find_package(code_coverage REQUIRED)
+    append_coverage_compiler_flags()
+endif()
+
 include_directories(
     include
     ${catkin_INCLUDE_DIRS}
@@ -58,15 +63,9 @@ install(TARGETS ${PROJECT_NAME}_node
 
 ## Add gtest based cpp test target and link libraries
 if(CATKIN_ENABLE_TESTING)
-    find_package(code_coverage REQUIRED)
     find_package(rostest REQUIRED)
 
-    if(ENABLE_COVERAGE_TESTING)
-        include(CodeCoverage)
-        append_coverage_compiler_flags()
-    endif()
-
-    add_rostest_gmock(${PROJECT_NAME}-test
+    add_rostest_gtest(${PROJECT_NAME}_test
         test/launch/${PROJECT_NAME}.test
         test/rostest/test_runner.cpp
         test/rostest/schedule_one_gait_test.cpp
@@ -76,13 +75,13 @@ if(CATKIN_ENABLE_TESTING)
         test/rostest/callback_counter.cpp
     )
 
-    target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES} ${PROJECT_NAME})
+    target_link_libraries(${PROJECT_NAME}_test ${catkin_LIBRARIES} ${PROJECT_NAME})
 
     if(ENABLE_COVERAGE_TESTING)
         set(COVERAGE_EXCLUDES "*/${PROJECT_NAME}/test*")
         add_code_coverage(
-            NAME ${PROJECT_NAME}_coverage
-            DEPENDS tests
+            NAME coverage_report
+            DEPENDENCIES ${PROJECT_NAME}_test
         )
     endif()
 endif()
