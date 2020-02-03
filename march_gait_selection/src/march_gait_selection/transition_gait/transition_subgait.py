@@ -206,13 +206,13 @@ class TransitionSubgait(Subgait):
                                           .format(tt=transition_setpoint.time, ot=new_setpoint.time))
 
                 if old_setpoint.position < transition_setpoint.position:
-                    if not transition_setpoint.position <= new_setpoint.position:
+                    if new_setpoint.position < transition_setpoint.position:
                         raise TransitionError('The transition position {tp} is not between the old {op} and new {np}'
                                               .format(tp=transition_setpoint.position, op=old_setpoint.position,
                                                       np=new_setpoint.position))
 
                 if old_setpoint.position > transition_setpoint.position:
-                    if not transition_setpoint.position >= new_setpoint.position:
+                    if new_setpoint.position > transition_setpoint.position:
                         raise TransitionError('The transition position {tp} is not between the new {np} and old {op}'
                                               .format(tp=transition_setpoint.position, op=old_setpoint.position,
                                                       np=new_setpoint.position))

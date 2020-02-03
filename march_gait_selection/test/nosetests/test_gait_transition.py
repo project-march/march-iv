@@ -25,52 +25,6 @@ gait_selection = GaitSelection(PKG, DIR)
 
 
 class TestTransitionTrajectory(unittest.TestCase):
-    def test_valid_walk_small_gait(self):
-        # check if gait name exists
-        is_walk_small_gait = False if gait_selection[walk_small] is None else True
-        self.assertTrue(is_walk_small_gait, msg='{gn} gait could not be found in folder'.format(gn=walk_small))
-
-    def test_valid_walk_medium_gait(self):
-        # check if gait name exists
-        is_walk_medium_medium = False if gait_selection[walk_medium] is None else True
-        self.assertTrue(is_walk_medium_medium, msg='{gn} gait could not be found in folder'.format(gn=walk_medium))
-
-    def test_right_open_walk_small(self):
-        # check if subgait name exists
-        is_right_open_subgait = False if gait_selection[walk_small][right_open] is None else True
-        self.assertTrue(is_right_open_subgait, msg='{sg} subgait could not be found in gait {gn}'
-                        .format(sg=right_open, gn=walk_small))
-
-    def test_right_open_walk_medium(self):
-        # check if subgait name exists
-        is_right_open_subgait = False if gait_selection[walk_medium][right_open] is None else True
-        self.assertTrue(is_right_open_subgait, msg='{sg} subgait could not be found in gait {gn}'
-                        .format(sg=right_open, gn=walk_medium))
-
-    def test_right_swing_in_walk_small(self):
-        # check if subgait name exists
-        is_right_swing_subgait = False if gait_selection[walk_small][right_swing] is None else True
-        self.assertTrue(is_right_swing_subgait, msg='{sg} subgait could not be found in gait {gn}'
-                        .format(sg=right_swing, gn=walk_small))
-
-    def test_right_swing_in_walk_medium(self):
-        # check if subgait name exists
-        is_right_swing_subgait = False if gait_selection[walk_medium][right_swing] is None else True
-        self.assertTrue(is_right_swing_subgait, msg='{sg} subgait could not be found in gait {gn}'
-                        .format(sg=right_swing, gn=walk_medium))
-
-    def test_right_close_walk_small(self):
-        # check if subgait name exists
-        is_right_close_subgait = False if gait_selection[walk_small][right_close] is None else True
-        self.assertTrue(is_right_close_subgait, msg='{sg} subgait could not be found in gait {gn}'
-                        .format(sg=right_close, gn=walk_small))
-
-    def test_right_close_walk_medium(self):
-        # check if subgait name exists
-        is_right_close_subgait = False if gait_selection[walk_medium][right_close] is None else True
-        self.assertTrue(is_right_close_subgait, msg='{sg} subgait could not be found in gait {gn}'
-                        .format(sg=right_close, gn=walk_medium))
-
     def test_invalid_old_gait_name(self):
         # check if wrong gait name causes right error
         with self.assertRaises(GaitError):
