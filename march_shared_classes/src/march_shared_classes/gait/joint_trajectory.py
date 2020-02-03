@@ -62,7 +62,8 @@ class JointTrajectory(object):
         :returns:
             True if ending and starting point are identical else False
         """
-        self._validate_boundary_points()
+        if not self._validate_boundary_points():
+            return False
 
         from_setpoint = self.setpoints[-1]
         to_setpoint = joint.setpoints[0]
