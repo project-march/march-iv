@@ -198,8 +198,12 @@ class TransitionSubgait(Subgait):
             new_joint = new_subgait.get_joint(transition_joint.name)
 
             for old_setpoint, transition_setpoint, new_setpoint in zip(old_joint, transition_joint, new_joint):
-                if old_setpoint.time != transition_setpoint.time or new_setpoint.time != transition_setpoint.time:
-                    raise TransitionError('The transition timestamps are not equal to the old and new subgait')
+                if old_setpoint.time != transition_setpoint.time:
+                    raise TransitionError('The transition timestamp {tt} != the old timestamp {ot}'
+                                          .format(tt=transition_setpoint.time, ot=old_setpoint.time))
+                if new_setpoint.time != transition_setpoint.time:
+                    raise TransitionError('The transition timestamp {tt} != the new timestamp {ot}'
+                                          .format(tt=transition_setpoint.time, ot=new_setpoint.time))
 
                 if old_setpoint.position < transition_setpoint.position:
                     if not transition_setpoint.position <= new_setpoint.position:
