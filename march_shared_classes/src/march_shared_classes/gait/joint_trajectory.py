@@ -80,7 +80,8 @@ class JointTrajectory(object):
             False if the starting/ending point is (not at 0/duration) and (has nonzero speed), True otherwise
         """
         return (self.setpoints[0].time == 0 or self.setpoints[0].velocity == 0) and \
-               (self.setpoints[0].time == self.duration or self.setpoints[0].velocity == 0)
+               (self.setpoints[-1].time == round(self.duration, self.setpoints[-1].digits) or
+                self.setpoints[-1].velocity == 0)
 
     def interpolate_setpoints(self):
         time, position, velocity = self.get_setpoints_unzipped()

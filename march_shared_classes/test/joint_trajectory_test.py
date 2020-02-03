@@ -52,7 +52,7 @@ class JointTrajectoryTest(unittest.TestCase):
 
     def test_invalid_boundary_points_nonzero_end_nonzero_speed(self):
         # Last setpoint at t = 1 =/= duration has nonzero speed.
-        setpoints = [Setpoint(0.5 * t, (self.duration - t), (self.duration - t) / 2.0) for t in self.times]
+        setpoints = [Setpoint(0.5 * t, (self.duration - t), t / 2.0) for t in self.times]
         joint_trajectory = JointTrajectory(self.joint_name, self.limits, setpoints, self.duration)
         self.assertFalse(joint_trajectory._validate_boundary_points())
 
