@@ -33,15 +33,15 @@ class Gait(object):
         :param gait_version_map:
             The parsed yaml file which states the version of the subgaits
         """
-        gait_map = gait_name
-        gait_path = os.path.join(gait_directory, gait_map, gait_name + '.gait')
+        gait_folder = gait_name
+        gait_path = os.path.join(gait_directory, gait_folder, gait_name + '.gait')
         if not os.path.isfile(gait_path):
             raise FileNotFoundError(gait_path)
 
         with open(gait_path, 'r') as gait_file:
-            gait = yaml.load(gait_file, Loader=yaml.SafeLoader)
+            gait_dictionary = yaml.load(gait_file, Loader=yaml.SafeLoader)
 
-        return cls.from_dict(robot, gait, gait_directory, gait_version_map, *args)
+        return cls.from_dict(robot, gait_dictionary, gait_directory, gait_version_map, *args)
 
     @classmethod
     def from_dict(cls, robot, gait_dictionary, gait_directory, gait_version_map, *args):
