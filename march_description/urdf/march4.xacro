@@ -37,7 +37,7 @@
     <xacro:arg name="k_position_value_hfe" default="5.0" />
     <xacro:arg name="k_position_value_kfe" default="5.0" />
     <xacro:arg name="k_position_value_haa" default="4.0" />
-    <xacro:arg name="k_position_value_adpf" default="4.0" />
+    <xacro:arg name="k_position_value_adpf" default="0.44" />
     <xacro:property name="k_position_value_hfe" value="$(arg k_position_value_hfe)" />
     <xacro:property name="k_position_value_kfe" value="$(arg k_position_value_kfe)" />
     <xacro:property name="k_position_value_haa" value="$(arg k_position_value_haa)" />
