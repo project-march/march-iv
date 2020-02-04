@@ -17,12 +17,8 @@ catkin_package(CATKIN_DEPENDS
     std_msgs
 )
 
-catkin_install_python(PROGRAMS scripts/${PROJECT_NAME}_node test/run_tests
+catkin_install_python(PROGRAMS scripts/${PROJECT_NAME}_node
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-)
-
-install(DIRECTORY launch test/launch
-    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
 if (CATKIN_ENABLE_TESTING)

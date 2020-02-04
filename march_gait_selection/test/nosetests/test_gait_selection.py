@@ -2,8 +2,6 @@
 
 import unittest
 
-import rosunit
-
 from march_gait_selection.GaitSelection import GaitSelection
 
 
@@ -78,7 +76,3 @@ class TestGaitSelection(unittest.TestCase):
         is_right_close_subgait = False if gait_selection[walk_medium][right_close] is None else True
         self.assertTrue(is_right_close_subgait, msg='{sg} subgait could not be found in gait {gn}'
                         .format(sg=right_close, gn=walk_medium))
-
-
-if __name__ == '__main__':
-    rosunit.unitrun('march_gait_selection', 'gait_selection_test', TestGaitSelection)

@@ -2,8 +2,6 @@
 
 import unittest
 
-import rosunit
-
 from march_gait_selection.GaitSelection import GaitSelection
 from march_gait_selection.transition_gait.transition_subgait import TransitionSubgait
 from march_shared_classes.exceptions.gait_exceptions import GaitError
@@ -68,7 +66,3 @@ class TestTransitionTrajectory(unittest.TestCase):
     def test_valid_transition_medium_to_small_right_close(self):
         #  Test if the TransitionSubgait is created without an error
         TransitionSubgait.from_subgait_names(gait_selection, walk_medium, walk_small, right_close)
-
-
-if __name__ == '__main__':
-    rosunit.unitrun('march_gait_selection', 'transition_gait_test', TestTransitionTrajectory)
