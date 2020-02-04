@@ -1,10 +1,11 @@
 import unittest
-import rospkg
 
-from march_shared_classes.gait.subgait import Subgait
-from march_shared_classes.gait.joint_trajectory import JointTrajectory
+import rospkg
 from urdf_parser_py import urdf
-import xacro
+
+from march_shared_classes.exceptions.gait_exceptions import NonValidGaitContent
+from march_shared_classes.gait.joint_trajectory import JointTrajectory
+from march_shared_classes.gait.subgait import Subgait
 
 
 class SubgaitTest(unittest.TestCase):
@@ -74,10 +75,34 @@ class SubgaitTest(unittest.TestCase):
         other_subgait = Subgait.from_file(self.robot, other_subgait_path)
         self.assertTrue(self.subgait.validate_subgait_transition(other_subgait))
 
+    def test_invalid_subgait_transition(self):
+        other_subgait_name = 'right_close'
+        other_version = 'MV_walk_rightclose_v2'
+        other_subgait_path = '{rsc}/{gait}/{subgait}/{version}.subgait'.format(rsc=self.resources_folder,
+                                                                               gait=self.gait_name,
+                                                                               subgait=other_subgait_name,
+                                                                               version=other_version)
+        other_subgait = Subgait.from_file(self.robot, other_subgait_path)
+        self.assertFalse(other_subgait.validate_subgait_transition(self.subgait))
 
+    def test_invalid_subgait_transition_unequal_joints(self):
+        other_subgait_name = 'right_close'
+        other_version = 'MV_walk_rightclose_v2_seven_joints'
+        other_subgait_path = '{rsc}/{gait}/{subgait}/{version}.subgait'.format(rsc=self.resources_folder,
+                                                                               gait=self.gait_name,
+                                                                               subgait=other_subgait_name,
+                                                                               version=other_version)
+        other_subgait = Subgait.from_file(self.robot, other_subgait_path)
+        with self.assertRaises(NonValidGaitContent):
+            other_subgait.validate_subgait_transition(self.subgait)
 
+    # getters tests
+    def test_get_unique_timestamps(self):
+        self.assertEqual(len(self.subgait.get_unique_timestamps()), 9)
 
+    def get_joint_test(self):
+        self.assertIsInstance(self.subgait.get_joint('left_knee'), JointTrajectory)
 
-
-
-
+    def get_joint_names_test(self):
+        self.assertIsInstance(self.subgait.get_joint_names()[0], str)
+        self.assertEqual(len(self.subgait.get_joint_names()), 8)
