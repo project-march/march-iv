@@ -75,6 +75,11 @@ class HealthyStateMachine(smach.StateMachine):
                                                                  'right_swing', 'left_close']),
                        'STANDING')
 
+        # These are three separate steps for the middle steps of the RT, as an alternative to the middle steps above.
+        self.add_state('GAIT RT FIRST MIDDLE STEP', StepStateMachine('rough_terrain_first_middle_step'), 'STANDING')
+        self.add_state('GAIT RT SECOND MIDDLE STEP', StepStateMachine('rough_terrain_second_middle_step'), 'STANDING')
+        self.add_state('GAIT RT THIRD MIDDLE STEP', StepStateMachine('rough_terrain_third_middle_step'), 'STANDING')
+
         # RD stands for Ramp and Door
         self.add_state('GAIT RD SLOPE UP', SlopeStateMachine('ramp_door_slope_up'), 'STANDING')
         self.add_state('GAIT RD SLOPE DOWN', slope_down_sm.create(), 'STANDING')
@@ -98,6 +103,9 @@ class HealthyStateMachine(smach.StateMachine):
                                                  'gait_stairs_up', 'gait_stairs_down',
                                                  'gait_walk_small', 'gait_rough_terrain_high_step',
                                                  'gait_rough_terrain_middle_steps',
+                                                 'gait_rough_terrain_first_middle_step',
+                                                 'gait_rough_terrain_second_middle_step',
+                                                 'gait_rough_terrain_third_middle_step',
                                                  'gait_ramp_door_slope_up', 'gait_ramp_door_slope_down',
                                                  'gait_tilted_path_straight_start_right',
                                                  'gait_tilted_path_straight_start_left',
@@ -117,6 +125,9 @@ class HealthyStateMachine(smach.StateMachine):
                               'gait_walk_small': 'GAIT WALK SMALL',
                               'gait_rough_terrain_high_step': 'GAIT RT HIGH STEP',
                               'gait_rough_terrain_middle_steps': 'GAIT RT MIDDLE STEPS',
+                              'gait_rough_terrain_first_middle_step': 'GAIT RT FIRST MIDDLE STEP',
+                              'gait_rough_terrain_second_middle_step': 'GAIT RT SECOND MIDDLE STEP',
+                              'gait_rough_terrain_third_middle_step': 'GAIT RT THIRD MIDDLE STEP',
                               'gait_ramp_door_slope_up': 'GAIT RD SLOPE UP',
                               'gait_ramp_door_slope_down': 'GAIT RD SLOPE DOWN',
                               'gait_tilted_path_straight_start_right': 'GAIT TP STRAIGHT START RIGHT',
