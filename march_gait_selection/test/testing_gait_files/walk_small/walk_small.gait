@@ -1,0 +1,5 @@
+name: walk_small
+
+graph:
+  from_subgait: [start,     right_open, left_swing, right_swing, left_close, start, right_open, left_swing, right_close]
+  to_subgait:   [right_open, left_swing, right_swing, left_close, end, right_open, left_swing, right_close, end]
