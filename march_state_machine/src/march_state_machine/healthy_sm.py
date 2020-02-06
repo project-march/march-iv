@@ -7,6 +7,7 @@ from march_shared_resources.srv import PossibleGaits
 from .gaits import slope_down_sm
 from .gaits import tilted_path_sideways_end_sm
 from .gaits import tilted_path_sideways_start_sm
+from .gaits import tilted_path_straight_sm
 from .state_machines.slope_state_machine import SlopeStateMachine
 from .state_machines.step_state_machine import StepStateMachine
 from .state_machines.walk_state_machine import WalkStateMachine
@@ -85,11 +86,7 @@ class HealthyStateMachine(smach.StateMachine):
         self.add_state('GAIT RD SLOPE DOWN', slope_down_sm.create(), 'STANDING')
 
         # TP stands for Tilted Path
-        self.add_state('GAIT TP STRAIGHT START RIGHT', StepStateMachine('tilted_path_straight_start_right'), 'STANDING')
-        self.add_state('GAIT TP STRAIGHT START LEFT',
-                       StepStateMachine('tilted_path_straight_start_left',
-                                        subgaits=['left_open', 'right_close']),
-                       'STANDING')
+        self.add_state('GAIT TP STRAIGHT', tilted_path_straight_sm.create(), 'STANDING')
 
         self.add_state('GAIT TP SIDEWAYS START', tilted_path_sideways_start_sm.create(), 'STANDING')
         self.add_state('GAIT TP SIDEWAYS END', tilted_path_sideways_end_sm.create(), 'STANDING')
@@ -107,8 +104,7 @@ class HealthyStateMachine(smach.StateMachine):
                                                  'gait_rough_terrain_second_middle_step',
                                                  'gait_rough_terrain_third_middle_step',
                                                  'gait_ramp_door_slope_up', 'gait_ramp_door_slope_down',
-                                                 'gait_tilted_path_straight_start_right',
-                                                 'gait_tilted_path_straight_start_left',
+                                                 'gait_tilted_path_straight_start',
                                                  'gait_tilted_path_first_start',
                                                  'gait_tilted_path_first_end',
                                                  'preempted']),
@@ -130,8 +126,7 @@ class HealthyStateMachine(smach.StateMachine):
                               'gait_rough_terrain_third_middle_step': 'GAIT RT THIRD MIDDLE STEP',
                               'gait_ramp_door_slope_up': 'GAIT RD SLOPE UP',
                               'gait_ramp_door_slope_down': 'GAIT RD SLOPE DOWN',
-                              'gait_tilted_path_straight_start_right': 'GAIT TP STRAIGHT START RIGHT',
-                              'gait_tilted_path_straight_start_left': 'GAIT TP STRAIGHT START LEFT',
+                              'gait_tilted_path_straight_start': 'GAIT TP STRAIGHT',
                               'gait_tilted_path_first_start': 'GAIT TP SIDEWAYS START',
                               'gait_tilted_path_first_end': 'GAIT TP SIDEWAYS END'})
         self.close()
