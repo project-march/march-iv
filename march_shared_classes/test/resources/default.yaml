@@ -1,0 +1,3 @@
+gaits:
+  walk: {right_open: MV_walk_rightopen_v2, left_swing: MV_walk_leftswing_v2, right_swing: MV_walk_rightswing_v2,
+         left_close: MV_walk_leftclose_v2, right_close: MV_walk_rightclose_v2}

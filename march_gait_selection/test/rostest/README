@@ -1,3 +1,0 @@
-# Important
-All `.py` files in the rostest folder need to be executable (`chmod +x <file>.py`).
-This ensures that they can be found by the `.test` launch files.
