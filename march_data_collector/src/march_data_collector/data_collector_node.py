@@ -55,16 +55,12 @@ class DataCollectorNode(object):
             rospy.logdebug('running without pressure soles')
 
     def trajectory_state_callback(self, data):
-        rospy.logdebug('received trajectory state' + str(data.desired))
         com = self._com_calculator.calculate_com()
         self._com_marker_publisher.publish(com)
         for cp_calculator in self._cp_calculators:
             cp_calculator.calculate_cp(com)
         if self.pressure_soles_on:
             self.send_udp(data.actual.positions)
-
-    def imc_state_callback(self, data):
-        rospy.logdebug('received IMC message current is ' + str(data.current))
 
     def imu_callback(self, data):
         if data.header.frame_id == 'imu_link':
