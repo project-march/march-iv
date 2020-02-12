@@ -23,12 +23,12 @@ add_message_files(
     PowerDistributionBoardState.msg
     PressureSole.msg
     Setpoint.msg
-    Sound.msg
     Subgait.msg
 )
 
 add_service_files(
     FILES
+    PossibleGaits.srv
     StringTrigger.srv
     Trigger.srv
 )

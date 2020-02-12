@@ -12,5 +12,4 @@ def interpolate(current_gains, needed_gains, gradient, delta_t):
             next_gains[i] = max(needed_gains[i], current_gains[i] - gradient * delta_t)
         else:
             next_gains[i] = min(needed_gains[i], current_gains[i] + gradient * delta_t)
-
     return next_gains

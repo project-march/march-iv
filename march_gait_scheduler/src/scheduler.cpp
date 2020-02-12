@@ -13,7 +13,7 @@ trajectory_msgs::JointTrajectory Scheduler::setStartTimeGait(trajectory_msgs::Jo
 
 ros::Time Scheduler::getEndTimeCurrentGait()
 {
-  if (this->last_gait_goal_ != nullptr && this->last_gait_goal_ != NULL)
+  if (this->last_gait_goal_ != nullptr)
   {
     ros::Time end_time = this->start_last_gait_;
     end_time += this->last_gait_goal_->current_subgait.duration;
