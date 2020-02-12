@@ -26,7 +26,10 @@ TEST(TestNoTemperatureError, belowSpecificThreshold)
   pub_joint1.publish(msg);
 
   // Wait to receive message
-  ros::Duration duration = ros::Duration(1);
+  int timeout_duration;
+  nh.getParam("/march_safety_node/ros_timeout", timeout_duration);
+
+  ros::Duration duration = ros::Duration(timeout_duration);
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint1", duration);
   ros::spinOnce();
 
@@ -58,7 +61,10 @@ TEST(TestNoTemperatureError, belowSpecificThreshold2)
   pub_joint2.publish(msg);
 
   // Wait to receive message
-  ros::Duration duration = ros::Duration(1);
+  int timeout_duration;
+  nh.getParam("/march_safety_node/ros_timeout", timeout_duration);
+
+  ros::Duration duration = ros::Duration(timeout_duration);
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint2", duration);
   ros::spinOnce();
 
@@ -86,7 +92,10 @@ TEST(TestNoTemperatureError, belowDefaultThreshold)
   pub_joint3.publish(msg);
 
   // Wait to receive message
-  ros::Duration duration = ros::Duration(1);
+  int timeout_duration;
+  nh.getParam("/march_safety_node/ros_timeout", timeout_duration);
+
+  ros::Duration duration = ros::Duration(timeout_duration);
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint3", duration);
   ros::spinOnce();
 

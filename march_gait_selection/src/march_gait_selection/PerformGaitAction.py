@@ -5,7 +5,6 @@ from march_shared_classes.exceptions.general_exceptions import MsgTypeError
 from march_shared_resources import msg
 from march_shared_resources.msg import GaitAction, GaitGoal, GaitNameAction
 
-
 SERVER_TIMEOUT = 5
 RESPONSE_TIMEOUT = 1
 
@@ -23,7 +22,7 @@ class PerformGaitAction(object):
             rospy.logdebug('Waiting for /march/gait/schedule to come up')
 
     def target_gait_callback(self, subgait_goal_msg):
-        """Set a new target subgait over the action server."""
+        """Set a new target subgait over the action server march/gait/schedule."""
         rospy.logdebug('Trying to schedule subgait {gn} {sn}'
                        .format(gn=subgait_goal_msg.name, sn=subgait_goal_msg.subgait_name))
 

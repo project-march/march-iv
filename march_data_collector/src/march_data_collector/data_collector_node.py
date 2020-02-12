@@ -1,16 +1,18 @@
+import errno
 from math import pi
 import socket
 
 from control_msgs.msg import JointTrajectoryControllerState
 from geometry_msgs.msg import TransformStamped
 import rospy
-from sensor_msgs.msg import Imu, Temperature
+from sensor_msgs.msg import Imu
 from tf.transformations import quaternion_from_euler, quaternion_multiply
 import tf2_ros
 from urdf_parser_py.urdf import URDF
 from visualization_msgs.msg import Marker
 
-from march_shared_resources.msg import ImcErrorState, PressureSole
+from march_shared_resources.msg import PressureSole
+
 
 from .com_calculator import CoMCalculator
 from .cp_calculator import CPCalculator
@@ -20,39 +22,37 @@ class DataCollectorNode(object):
     def __init__(self, com_calculator, cp_calculators):
         self._com_calculator = com_calculator
         self._cp_calculators = cp_calculators
-        self.output_host = rospy.get_param('moticon_ip')
-        self.input_host = rospy.get_param('host_ip')
-        if (self.output_host != ""):
-            self.output_port = 9999
-            self.output_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-        joint_names = rospy.get_param('/march/joint_names')
 
         self._imu_broadcaster = tf2_ros.TransformBroadcaster()
         self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
-
-        self._temperature_subscriber = [rospy.Subscriber('/march/temperature/' + joint,
-                                                         Temperature,
-                                                         self.temperature_callback, joint) for joint in joint_names]
 
         self._trajectory_state_subscriber = rospy.Subscriber('/march/controller/trajectory/state',
                                                              JointTrajectoryControllerState,
                                                              self.trajectory_state_callback)
 
-        self._imc_state_subscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback)
-
         self._imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
 
-        self._pressure_sole_publisher = rospy.Publisher('/march/pressure_soles', PressureSole, queue_size=1)
+        self.pressure_soles_on = rospy.get_param('pressure_soles')
+        if self.pressure_soles_on:
+            rospy.logdebug('will run with pressure soles')
+            self.output_host = rospy.get_param('moticon_ip')
+            sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            sock.connect(('8.8.8.8', 53))
+            self.input_host = sock.getsockname()[0]
+            sock.close()
+            self.output_port = 8888
+            self.output_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
-        if (self.input_host != ""):
             self.input_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            self.input_sock.bind((rospy.get_param('host_ip'), 8888))
-            self.delay = []
-            self.receive_udp()
+            try:
+                self.input_sock.bind((self.input_host, 9999))
+            except socket.error:
+                rospy.logwarn('Cannot connect to host, is the adress correct? \nrunning without pressure soles')
+                self.pressure_soles_on = False
 
-    def temperature_callback(self, data, joint):
-        rospy.logdebug('Temperature' + joint + ' is ' + str(data.temperature))
+            self._pressure_sole_publisher = rospy.Publisher('/march/pressure_soles', PressureSole, queue_size=1)
+        else:
+            rospy.logdebug('running without pressure soles')
 
     def trajectory_state_callback(self, data):
         rospy.logdebug('received trajectory state' + str(data.desired))
@@ -60,7 +60,7 @@ class DataCollectorNode(object):
         self._com_marker_publisher.publish(com)
         for cp_calculator in self._cp_calculators:
             cp_calculator.calculate_cp(com)
-        if (self.output_host != ""):
+        if self.pressure_soles_on:
             self.send_udp(data.actual.positions)
 
     def imc_state_callback(self, data):
@@ -87,24 +87,33 @@ class DataCollectorNode(object):
             self._imu_broadcaster.sendTransform(transform)
 
     def send_udp(self, data):
-        message = " ".join([str(1000 * val) for val in data])
-        self.output_sock.sendto(message.encode("utf-8"), (self.output_host, self.output_port))
+        message = ' '.join([str(180 * val / pi) for val in data])
+        self.output_sock.sendto(message.encode('utf-8'), (self.output_host, self.output_port))
 
     def receive_udp(self):
-        while True:
-            data, addr = self.input_sock.recvfrom(1024)
-            datachannels = data.split()
-            values = [float(x) for x in datachannels]
-            pressure_sole_msg = PressureSole()
-            pressure_sole_msg.header.stamp = rospy.Time.now()
-            pressure_sole_msg.pressure_soles_time = rospy.Time(values[0])
-            pressure_sole_msg.cop_left = values[1:3]
-            pressure_sole_msg.pressure_left = values[3:19]
-            pressure_sole_msg.total_force_left = values[19]
-            pressure_sole_msg.cop_right = values[20:22]
-            pressure_sole_msg.pressure_right = values[22:38]
-            pressure_sole_msg.total_force_right = values[38]
-            self._pressure_sole_publisher.publish(pressure_sole_msg)
+        while self.pressure_soles_on:
+            try:
+                data, addr = self.input_sock.recvfrom(1024)
+                datachannels = data.split()
+                values = [float(x) for x in datachannels]
+                pressure_sole_msg = PressureSole()
+                pressure_sole_msg.header.stamp = rospy.Time.now()
+                pressure_sole_msg.pressure_soles_time = rospy.Time(values[0])
+                pressure_sole_msg.cop_left = values[1:3]
+                pressure_sole_msg.pressure_left = values[3:19]
+                pressure_sole_msg.total_force_left = values[19]
+                pressure_sole_msg.cop_right = values[20:22]
+                pressure_sole_msg.pressure_right = values[22:38]
+                pressure_sole_msg.total_force_right = values[38]
+                self._pressure_sole_publisher.publish(pressure_sole_msg)
+            except socket.timeout:
+                rospy.loginfo('Has not received pressure sole data in a while, are they on?')
+            except socket.error as error:
+                if error.errno == errno.EINTR:
+                    pass
+                else:
+                    raise
+        return
 
 
 def main():
@@ -115,6 +124,6 @@ def main():
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
     feet = ['ankle_plate_left', 'ankle_plate_right']
     cp_calculators = [CPCalculator(tf_buffer, foot) for foot in feet]
-   # DataCollectorNode(center_of_mass_calculator, cp_calculators, "192.168.8.144", "192.168.8.137", 8888, 9999)
-    DataCollectorNode(center_of_mass_calculator, cp_calculators)
+    data_collector_node = DataCollectorNode(center_of_mass_calculator, cp_calculators)
+    data_collector_node.receive_udp()
     rospy.spin()

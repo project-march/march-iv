@@ -1,0 +1,373 @@
+<engine port="9901">
+  <projects>
+    <project name="March_test" pubsub="auto" threads="4">
+      <contqueries>
+        <contquery name="March_cq">
+          <windows>
+            <window-join name="joinTemperature">
+              <join type="inner">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="temperature_left_hip_aa" source="l_temperature_left_hip_aa" />
+                <field-selection name="temperature_right_hip_aa" source="l_temperature_right_hip_aa" />
+                <field-selection name="temperature_left_hip_fe" source="l_temperature_left_hip_fe" />
+                <field-selection name="temperature_right_hip_fe" source="l_temperature_right_hip_fe" />
+                <field-selection name="temperature_left_ankle" source="r_temperature_left_ankle" />
+                <field-selection name="temperature_right_ankle" source="r_temperature_right_ankle" />
+                <field-selection name="temperature_left_knee" source="r_temperature_left_knee" />
+                <field-selection name="temperature_right_knee" source="r_temperature_right_knee" />
+              </output>
+            </window-join>
+            <window-join name="joinTemperature_ankle">
+              <join type="inner">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="temperature_left_ankle" source="l_temperature" />
+                <field-selection name="temperature_right_ankle" source="r_temperature" />
+              </output>
+            </window-join>
+            <window-join name="joinTemperature_ankle_knee">
+              <join type="inner">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="temperature_left_ankle" source="l_temperature_left_ankle" />
+                <field-selection name="temperature_right_ankle" source="l_temperature_right_ankle" />
+                <field-selection name="temperature_left_knee" source="r_temperature_left_knee" />
+                <field-selection name="temperature_right_knee" source="r_temperature_right_knee" />
+              </output>
+            </window-join>
+            <window-join name="joinTemperature_hip">
+              <join type="inner">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="temperature_left_hip_aa" source="l_temperature_left_hip_aa" />
+                <field-selection name="temperature_right_hip_aa" source="l_temperature_right_hip_aa" />
+                <field-selection name="temperature_left_hip_fe" source="r_temperature_left_hip_fe" />
+                <field-selection name="temperature_right_hip_fe" source="r_temperature_right_hip_fe" />
+              </output>
+            </window-join>
+            <window-join name="joinTemperature_hip_aa">
+              <join type="inner">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="temperature_left_hip_aa" source="l_temperature" />
+                <field-selection name="temperature_right_hip_aa" source="r_temperature" />
+              </output>
+            </window-join>
+            <window-join name="joinTemperature_hip_fe">
+              <join type="inner">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="temperature_left_hip_fe" source="l_temperature" />
+                <field-selection name="temperature_right_hip_fe" source="r_temperature" />
+              </output>
+            </window-join>
+            <window-join name="joinTemperature_knee">
+              <join type="inner">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="temperature_left_knee" source="l_temperature" />
+                <field-selection name="temperature_right_knee" source="r_temperature" />
+              </output>
+            </window-join>
+            <window-join name="joinWindow2">
+              <join type="inner">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="actual_positions" source="l_actual_positions" />
+                <field-selection name="actual_velocities" source="l_actual_velocities" />
+                <field-selection name="desired_positions" source="l_desired_positions" />
+                <field-selection name="desired_velocities" source="l_desired_velocities" />
+                <field-selection name="orientation" source="r_orientation" />
+                <field-selection name="rotational_velocity" source="r_rotational_velocity" />
+                <field-selection name="linear_acceleration" source="r_linear_acceleration" />
+              </output>
+            </window-join>
+            <window-join name="joinWindow3">
+              <join type="inner">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="actual_positions" source="r_actual_positions" />
+                <field-selection name="actual_velocities" source="r_actual_velocities" />
+                <field-selection name="desired_positions" source="r_desired_positions" />
+                <field-selection name="desired_velocities" source="r_desired_velocities" />
+                <field-selection name="orientation" source="r_orientation" />
+                <field-selection name="rotational_velocity" source="r_rotational_velocity" />
+                <field-selection name="linear_acceleration" source="r_linear_acceleration" />
+                <field-selection name="motor_current" source="l_motor_current" />
+                <field-selection name="motor_voltage" source="l_motor_voltage" />
+              </output>
+              <connectors>
+                <connector class="fs" name="sub" type="subscribe">
+                  <properties>
+                    <property name="dateformat">%Y-%m-%d %H:%M:%S</property>
+                    <property name="fsname">full.csv</property>
+                    <property name="fstype">csv</property>
+                    <property name="snapshot">true</property>
+                  </properties>
+                </connector>
+              </connectors>
+            </window-join>
+            <window-join name="joinWindow4">
+              <join type="inner">
+                <conditions>
+                  <fields left="time" right="time" />
+                </conditions>
+              </join>
+              <output>
+                <field-selection name="time" source="l_time" />
+                <field-selection name="gait_name" source="l_gait_name" />
+                <field-selection name="subgait_name" source="l_subgait_name" />
+                <field-selection name="version" source="l_version" />
+                <field-selection name="com_position" source="r_com_position" />
+              </output>
+            </window-join>
+            <window-source autogen-key="true" insert-only="true" name="sourceCom">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="com_position" type="array(dbl)" />
+                </fields>
+              </schema>
+              <connectors>
+                <connector class="fs" name="sub" type="subscribe">
+                  <properties>
+                    <property name="dateformat">%Y-%m-%d %H:%M:%S</property>
+                    <property name="fsname">com.csv</property>
+                    <property name="fstype">csv</property>
+                    <property name="snapshot">true</property>
+                  </properties>
+                </connector>
+              </connectors>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceGait">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="gait_name" type="string" />
+                  <field key="false" name="subgait_name" type="string" />
+                  <field key="false" name="version" type="string" />
+                </fields>
+              </schema>
+              <connectors>
+                <connector class="fs" name="sub" type="subscribe">
+                  <properties>
+                    <property name="dateformat">%Y-%m-%d %H:%M:%S</property>
+                    <property name="fsname">gait.csv</property>
+                    <property name="fstype">csv</property>
+                    <property name="snapshot">true</property>
+                  </properties>
+                </connector>
+              </connectors>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceIMC">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="motor_current" type="array(dbl)" />
+                  <field key="false" name="motor_voltage" type="array(dbl)" />
+                </fields>
+              </schema>
+              <connectors>
+                <connector class="fs" name="sub" type="subscribe">
+                  <properties>
+                    <property name="dateformat">%Y-%m-%d %H:%M:%S</property>
+                    <property name="fsname">imc.csv</property>
+                    <property name="fstype">csv</property>
+                    <property name="snapshot">true</property>
+                  </properties>
+                </connector>
+              </connectors>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceIMU">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="orientation" type="array(dbl)" />
+                  <field key="false" name="rotational_velocity" type="array(dbl)" />
+                  <field key="false" name="linear_acceleration" type="array(dbl)" />
+                </fields>
+              </schema>
+              <connectors>
+                <connector class="fs" name="sub" type="subscribe">
+                  <properties>
+                    <property name="dateformat">%Y-%m-%d %H:%M:%S</property>
+                    <property name="fsname">imu.csv</property>
+                    <property name="fstype">csv</property>
+                    <property name="snapshot">true</property>
+                  </properties>
+                </connector>
+              </connectors>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceJoint">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="actual_positions" type="array(dbl)" />
+                  <field key="false" name="actual_velocities" type="array(dbl)" />
+                  <field key="false" name="desired_positions" type="array(dbl)" />
+                  <field key="false" name="desired_velocities" type="array(dbl)" />
+                </fields>
+              </schema>
+              <connectors>
+                <connector class="fs" name="sub" type="subscribe">
+                  <properties>
+                    <property name="dateformat">%Y-%m-%d %H:%M:%S</property>
+                    <property name="fsname">joint.csv</property>
+                    <property name="fstype">csv</property>
+                    <property name="snapshot">true</property>
+                  </properties>
+                </connector>
+              </connectors>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_left_ankle">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="temperature" type="double" />
+                </fields>
+              </schema>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_left_hip_aa">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="temperature" type="double" />
+                </fields>
+              </schema>
+              <connectors>
+                <connector class="fs" name="sub" type="subscribe">
+                  <properties>
+                    <property name="dateformat">%Y-%m-%d %H:%M:%S</property>
+                    <property name="fsname">tp.csv</property>
+                    <property name="fstype">csv</property>
+                    <property name="snapshot">true</property>
+                  </properties>
+                </connector>
+              </connectors>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_left_hip_fe">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="temperature" type="double" />
+                </fields>
+              </schema>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_left_knee">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="temperature" type="double" />
+                </fields>
+              </schema>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_right_ankle">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="temperature" type="double" />
+                </fields>
+              </schema>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_right_hip_aa">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="temperature" type="double" />
+                </fields>
+              </schema>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_right_hip_fe">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="temperature" type="double" />
+                </fields>
+              </schema>
+            </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourceTemperature_right_knee">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="temperature" type="double" />
+                </fields>
+              </schema>
+            </window-source>
+          </windows>
+          <edges>
+            <edge role="left" source="sourceTemperature_left_ankle" target="joinTemperature_ankle" />
+            <edge role="right" source="sourceTemperature_right_ankle" target="joinTemperature_ankle" />
+            <edge role="left" source="sourceTemperature_left_hip_aa" target="joinTemperature_hip_aa" />
+            <edge role="right" source="sourceTemperature_right_hip_aa" target="joinTemperature_hip_aa" />
+            <edge role="left" source="sourceTemperature_left_hip_fe" target="joinTemperature_hip_fe" />
+            <edge role="right" source="sourceTemperature_right_hip_fe" target="joinTemperature_hip_fe" />
+            <edge role="left" source="sourceTemperature_left_knee" target="joinTemperature_knee" />
+            <edge role="right" source="sourceTemperature_right_knee" target="joinTemperature_knee" />
+            <edge role="left" source="joinTemperature_ankle" target="joinTemperature_ankle_knee" />
+            <edge role="right" source="joinTemperature_knee" target="joinTemperature_ankle_knee" />
+            <edge role="left" source="joinTemperature_hip_aa" target="joinTemperature_hip" />
+            <edge role="right" source="joinTemperature_hip_fe" target="joinTemperature_hip" />
+            <edge role="left" source="joinTemperature_hip" target="joinTemperature" />
+            <edge role="right" source="joinTemperature_ankle_knee" target="joinTemperature" />
+            <edge role="left" source="sourceJoint" target="joinWindow2" />
+            <edge role="right" source="sourceIMU" target="joinWindow2" />
+            <edge role="left" source="sourceIMC" target="joinWindow3" />
+            <edge role="right" source="joinWindow2" target="joinWindow3" />
+            <edge role="left" source="sourceGait" target="joinWindow4" />
+            <edge role="right" source="sourceCom" target="joinWindow4" />
+          </edges>
+        </contquery>
+      </contqueries>
+    </project>
+  </projects>
+</engine>

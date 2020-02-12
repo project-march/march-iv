@@ -1,7 +1,10 @@
 <launch>
-    <arg name="host_ip" default="" doc="The ip-adress to which the Moticon sends pressure sole data"/>
-    <arg name="moticon_ip" default="" doc="The ip-adress with Moticon software running on it."/>
+    <arg name="moticon_ip" default="192.168.8.105" doc="The ip-adress with Moticon software running on it, defaults to
+            EMS switch laptop on standard rotuer"/>
+    <arg name="pressure_soles" default="false" doc="Whether to pressure soles will be connected"/>
+    <arg name="esp" default="false" doc="Whether to launch the esp adapter"/>
     <node name="march_data_collector" pkg="march_data_collector" type="march_data_collector" output="screen" />
-        <param name="host_ip" value="$(arg host_ip)" />
         <param name="moticon_ip" value="$(arg moticon_ip)" />
+        <param name="pressure_soles" value="$(arg pressure_soles)" />
+    <node if="$(arg esp)" name="esp_adapter" pkg="march_data_collector" type="esp_adapter" output="screen"/>
 </launch>
