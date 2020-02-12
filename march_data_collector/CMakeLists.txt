@@ -27,7 +27,7 @@ catkin_package(
     visualization_msgs
 )
 
-catkin_install_python(PROGRAMS scripts/${PROJECT_NAME}
+catkin_install_python(PROGRAMS scripts/${PROJECT_NAME} scripts/esp_adapter
     DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 install(DIRECTORY launch
