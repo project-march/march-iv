@@ -32,10 +32,10 @@ class DataCollectorNode(object):
 
         self._imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
 
-        self.pressure_soles_on = rospy.get_param('pressure_soles')
+        self.pressure_soles_on = rospy.get_param('~pressure_soles')
         if self.pressure_soles_on:
             rospy.logdebug('will run with pressure soles')
-            self.output_host = rospy.get_param('moticon_ip')
+            self.output_host = rospy.get_param('~moticon_ip')
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             sock.connect(('8.8.8.8', 53))
             self.input_host = sock.getsockname()[0]
@@ -87,29 +87,34 @@ class DataCollectorNode(object):
         self.output_sock.sendto(message.encode('utf-8'), (self.output_host, self.output_port))
 
     def receive_udp(self):
-        while self.pressure_soles_on:
-            try:
-                data, addr = self.input_sock.recvfrom(1024)
-                datachannels = data.split()
-                values = [float(x) for x in datachannels]
-                pressure_sole_msg = PressureSole()
-                pressure_sole_msg.header.stamp = rospy.Time.now()
-                pressure_sole_msg.pressure_soles_time = rospy.Time(values[0])
-                pressure_sole_msg.cop_left = values[1:3]
-                pressure_sole_msg.pressure_left = values[3:19]
-                pressure_sole_msg.total_force_left = values[19]
-                pressure_sole_msg.cop_right = values[20:22]
-                pressure_sole_msg.pressure_right = values[22:38]
-                pressure_sole_msg.total_force_right = values[38]
-                self._pressure_sole_publisher.publish(pressure_sole_msg)
-            except socket.timeout:
-                rospy.loginfo('Has not received pressure sole data in a while, are they on?')
-            except socket.error as error:
-                if error.errno == errno.EINTR:
-                    pass
-                else:
-                    raise
+        try:
+            data, addr = self.input_sock.recvfrom(1024)
+            datachannels = data.split()
+            values = [float(x) for x in datachannels]
+            pressure_sole_msg = PressureSole()
+            pressure_sole_msg.header.stamp = rospy.Time.now()
+            pressure_sole_msg.pressure_soles_time = rospy.Time(values[0])
+            pressure_sole_msg.cop_left = values[1:3]
+            pressure_sole_msg.pressure_left = values[3:19]
+            pressure_sole_msg.total_force_left = values[19]
+            pressure_sole_msg.cop_right = values[20:22]
+            pressure_sole_msg.pressure_right = values[22:38]
+            pressure_sole_msg.total_force_right = values[38]
+            self._pressure_sole_publisher.publish(pressure_sole_msg)
+        except socket.timeout:
+            rospy.loginfo('Has not received pressure sole data in a while, are they on?')
+        except socket.error as error:
+            if error.errno == errno.EINTR:
+                pass
+            else:
+                raise
         return
+
+    def run(self):
+        while not rospy.is_shutdown():
+            if self.pressure_soles_on:
+                self.receive_udp()
+            rospy.spin_once()
 
 
 def main():
@@ -121,5 +126,4 @@ def main():
     feet = ['ankle_plate_left', 'ankle_plate_right']
     cp_calculators = [CPCalculator(tf_buffer, foot) for foot in feet]
     data_collector_node = DataCollectorNode(center_of_mass_calculator, cp_calculators)
-    data_collector_node.receive_udp()
-    rospy.spin()
+    data_collector_node.run()
