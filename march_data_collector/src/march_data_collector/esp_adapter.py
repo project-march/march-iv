@@ -242,7 +242,6 @@ class ESPAdapter:
         cop_right = list_to_str(data.cop_right)
         csv = ','.join([get_time_str(data.pressure_soles_time), str(data.total_force_left), str(data.total_force_right),
                         pressure_left, pressure_right, cop_left, cop_right])
-        rospy.loginfo("ps to esp")
         self.send_to_esp(csv, source)
 
 
@@ -254,8 +253,9 @@ def get_time_str(timestamp):
     time = timestamp.secs + timestamp.nsecs * 10**(-9)
     return datetime.datetime.fromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S.%f')
 
-def list_to_str(list):
-    return '[' + ';'.join([str(value) for value in list]) + ']'
+
+def list_to_str(ls):
+    return '[' + ';'.join([str(value) for value in ls]) + ']'
 
 
 def quaternion_to_str(quaternion):
