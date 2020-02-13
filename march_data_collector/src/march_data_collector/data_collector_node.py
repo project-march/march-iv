@@ -49,6 +49,7 @@ class DataCollectorNode(object):
             except socket.error:
                 rospy.logwarn('Cannot connect to host, is the adress correct? \nrunning without pressure soles')
                 self.pressure_soles_on = False
+                self.close_sockets()
 
             self._pressure_sole_publisher = rospy.Publisher('/march/pressure_soles', PressureSole, queue_size=1)
         else:
@@ -105,10 +106,15 @@ class DataCollectorNode(object):
             rospy.loginfo('Has not received pressure sole data in a while, are they on?')
         except socket.error as error:
             if error.errno == errno.EINTR:
-                pass
+                self.close_sockets()
             else:
                 raise
         return
+
+    def close_sockets(self):
+        self.output_sock.close()
+        self.input_sock.close()
+
 
     def run(self):
         while not rospy.is_shutdown():
