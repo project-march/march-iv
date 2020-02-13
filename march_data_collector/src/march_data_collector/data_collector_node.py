@@ -115,7 +115,6 @@ class DataCollectorNode(object):
         self.output_sock.close()
         self.input_sock.close()
 
-
     def run(self):
         while not rospy.is_shutdown():
             if self.pressure_soles_on:
