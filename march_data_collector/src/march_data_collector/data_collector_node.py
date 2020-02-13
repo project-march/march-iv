@@ -1,6 +1,7 @@
 import errno
 from math import pi
 import socket
+import sys
 
 from control_msgs.msg import JointTrajectoryControllerState
 from geometry_msgs.msg import TransformStamped
@@ -123,7 +124,11 @@ class DataCollectorNode(object):
 
 def main():
     rospy.init_node('data_collector', anonymous=True)
-    robot = URDF.from_parameter_server()
+    try:
+        robot = URDF.from_parameter_server()
+    except KeyError:
+        rospy.logerr('Cannot retrieve URDF from parameter server.')
+        sys.exit()
     tf_buffer = tf2_ros.Buffer()
     tf2_ros.TransformListener(tf_buffer)
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
