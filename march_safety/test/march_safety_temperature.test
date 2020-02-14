@@ -22,5 +22,5 @@
         </rosparam>
     </node>
 
-    <test test-name="march_safety_test" pkg="march_safety" type="march_safety_temperature_test" retry="3"/>
+    <test test-name="march_safety_test" pkg="march_safety" type="march_safety_temperature_test" retry="3" time-limit="180.0"/>
 </launch>
