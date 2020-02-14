@@ -21,6 +21,4 @@
             test_joint2: 90
         </rosparam>
     </node>
-
-    <test test-name="march_safety_test" pkg="march_safety" type="march_safety_temperature_test"/>
 </launch>
