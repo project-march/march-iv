@@ -77,11 +77,19 @@ class TestTransitionTrajectory(unittest.TestCase):
         subgait_walk_medium = TransitionSubgait._scale_timestamps_subgaits(subgait_stairs_up,
                                                                            subgait_walk_medium.duration)
 
-        subgait_stairs_up, subgait_walk_medium = TransitionSubgait._equalize_amount_of_setpoints(subgait_stairs_up,
-                                                                                                 subgait_walk_medium)
+        subgait_stairs_up, subgait_walk_medium = TransitionSubgait._equalize_amount_of_setpoints(
+            subgait_stairs_up, subgait_walk_medium)
 
         self.assertEqual(subgait_stairs_up.get_unique_timestamps(), subgait_walk_medium.get_unique_timestamps(),
                          msg='Scaling the function did not result in same timestamps and equal amount of setpoints')
+
+        old_timestamps = subgait_stairs_up.get_unique_timestamps()
+        new_timestamps = subgait_walk_medium.get_unique_timestamps()
+
+        self.assertEqual(old_timestamps, new_timestamps,
+                         msg='Scaling the function did not result in same timestamps and equal amount of setpoints'
+                             '\nold timestamps: {old} \nnew timestamps: {new}'.format(old=old_timestamps,
+                                                                                      new=new_timestamps))
 
     def test_equalize_amount_of_setpoints_with_higher_duration_new_gait(self):
         # test if interpolation works with higher duration and different setpoints
@@ -91,10 +99,16 @@ class TestTransitionTrajectory(unittest.TestCase):
         subgait_walk_medium = TransitionSubgait._scale_timestamps_subgaits(subgait_walk_medium,
                                                                            subgait_stairs_up.duration)
 
-        TransitionSubgait._equalize_amount_of_setpoints(subgait_walk_medium, subgait_stairs_up)
+        subgait_walk_medium, subgait_stairs_up = TransitionSubgait._equalize_amount_of_setpoints(
+            subgait_walk_medium, subgait_stairs_up)
 
-        self.assertEqual(subgait_stairs_up.get_unique_timestamps(), subgait_walk_medium.get_unique_timestamps(),
-                         msg='Scaling the function did not result in same timestamps and equal amount of setpoints')
+        old_timestamps = subgait_walk_medium.get_unique_timestamps()
+        new_timestamps = subgait_stairs_up.get_unique_timestamps()
+
+        self.assertEqual(old_timestamps, new_timestamps,
+                         msg='Scaling the function did not result in same timestamps and equal amount of setpoints'
+                             '\nold timestamps: {old} \nnew timestamps: {new}'.format(old=old_timestamps,
+                                                                                      new=new_timestamps))
 
     def test_walk_transition_small_to_medium_right_swing(self):
         #  Test if the TransitionSubgait is created without an error

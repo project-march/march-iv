@@ -98,6 +98,7 @@ class TransitionSubgait(Subgait):
             return subgait
 
         for joint in subgait.joints:
+            joint.duration = new_duration
             for setpoint in joint.setpoints:
                 setpoint.time = round((setpoint.time * new_duration / old_duration), Setpoint.digits)
 
@@ -121,12 +122,8 @@ class TransitionSubgait(Subgait):
             new_joint_setpoints = []
 
             for timestamp in unique_timestamps:
-                interpolated_setpoint_old_joint = old_joint.get_interpolated_setpoint(timestamp)
-                interpolated_setpoint_new_joint = new_joint.get_interpolated_setpoint(timestamp)
-
-                if interpolated_setpoint_old_joint.time != 0 and interpolated_setpoint_new_joint.time != 0:
-                    old_joint_setpoints.append(interpolated_setpoint_old_joint)
-                    new_joint_setpoints.append(interpolated_setpoint_new_joint)
+                old_joint_setpoints.append(old_joint.get_interpolated_setpoint(timestamp))
+                new_joint_setpoints.append(new_joint.get_interpolated_setpoint(timestamp))
 
             old_joint.setpoints = old_joint_setpoints
             new_joint.setpoints = new_joint_setpoints
