@@ -162,7 +162,8 @@ class Subgait(object):
         subgait_msg.gait_type = self.gait_type
         subgait_msg.trajectory = self._to_joint_trajectory_msg()
         subgait_msg.setpoints = self._to_setpoints_msg()
-        subgait_msg.description = str(self.description)
+        subgait_msg.description = self.description
+        subgait_msg.version = self.version
         subgait_msg.duration = rospy.Duration.from_sec(self.duration)
 
         return subgait_msg
