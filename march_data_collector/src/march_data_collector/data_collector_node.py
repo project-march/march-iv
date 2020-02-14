@@ -3,13 +3,12 @@ from math import pi
 from control_msgs.msg import JointTrajectoryControllerState
 from geometry_msgs.msg import TransformStamped
 import rospy
-from sensor_msgs.msg import Imu, Temperature
+from sensor_msgs.msg import Imu
 from tf.transformations import quaternion_from_euler, quaternion_multiply
 import tf2_ros
 from urdf_parser_py.urdf import URDF
 from visualization_msgs.msg import Marker
 
-from march_shared_resources.msg import ImcErrorState
 
 from .com_calculator import CoMCalculator
 from .cp_calculator import CPCalculator
@@ -20,36 +19,14 @@ class DataCollectorNode(object):
     def __init__(self, com_calculator, cp_calculators):
         self._com_calculator = com_calculator
         self._cp_calculators = cp_calculators
-
-        joint_names = rospy.get_param('/march/joint_names')
-
         self._imu_broadcaster = tf2_ros.TransformBroadcaster()
         self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
-
-        self._temperature_subscriber = [rospy.Subscriber('/march/temperature/' + joint,
-                                                         Temperature,
-                                                         self.temperature_callback, joint) for joint in joint_names]
 
         self._trajectory_state_subscriber = rospy.Subscriber('/march/controller/trajectory/state',
                                                              JointTrajectoryControllerState,
                                                              self.trajectory_state_callback)
 
-        self._imc_state_subscriber = rospy.Subscriber('/march/imc_states', ImcErrorState, self.imc_state_callback)
-
         self._imu_subscriber = rospy.Subscriber('/march/imu', Imu, self.imu_callback)
-
-    def temperature_callback(self, data, joint):
-        rospy.logdebug('Temperature' + joint + ' is ' + str(data.temperature))
-
-    def trajectory_state_callback(self, data):
-        rospy.logdebug('received trajectory state' + str(data.desired))
-        com = self._com_calculator.calculate_com()
-        self._com_marker_publisher.publish(com)
-        for cp_calculator in self._cp_calculators:
-            cp_calculator.calculate_cp(com)
-
-    def imc_state_callback(self, data):
-        rospy.logdebug('received IMC message current is ' + str(data.current))
 
     def imu_callback(self, data):
         if data.header.frame_id == 'imu_link':
@@ -71,16 +48,20 @@ class DataCollectorNode(object):
 
             self._imu_broadcaster.sendTransform(transform)
 
+    def trajectory_state_callback(self, _):
+        com = self._com_calculator.calculate_com()
+        self._com_marker_publisher.publish(com)
+        for cp_calculator in self._cp_calculators:
+            cp_calculator.calculate_cp(com)
+
 
 def main():
     rospy.init_node('data_collector', anonymous=True)
-
     robot = URDF.from_parameter_server()
     tf_buffer = tf2_ros.Buffer()
     tf2_ros.TransformListener(tf_buffer)
     center_of_mass_calculator = CoMCalculator(robot, tf_buffer)
     feet = ['ankle_plate_left', 'ankle_plate_right']
     cp_calculators = [CPCalculator(tf_buffer, foot) for foot in feet]
-
     DataCollectorNode(center_of_mass_calculator, cp_calculators)
     rospy.spin()

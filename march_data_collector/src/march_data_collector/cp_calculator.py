@@ -37,7 +37,13 @@ class CPCalculator(object):
             y_dot = (com_mark.pose.position.y - self.prev_y) / time_difference
 
             trans = self.tf_buffer.lookup_transform('world', self.foot_link, rospy.Time())
-            multiplier = sqrt(com_mark.pose.position.z / self.g)
+            try:
+                multiplier = sqrt(com_mark.pose.position.z / self.g)
+            except ValueError:
+                rospy.logwarn_throttle(1, 'Cannot calculate capture point, because center of mass height is smaller '
+                                          'than 0')
+                return self.marker
+
             x_cp = trans.transform.translation.x + x_dot * multiplier
             y_cp = trans.transform.translation.y + y_dot * multiplier
 
