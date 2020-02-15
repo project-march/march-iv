@@ -19,7 +19,7 @@ class IdleState(smach.State):
         self._trigger_event = threading.Event()
 
     def execute(self, userdata):
-        """Run this function on entry of this state"""
+        """Run this function on entry of this state."""
         userdata.next_state_name = None
 
         if self.preempt_requested():

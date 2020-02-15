@@ -19,7 +19,7 @@ class StoppableState(FeedbackActionState):
             self.register_output_keys(['current_gait_name', 'new_gait_name', 'next_subgait'])
 
     def execute(self, ud):
-        """Run this function on entry of this state"""
+        """Run this function on entry of this state."""
         result = super(StoppableState, self).execute(ud)
 
         if self.preempt_requested():
@@ -46,7 +46,7 @@ class StoppableState(FeedbackActionState):
         return result
 
     def check_transition(self):
-        """Check if a transition is allowed and possible of the current state"""
+        """Check if a transition is allowed and possible of the current state."""
         if self._transition_chain is None:
             return False
 
@@ -69,8 +69,7 @@ class StoppableState(FeedbackActionState):
         return True
 
     def get_transition(self):
-        """Get the requested transition of the passed transition chain"""
+        """Get the requested transition of the passed transition chain."""
         transition_direction = control_flow.get_transition_integer()
         transition_index = self._transition_chain.index(self._gait_name) + transition_direction
         return self._transition_chain[transition_index]
-

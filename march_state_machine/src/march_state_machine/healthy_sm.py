@@ -10,8 +10,8 @@ from .gaits import tilted_path_sideways_start_sm
 from .gaits import tilted_path_straight_sm
 from .state_machines.slope_state_machine import SlopeStateMachine
 from .state_machines.step_state_machine import StepStateMachine
-from .state_machines.walk_state_machine import WalkStateMachine
 from .state_machines.transition_state_machine import TransitionStateMachine
+from .state_machines.walk_state_machine import WalkStateMachine
 from .states.idle_state import IdleState
 
 

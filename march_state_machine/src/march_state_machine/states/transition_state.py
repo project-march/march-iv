@@ -15,7 +15,7 @@ class TransitionState(FeedbackActionState):
                                               outcomes=outcomes, input_keys=input_keys)
 
     def execute(self, ud):
-        """Check if a transition is allowed and possible of the current state"""
+        """Check if a transition is allowed and possible of the current state."""
         if self.preempt_requested():
             self.service_preempt()
             return 'preempted'

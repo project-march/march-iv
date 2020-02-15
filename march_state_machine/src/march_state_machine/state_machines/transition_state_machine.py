@@ -25,6 +25,6 @@ class TransitionStateMachine(smach.StateMachine):
         self.close()
 
     def _update_once(self):
-        """Before entering the transition state set the succeeded transition to the new gait name"""
+        """Before entering the transition state set the succeeded transition to the new gait name."""
         self._current_transitions['succeeded'] = self.userdata.new_gait_name
         return super(TransitionStateMachine, self)._update_once()
