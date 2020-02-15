@@ -1,5 +1,6 @@
 #goal definition
 string name
+string old_name
 string subgait_name
 ---
 ---
