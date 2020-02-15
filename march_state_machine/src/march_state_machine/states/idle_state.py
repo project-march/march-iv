@@ -13,12 +13,15 @@ class IdleState(smach.State):
     """
 
     def __init__(self, outcomes):
-        super(IdleState, self).__init__(outcomes)
+        super(IdleState, self).__init__(outcomes, output_keys=['next_state_name'])
 
         self._result_gait = None
         self._trigger_event = threading.Event()
 
     def execute(self, userdata):
+        """Run this function on entry of this state"""
+        userdata.next_state_name = None
+
         if self.preempt_requested():
             self.service_preempt()
             return 'preempted'
@@ -28,6 +31,7 @@ class IdleState(smach.State):
 
         control_flow.reset_gait()
         control_flow.set_stopped_callback(self._stopped_cb)
+        control_flow.set_gait_transition_callback(self._transition_cb)
         control_flow.set_gait_selected_callback(self._gait_cb)
 
         self._trigger_event.wait()
@@ -42,9 +46,15 @@ class IdleState(smach.State):
 
         return 'failed'
 
-    def _stopped_cb(self):
+    @staticmethod
+    def _stopped_cb():
         rospy.logwarn('Idle state does not respond to stop')
         control_flow.reset_stop()
+
+    @staticmethod
+    def _transition_cb():
+        rospy.logwarn('Idle state does not respond to transition input')
+        control_flow.reset_transition()
 
     def _gait_cb(self, gait):
         if gait in self.get_registered_outcomes():
