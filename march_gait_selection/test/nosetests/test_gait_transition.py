@@ -20,12 +20,14 @@ right_close = 'right_close'
 
 wrong_name = 'wrong'
 
-gait_selection = GaitSelection(PKG, DIR)
-
 
 class TestTransitionTrajectory(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls._gait_selection = GaitSelection(PKG, DIR)
+
     def setUp(self):
-        self.gait_selection = deepcopy(gait_selection)
+        self.gait_selection = deepcopy(self._gait_selection)
 
     def test_invalid_old_gait_name(self):
         # check if wrong gait name causes right error
