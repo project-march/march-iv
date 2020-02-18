@@ -48,18 +48,23 @@ class HealthyStateMachine(smach.StateMachine):
 
         # region walking
         self.add('GAIT WALK SMALL',
-                 WalkStateMachine('walk_small', transition_chain=['walk_small', 'walk']),
+                 WalkStateMachine('walk_small', transition_chain=['walk_small', 'walk', 'walk_large']),
                  transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN', 'transition': 'TRANSITION WALK'},
                  remapping={'start_state': 'next_state_name'})
 
         self.add('GAIT WALK',
-                 WalkStateMachine('walk', transition_chain=['walk_small', 'walk']),
+                 WalkStateMachine('walk', transition_chain=['walk_small', 'walk', 'walk_large']),
+                 transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN', 'transition': 'TRANSITION WALK'},
+                 remapping={'start_state': 'next_state_name'})
+
+        self.add('GAIT WALK LARGE',
+                 WalkStateMachine('walk_large', transition_chain=['walk_small', 'walk', 'walk_large']),
                  transitions={'succeeded': 'STANDING', 'failed': 'UNKNOWN', 'transition': 'TRANSITION WALK'},
                  remapping={'start_state': 'next_state_name'})
 
         self.add('TRANSITION WALK',
-                 TransitionStateMachine(transition_chain=['walk_small', 'walk']),
-                 transitions={'failed': 'UNKNOWN', 'walk_small': 'GAIT WALK SMALL', 'walk': 'GAIT WALK'},
+                 TransitionStateMachine(transition_chain=['walk_small', 'walk', 'walk_large']),
+                 transitions={'failed': 'UNKNOWN', 'walk_small': 'GAIT WALK SMALL', 'walk': 'GAIT WALK', 'walk_large': 'GAIT WALK LARGE'},
                  remapping={'current_gait_name': 'current_gait_name', 'new_gait_name': 'new_gait_name',
                             'transition_state_name': 'transition_state_name', 'next_state_name': 'next_state_name'})
         # endregion
@@ -122,8 +127,8 @@ class HealthyStateMachine(smach.StateMachine):
 
         self.add('SITTING', IdleState(outcomes=['gait_stand', 'preempted']),
                  transitions={'gait_stand': 'GAIT STAND'})
-        self.add('STANDING', IdleState(outcomes=['gait_sit', 'gait_walk', 'gait_single_step_small',
-                                                 'gait_single_step_normal', 'gait_side_step_left',
+        self.add('STANDING', IdleState(outcomes=['gait_sit', 'gait_walk', 'gait_walk_small', 'gait_single_step_small',
+                                                 'gait_walk_large', 'gait_single_step_normal', 'gait_side_step_left',
                                                  'gait_side_step_right', 'gait_side_step_left_small',
                                                  'gait_side_step_right_small', 'gait_sofa_sit',
                                                  'gait_stairs_up', 'gait_stairs_down',
@@ -137,7 +142,10 @@ class HealthyStateMachine(smach.StateMachine):
                                                  'gait_tilted_path_first_start',
                                                  'gait_tilted_path_first_end',
                                                  'preempted']),
-                 transitions={'gait_sit': 'GAIT SIT', 'gait_walk': 'GAIT WALK',
+                 transitions={'gait_sit': 'GAIT SIT',
+                              'gait_walk': 'GAIT WALK',
+                              'gait_walk_small': 'GAIT WALK SMALL',
+                              'gait_walk_large': 'GAIT WALK LARGE',
                               'gait_single_step_small': 'GAIT SINGLE STEP SMALL',
                               'gait_single_step_normal': 'GAIT SINGLE STEP NORMAL',
                               'gait_side_step_left': 'GAIT SIDE STEP LEFT',
@@ -147,7 +155,6 @@ class HealthyStateMachine(smach.StateMachine):
                               'gait_sofa_sit': 'GAIT SOFA SIT',
                               'gait_stairs_up': 'GAIT STAIRS UP',
                               'gait_stairs_down': 'GAIT STAIRS DOWN',
-                              'gait_walk_small': 'GAIT WALK SMALL',
                               'gait_rough_terrain_high_step': 'GAIT RT HIGH STEP',
                               'gait_rough_terrain_middle_steps': 'GAIT RT MIDDLE STEPS',
                               'gait_rough_terrain_first_middle_step': 'GAIT RT FIRST MIDDLE STEP',
