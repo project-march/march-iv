@@ -39,8 +39,6 @@ class TransitionSubgait(Subgait):
         old_subgait, new_subgait = cls._get_copy_of_subgaits(gait_selection, old_gait_name, new_gait_name,
                                                              new_subgait_name, old_subgait_name)
 
-        old_subgait = cls._scale_timestamps_subgaits(old_subgait, new_subgait.duration)
-
         old_subgait, new_subgait = cls._equalize_amount_of_setpoints(old_subgait, new_subgait)
 
         transition_joints = cls._transition_joints(gait_selection.robot, old_subgait, new_subgait)
@@ -92,19 +90,29 @@ class TransitionSubgait(Subgait):
         return old_subgait, new_subgait
 
     @staticmethod
-    def _scale_timestamps_subgaits(old_subgait, new_duration):
+    def _scale_timestamps_subgaits(subgait, new_duration):
         """Scale all the setpoint to match the duration in both subgaits."""
-        old_duration = old_subgait.duration
+        old_duration = subgait.duration
 
-        for joint in old_subgait.joints:
+        if new_duration == old_duration:
+            return subgait
+
+        for joint in subgait.joints:
+            joint.duration = new_duration
             for setpoint in joint.setpoints:
-                setpoint.time = setpoint.time * new_duration / old_duration
+                setpoint.time = round((setpoint.time * new_duration / old_duration), Setpoint.digits)
 
-        return old_subgait
+        subgait.duration = new_duration
+        return subgait
 
     @staticmethod
     def _equalize_amount_of_setpoints(old_subgait, new_subgait):
         """Equalize the subgaits to have matching amount of setpoints on all the timestamps."""
+        max_duration = max([old_subgait.duration, new_subgait.duration])
+
+        old_subgait = TransitionSubgait._scale_timestamps_subgaits(old_subgait, max_duration)
+        new_subgait = TransitionSubgait._scale_timestamps_subgaits(new_subgait, max_duration)
+
         unique_timestamps = TransitionSubgait._get_all_unique_timestamps(old_subgait, new_subgait)
 
         for old_joint in old_subgait:
@@ -112,6 +120,7 @@ class TransitionSubgait(Subgait):
 
             old_joint_setpoints = []
             new_joint_setpoints = []
+
             for timestamp in unique_timestamps:
                 old_joint_setpoints.append(old_joint.get_interpolated_setpoint(timestamp))
                 new_joint_setpoints.append(new_joint.get_interpolated_setpoint(timestamp))
@@ -174,8 +183,8 @@ class TransitionSubgait(Subgait):
     @staticmethod
     def _get_all_unique_timestamps(old_subgait, new_subgait):
         """Get all the timestamps from the subgaits, eliminate double."""
-        timestamps = sorted(set(old_subgait.get_unique_timestamps() + new_subgait.get_unique_timestamps()))
-        return [round(timestamp, Setpoint.digits) for timestamp in timestamps]
+        all_timestamps = old_subgait.get_unique_timestamps() + new_subgait.get_unique_timestamps()
+        return sorted(set([round(timestamp, Setpoint.digits) for timestamp in all_timestamps]))
 
     @staticmethod
     def _validate_transition_gait(old_subgait, transition_subgait, new_subgait):
@@ -198,9 +207,11 @@ class TransitionSubgait(Subgait):
             new_joint = new_subgait.get_joint(transition_joint.name)
 
             for old_setpoint, transition_setpoint, new_setpoint in zip(old_joint, transition_joint, new_joint):
+
                 if old_setpoint.time != transition_setpoint.time:
                     raise TransitionError('The transition timestamp {tt} != the old timestamp {ot}'
                                           .format(tt=transition_setpoint.time, ot=old_setpoint.time))
+
                 if new_setpoint.time != transition_setpoint.time:
                     raise TransitionError('The transition timestamp {tt} != the new timestamp {ot}'
                                           .format(tt=transition_setpoint.time, ot=new_setpoint.time))
