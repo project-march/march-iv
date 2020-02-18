@@ -20,6 +20,7 @@ add_message_files(
     ImcErrorState.msg
     LowVoltageNet.msg
     PowerDistributionBoardState.msg
+    PressureSole.msg
     Setpoint.msg
     Subgait.msg
 )

@@ -158,6 +158,20 @@
                 <field-selection name="com_position" source="r_com_position" />
               </output>
             </window-join>
+            <window-copy name='copyWindow'>
+              <retention field='time' type='bytime_sliding'>300 seconds</retention>
+              <connectors>
+                <connector class='fs' name='sub'>
+                  <properties>
+                    <property name='type'>sub</property>
+                    <property name='fstype'>csv</property>
+                    <property name='fsname'>result.out</property>
+                    <property name='snapshot'>true</property>
+                    <property name='dateformat'>%Y-%m-%d %H:%M:%S</property>
+                  </properties>
+                </connector>
+              </connectors>
+            </window-copy>
             <window-source autogen-key="true" insert-only="true" name="sourceCom">
               <schema>
                 <fields>
@@ -334,6 +348,20 @@
                 </fields>
               </schema>
             </window-source>
+            <window-source autogen-key="true" insert-only="true" name="sourcePS">
+              <schema>
+                <fields>
+                  <field key="true" name="SEQUENCE" type="int64" />
+                  <field key="false" name="time" type="stamp" />
+                  <field key="false" name="total_force_left" type="double" />
+                  <field key="false" name="total_force_right" type="double" />
+                  <field key="false" name="pressure_left" type="array(dbl)" />
+                  <field key="false" name="pressure_right" type="array(dbl)" />
+                  <field key="false" name="cop_left" type="array(dbl)" />
+                  <field key="false" name="cop_right" type="array(dbl)" />
+                </fields>
+              </schema>
+            </window-source>
             <window-source autogen-key="true" insert-only="true" name="sourceTemperature_right_knee">
               <schema>
                 <fields>
@@ -345,6 +373,7 @@
             </window-source>
           </windows>
           <edges>
+            <edge source="sourcePS" target="copyWindow" />
             <edge role="left" source="sourceTemperature_left_ankle" target="joinTemperature_ankle" />
             <edge role="right" source="sourceTemperature_right_ankle" target="joinTemperature_ankle" />
             <edge role="left" source="sourceTemperature_left_hip_aa" target="joinTemperature_hip_aa" />
