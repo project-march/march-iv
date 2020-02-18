@@ -64,7 +64,8 @@ class HealthyStateMachine(smach.StateMachine):
 
         self.add('TRANSITION WALK',
                  TransitionStateMachine(transition_chain=['walk_small', 'walk', 'walk_large']),
-                 transitions={'failed': 'UNKNOWN', 'walk_small': 'GAIT WALK SMALL', 'walk': 'GAIT WALK', 'walk_large': 'GAIT WALK LARGE'},
+                 transitions={'walk_small': 'GAIT WALK SMALL', 'walk': 'GAIT WALK', 'walk_large': 'GAIT WALK LARGE',
+                              'failed': 'UNKNOWN'},
                  remapping={'current_gait_name': 'current_gait_name', 'new_gait_name': 'new_gait_name',
                             'transition_state_name': 'transition_state_name', 'next_state_name': 'next_state_name'})
         # endregion

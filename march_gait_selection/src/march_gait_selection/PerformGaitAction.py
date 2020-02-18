@@ -35,8 +35,8 @@ class PerformGaitAction(object):
                 old_gait_name = subgait_goal_msg.old_name
                 gait_name = subgait_goal_msg.name
                 subgait_name = subgait_goal_msg.subgait_name
-                rospy.logwarn('Create with old gait: {og}, gait: {ng}, subgait: {sg}'
-                              .format(og=old_gait_name, ng=gait_name, sg=subgait_name))
+                rospy.logdebug('Create with old gait: {og}, gait: {ng}, subgait: {sg}'
+                               .format(og=old_gait_name, ng=gait_name, sg=subgait_name))
                 subgait = TransitionSubgait.from_subgait_names(self.gait_selection, old_gait_name,
                                                                gait_name, subgait_name)
 
