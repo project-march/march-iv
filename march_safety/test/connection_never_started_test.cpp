@@ -20,16 +20,16 @@ TEST_F(TestConnectionNeverStarted, connectionNeverStarted)
   ErrorCounter errorCounter;
   ros::Subscriber sub = nh.subscribe("march/error", 0, &ErrorCounter::cb, &errorCounter);
 
-  while (0 == sub.getNumPublishers())
+  while (0u == sub.getNumPublishers())
   {
     ros::Duration(0.1).sleep();
   }
-  EXPECT_EQ(1, sub.getNumPublishers());
+  EXPECT_EQ(1u, sub.getNumPublishers());
 
   ros::spinOnce();
   ros::Duration(0.5).sleep();
   ros::spinOnce();
-  EXPECT_EQ(0, errorCounter.count);
+  EXPECT_EQ(0u, errorCounter.count);
 }
 
 /**
