@@ -3,6 +3,7 @@ project(march_shared_resources)
 
 find_package(catkin REQUIRED COMPONENTS
     actionlib_msgs
+    control_msgs
     message_generation
     message_runtime
     std_msgs
@@ -18,6 +19,7 @@ add_message_files(
     Graph.msg
     HighVoltageNet.msg
     ImcErrorState.msg
+    JointValues.msg
     LowVoltageNet.msg
     PowerDistributionBoardState.msg
     PressureSole.msg
@@ -42,6 +44,7 @@ add_action_files(
 generate_messages(
     DEPENDENCIES
     actionlib_msgs
+    control_msgs
     std_msgs
     trajectory_msgs
 )
@@ -49,6 +52,7 @@ generate_messages(
 catkin_package(
     CATKIN_DEPENDS
     actionlib_msgs
+    control_msgs
     message_generation
     message_runtime
     std_msgs

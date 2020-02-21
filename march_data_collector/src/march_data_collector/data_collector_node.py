@@ -5,6 +5,7 @@ import sys
 
 from control_msgs.msg import JointTrajectoryControllerState
 from geometry_msgs.msg import TransformStamped
+import numpy
 import rospy
 from sensor_msgs.msg import Imu
 from tf.transformations import quaternion_from_euler, quaternion_multiply
@@ -12,7 +13,7 @@ import tf2_ros
 from urdf_parser_py.urdf import URDF
 from visualization_msgs.msg import Marker
 
-from march_shared_resources.msg import PressureSole
+from march_shared_resources.msg import JointValues, PressureSole
 
 
 from .com_calculator import CoMCalculator
@@ -21,8 +22,15 @@ from .cp_calculator import CPCalculator
 
 class DataCollectorNode(object):
     def __init__(self, com_calculator, cp_calculators):
+        self.differentiation_order = 2
         self._com_calculator = com_calculator
         self._cp_calculators = cp_calculators
+
+        self.position_memory = []
+        self.time_memory = []
+        self.joint_values = JointValues()
+
+        self.joint_values_publisher = rospy.Publisher('/march/joint_values', JointValues, queue_size=1)
 
         self._imu_broadcaster = tf2_ros.TransformBroadcaster()
         self._com_marker_publisher = rospy.Publisher('/march/com_marker', Marker, queue_size=1)
@@ -63,6 +71,24 @@ class DataCollectorNode(object):
             cp_calculator.calculate_cp(com)
         if self.pressure_soles_on:
             self.send_udp(data.actual.positions)
+
+        self.position_memory.append(data.actual.positions)
+        self.time_memory.append(data.header.stamp.secs + data.header.stamp.nsecs * 10**(-9))
+        if len(self.position_memory) > self.differentiation_order + 1:
+            self.position_memory.pop(0)
+            self.time_memory.pop(0)
+        if len(self.position_memory) > self.differentiation_order:
+            velocity = numpy.gradient(self.position_memory, self.time_memory, edge_order=self.differentiation_order,
+                                      axis=0)
+            acceleration = numpy.gradient(velocity, self.time_memory, edge_order=self.differentiation_order, axis=0)
+            jerk = numpy.gradient(acceleration, self.time_memory, edge_order=self.differentiation_order, axis=0)
+
+            self.joint_values.controller_output = data
+            self.joint_values.velocities = velocity[-1]
+            self.joint_values.accelerations = acceleration[-1]
+            self.joint_values.jerks = jerk[-1]
+
+            self.joint_values_publisher.publish(self.joint_values)
 
     def imu_callback(self, data):
         if data.header.frame_id == 'imu_link':
