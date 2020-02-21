@@ -17,7 +17,7 @@ TEST_F(TestConnectionNotLost, connectionNotLost)
 {
   ros::Time::init();
   ros::NodeHandle nh;
-  int send_errors_interval;
+  double send_errors_interval;
   nh.getParam("/march_safety_node/send_errors_interval", send_errors_interval);
   ros::Publisher pub_alive = nh.advertise<std_msgs::Time>("march/input_device/alive", 0);
   ErrorCounter errorCounter;
@@ -27,8 +27,8 @@ TEST_F(TestConnectionNotLost, connectionNotLost)
   {
     ros::Duration(0.1).sleep();
   }
-  EXPECT_EQ(1, pub_alive.getNumSubscribers());
-  EXPECT_EQ(1, sub.getNumPublishers());
+  EXPECT_EQ(1u, pub_alive.getNumSubscribers());
+  EXPECT_EQ(1u, sub.getNumPublishers());
 
   std_msgs::Time timeMessage;
   timeMessage.data = ros::Time::now();
@@ -36,7 +36,7 @@ TEST_F(TestConnectionNotLost, connectionNotLost)
   ros::spinOnce();
   ros::Duration(send_errors_interval / 2 / 1000).sleep();
   ros::spinOnce();
-  EXPECT_EQ(0, errorCounter.count);
+  EXPECT_EQ(0u, errorCounter.count);
 }
 
 /**

@@ -18,9 +18,9 @@ TEST_F(TestConnectionLost, connectionLost)
   ros::Time::init();
   ros::NodeHandle nh;
 
-  int input_device_connection_timeout;
+  double input_device_connection_timeout;
   nh.getParam("/march_safety_node/input_device_connection_timeout", input_device_connection_timeout);
-  int send_errors_interval;
+  double send_errors_interval;
   nh.getParam("/march_safety_node/send_errors_interval", send_errors_interval);
 
   ros::Publisher pub_alive = nh.advertise<std_msgs::Time>("march/input_device/alive", 0);
@@ -31,18 +31,18 @@ TEST_F(TestConnectionLost, connectionLost)
   {
     ros::Duration(0.1).sleep();
   }
-  EXPECT_EQ(1, pub_alive.getNumSubscribers());
-  EXPECT_EQ(1, sub.getNumPublishers());
+  EXPECT_EQ(1u, pub_alive.getNumSubscribers());
+  EXPECT_EQ(1u, sub.getNumPublishers());
 
   std_msgs::Time timeMessage;
   timeMessage.data = ros::Time::now();
   pub_alive.publish(timeMessage);
   ros::spinOnce();
-  int sleep_ms = send_errors_interval * 0.9 + input_device_connection_timeout;
+  double sleep_ms = send_errors_interval * 0.9 + input_device_connection_timeout;
   ros::Duration(sleep_ms / 1000).sleep();
   ros::spinOnce();
 
-  EXPECT_EQ(1, errorCounter.count);
+  EXPECT_EQ(1u, errorCounter.count);
 }
 
 /**
