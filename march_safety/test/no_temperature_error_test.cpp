@@ -16,8 +16,8 @@ TEST(TestNoTemperatureError, belowSpecificThreshold)
   {
     ros::Duration(0.1).sleep();
   }
-  EXPECT_EQ(1, pub_joint1.getNumSubscribers());
-  EXPECT_EQ(1, sub.getNumPublishers());
+  EXPECT_EQ(1u, pub_joint1.getNumSubscribers());
+  EXPECT_EQ(1u, sub.getNumPublishers());
 
   sensor_msgs::Temperature msg;
   int temperature;
@@ -33,7 +33,7 @@ TEST(TestNoTemperatureError, belowSpecificThreshold)
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint1", duration);
   ros::spinOnce();
 
-  EXPECT_EQ(0, errorCounter.count);
+  EXPECT_EQ(0u, errorCounter.count);
 }
 
 /**
@@ -51,8 +51,8 @@ TEST(TestNoTemperatureError, belowSpecificThreshold2)
   {
     ros::Duration(0.1).sleep();
   }
-  EXPECT_EQ(1, pub_joint2.getNumSubscribers());
-  EXPECT_EQ(1, sub.getNumPublishers());
+  EXPECT_EQ(1u, pub_joint2.getNumSubscribers());
+  EXPECT_EQ(1u, sub.getNumPublishers());
 
   sensor_msgs::Temperature msg;
   int temperature;
@@ -68,7 +68,7 @@ TEST(TestNoTemperatureError, belowSpecificThreshold2)
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint2", duration);
   ros::spinOnce();
 
-  EXPECT_EQ(0, errorCounter.count);
+  EXPECT_EQ(0u, errorCounter.count);
 }
 
 TEST(TestNoTemperatureError, belowDefaultThreshold)
@@ -82,8 +82,8 @@ TEST(TestNoTemperatureError, belowDefaultThreshold)
   {
     ros::Duration(0.1).sleep();
   }
-  EXPECT_EQ(1, pub_joint3.getNumSubscribers());
-  EXPECT_EQ(1, sub.getNumPublishers());
+  EXPECT_EQ(1u, pub_joint3.getNumSubscribers());
+  EXPECT_EQ(1u, sub.getNumPublishers());
 
   sensor_msgs::Temperature msg;
   int temperature;
@@ -99,5 +99,5 @@ TEST(TestNoTemperatureError, belowDefaultThreshold)
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint3", duration);
   ros::spinOnce();
 
-  EXPECT_EQ(0, errorCounter.count);
+  EXPECT_EQ(0u, errorCounter.count);
 }
