@@ -16,8 +16,8 @@ TEST(TestTemperatureError, exceedDefaultThreshold)
   {
     ros::Duration(0.1).sleep();
   }
-  EXPECT_EQ(1, pub_joint3.getNumSubscribers());
-  EXPECT_EQ(1, sub.getNumPublishers());
+  EXPECT_EQ(1u, pub_joint3.getNumSubscribers());
+  EXPECT_EQ(1u, sub.getNumPublishers());
 
   sensor_msgs::Temperature msg;
   int temperature;
@@ -26,11 +26,14 @@ TEST(TestTemperatureError, exceedDefaultThreshold)
   pub_joint3.publish(msg);
 
   // Wait to receive message
-  ros::Duration duration = ros::Duration(1);
+  int timeout_duration;
+  nh.getParam("/march_safety_node/ros_timeout", timeout_duration);
+
+  ros::Duration duration = ros::Duration(timeout_duration);
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint3", duration);
   ros::spinOnce();
 
-  EXPECT_EQ(1, errorCounter.count);
+  EXPECT_EQ(1u, errorCounter.count);
 }
 
 TEST(TestTemperatureError, exceedDefaultThresholdMultipleTimes)
@@ -45,22 +48,25 @@ TEST(TestTemperatureError, exceedDefaultThresholdMultipleTimes)
   {
     ros::Duration(0.1).sleep();
   }
-  EXPECT_EQ(1, pub_joint3.getNumSubscribers());
-  EXPECT_EQ(1, sub.getNumPublishers());
+  EXPECT_EQ(1u, pub_joint3.getNumSubscribers());
+  EXPECT_EQ(1u, sub.getNumPublishers());
 
   sensor_msgs::Temperature msg;
   int temperature;
   nh.getParam("/march_safety_node/default_temperature_threshold", temperature);
   msg.temperature = temperature + 1;
 
-  int times = 5;
-  for (int i = 0; i < times; i++)
+  size_t times = 5;
+  for (size_t i = 0; i < times; i++)
   {
     pub_joint3.publish(msg);
   }
 
   // Wait to receive message
-  ros::Duration duration = ros::Duration(1);
+  int timeout_duration;
+  nh.getParam("/march_safety_node/ros_timeout", timeout_duration);
+
+  ros::Duration duration = ros::Duration(timeout_duration);
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint3", duration);
   ros::spinOnce();
 

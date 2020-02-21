@@ -11,3 +11,14 @@ class Setpoint(object):
 
     def __repr__(self):
         return 'Time: %s, Position: %s, Velocity: %s' % (self.time, self.position, self.velocity)
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return (self.time == other.time
+                    and self.position == other.position
+                    and self.velocity == other.velocity)
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self.__eq__(other)

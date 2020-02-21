@@ -47,16 +47,19 @@ TEST_P(TestTemperatureParameterized, valuesAroundThreshold)
   {
     ros::Duration(0.1).sleep();
   }
-  EXPECT_EQ(1, pub_joint1.getNumSubscribers());
-  EXPECT_EQ(1, sub.getNumPublishers());
-  EXPECT_EQ(0, errorCounter.count);
+  EXPECT_EQ(1u, pub_joint1.getNumSubscribers());
+  EXPECT_EQ(1u, sub.getNumPublishers());
+  EXPECT_EQ(0u, errorCounter.count);
 
   sensor_msgs::Temperature msg;
   msg.temperature = temperature;
   pub_joint1.publish(msg);
 
   // Wait to receive message
-  ros::Duration duration = ros::Duration(1);
+  int timeout_duration;
+  nh.getParam("/march_safety_node/ros_timeout", timeout_duration);
+
+  ros::Duration duration = ros::Duration(timeout_duration);
   ros::topic::waitForMessage<sensor_msgs::Temperature>("march/temperature/test_joint1", duration);
   ros::spinOnce();
 

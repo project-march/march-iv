@@ -1,0 +1,9 @@
+gaits:
+  walk: {right_open: MV_walk_rightopen_v2, left_swing: MV_walk_leftswing_v2, right_swing: MV_walk_rightswing_v2,
+         left_close: MV_walk_leftclose_v2, right_close: MV_walk_rightclose_v2}
+  walk_small: {right_open: MIV_final, left_swing: MIV_final, right_swing: MIV_final,
+               left_close: MIV_final, right_close: MIV_final}
+  walk_medium: {right_open: MV_walk_rightopen_v1, left_swing: MV_walk_leftswing_v1, right_swing: MV_walk_rightswing_v1,
+                left_close: MV_walk_leftclose_v1, right_close: MV_walk_rightclose_v1}
+  stairs_up: {right_open: MIV_final, left_swing: MIV_final, right_swing: MIV_final, left_close: MIV_final,
+              right_close: MIV_final}

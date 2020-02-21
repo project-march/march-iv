@@ -1,6 +1,5 @@
 <launch>
     <arg name="robot" default="march4" doc="The robot to run. Can be: march3, march4, test_joint_linear, test_joint_rotational."/>
     <!-- Load the URDF into the ROS Parameter Server -->
-    <param name="robot_description"
-           command="$(find xacro)/xacro --inorder '$(find march_description)/urdf/$(arg robot).xacro'"/>
+    <param name="robot_description" textfile="$(find march_description)/urdf/$(arg robot).urdf"/>
 </launch>
