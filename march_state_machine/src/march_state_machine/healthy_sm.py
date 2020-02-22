@@ -10,6 +10,7 @@ from .gaits import tilted_path_sideways_start_sm
 from .gaits import tilted_path_straight_sm
 from .state_machines.slope_state_machine import SlopeStateMachine
 from .state_machines.step_state_machine import StepStateMachine
+from .state_machines.transition_state_machine import StateMachineWithTransition
 from .state_machines.walk_state_machine import WalkStateMachine
 from .states.idle_state import IdleState
 
@@ -18,7 +19,7 @@ class HealthyStart(smach.State):
     def __init__(self):
         super(HealthyStart, self).__init__(outcomes=['succeeded'])
 
-    def execute(self, userdata):
+    def execute(self, ud):
         if rospy.get_param('~unpause', False):
             unpause = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
             unpause.wait_for_service()
@@ -42,7 +43,14 @@ class HealthyStateMachine(smach.StateMachine):
         self.add_state('HOME SIT', StepStateMachine('home', ['home_sit']), 'SITTING')
         self.add_state('HOME STAND', StepStateMachine('home', ['home_stand']), 'STANDING')
 
-        self.add_state('GAIT WALK', WalkStateMachine('walk'), 'STANDING')
+        walking_state_machine = StateMachineWithTransition(['walk_small', 'walk', 'walk_large'])
+        walking_state_machine.add('walk_small', WalkStateMachine('walk_small', is_transition_active=True))
+        walking_state_machine.add('walk', WalkStateMachine('walk', is_transition_active=True), default_start=True)
+        walking_state_machine.add('walk_large', WalkStateMachine('walk_large', is_transition_active=True))
+
+        self.add_state('GAIT WALK', walking_state_machine, 'STANDING')
+
+        # self.add_state('GAIT WALK', WalkStateMachine('walk'), 'STANDING')
         self.add_state('GAIT WALK SMALL', WalkStateMachine('walk_small'), 'STANDING')
         self.add_state('GAIT WALK LARGE', WalkStateMachine('walk_large'), 'STANDING')
 
