@@ -88,6 +88,8 @@ class JointTrajectory(object):
         for i in range(0, len(time)):
             yi.append([position[i], velocity[i]])
 
+        # We do a cubic spline here, just like the ros joint_trajectory_action_controller,
+        # see https://wiki.ros.org/robot_mechanism_controllers/JointTrajectoryActionController
         bpoly = BPoly.from_derivatives(time, yi)
         indices = np.linspace(0, self.duration, self.duration * 100)
         return [indices, bpoly(indices)]
