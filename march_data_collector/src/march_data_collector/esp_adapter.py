@@ -9,12 +9,11 @@ import logging
 import os
 import sys
 
-from control_msgs.msg import JointTrajectoryControllerState
 import rospy
 from sensor_msgs.msg import Imu, Temperature
 from visualization_msgs.msg import Marker
 
-from march_shared_resources.msg import GaitNameActionGoal, ImcErrorState, PressureSole
+from march_shared_resources.msg import GaitActionGoal, ImcErrorState, JointValues, PressureSole
 
 
 try:
@@ -71,17 +70,16 @@ class ESPAdapter:
         self.source_windows_esp = set(convert_stringv(stringv, True))
 
         for joint in joint_names:
-            self.configure_source('sourceTemperature_' + joint, '/march/temperature/', Temperature,
+            self.configure_source('source_temperature_' + joint, '/march/temperature/' + joint, Temperature,
                                   self.temperature_callback)
 
-        self.configure_source('sourceJoint', '/march/controller/trajectory/state', JointTrajectoryControllerState,
-                              self.trajectory_state_callback)
-        self.configure_source('sourceIMU', '/march/imu', Imu, self.imu_callback)
+        self.configure_source('source_imu', '/march/imu', Imu, self.imu_callback)
 
-        self.configure_source('sourceIMC', '/march/imc_states', ImcErrorState, self.imc_state_callback)
-        self.configure_source('sourceGait', '/march/gait/schedule/goal', GaitNameActionGoal, self.gait_callback)
-        self.configure_source('sourceCom', '/march/com_marker', Marker, self.com_callback)
-        self.configure_source('sourcePS', '/march/pressure_soles', PressureSole, self.pressure_sole_callback)
+        self.configure_source('source_ps', '/march/pressure_soles', PressureSole, self.pressure_sole_callback)
+        self.configure_source('source_imc', '/march/imc_states', ImcErrorState, self.imc_state_callback)
+        self.configure_source('source_gait', '/march/gait/schedule/goal', GaitActionGoal, self.gait_callback)
+        self.configure_source('source_com', '/march/com_marker', Marker, self.com_callback)
+        self.configure_source('source_joint', '/march/joint_values', JointValues, self.joint_values_callback)
 
     def pub_err_cb_func(self, failure, code, _):
         if failure == pubsubApi.pubsubFail_APIFAIL and code == pubsubApi.pubsubCode_CLIENTEVENTSQUEUED:
@@ -135,6 +133,7 @@ class ESPAdapter:
 
         self.esp_publishers[source] = (pub, schemaptr)
         self.subscribers[source] = rospy.Subscriber(topic, msg_type, callback, source)
+        rospy.logdebug('configured ESP sourcewindow for ' + source)
 
     def send_to_esp(self, csv, source):
         """Sends a csv string to the configured source window. Also adds standard stuff to the start of the csv string.
@@ -142,7 +141,7 @@ class ESPAdapter:
         :param csv: the csv string containing all data to send to the message
         :param source: the name of the source window in the ESP engine
         """
-        csv = 'i, n, 1,' + csv
+        csv = 'i, n, 1, 1,' + csv
         try:
             pub, schemaptr = self.esp_publishers[source]
         except KeyError:
@@ -165,6 +164,25 @@ class ESPAdapter:
         """
         timestr = get_time_str(data.header.stamp)
         csv = timestr + ',' + str(data.temperature)
+        self.send_to_esp(csv, source)
+
+    def joint_values_callback(self, data, source):
+        """Callback for trajectory_state data. Converts ROS message to csv string to send to the source window.
+
+        :param data: ROS message
+        :param source: the name of the source window in the ESP engine
+        """
+        actual_positions_str = list_to_str(data.controller_output.actual.positions)
+        actual_velocity_str = list_to_str(data.velocities)
+        acutal_acceleration_str = list_to_str(data.accelerations)
+        acutal_jerk_str = list_to_str(data.jerks)
+        desired_positions_str = list_to_str(data.controller_output.desired.positions)
+        desired_velocity_str = list_to_str(data.controller_output.desired.velocities)
+        position_error_str = list_to_str(data.controller_output.error.positions)
+        timestr = get_time_str(data.controller_output.header.stamp)
+
+        csv = ','.join([timestr, actual_positions_str, actual_velocity_str, acutal_acceleration_str, acutal_jerk_str,
+                        desired_positions_str, desired_velocity_str, position_error_str])
         self.send_to_esp(csv, source)
 
     def trajectory_state_callback(self, data, source):
@@ -226,8 +244,8 @@ class ESPAdapter:
         :param data: ROS message
         :param source: the name of the source window in the ESP engine
         """
-        com_position_str = vector_to_str(data.pose.position)
-        csv = ','.join([get_time_str(data.header.stamp), com_position_str])
+        csv = ','.join([get_time_str(data.header.stamp), str(data.pose.position.x), str(data.pose.position.y),
+                        str(data.pose.position.z)])
         self.send_to_esp(csv, source)
 
     def pressure_sole_callback(self, data, source):

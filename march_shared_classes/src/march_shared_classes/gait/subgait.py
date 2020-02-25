@@ -89,7 +89,10 @@ class Subgait(object):
 
             limits = Limits(urdf_joint.safety_controller.soft_lower_limit,
                             urdf_joint.safety_controller.soft_upper_limit,
-                            urdf_joint.limit.velocity)
+                            urdf_joint.limit.velocity,
+                            urdf_joint.limit.effort,
+                            urdf_joint.safety_controller.k_position,
+                            urdf_joint.safety_controller.k_velocity)
 
             joint_list.append(cls.joint_class.from_dict(subgait_dict, joint_name, limits, duration, *args))
 

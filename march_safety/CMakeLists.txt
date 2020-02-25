@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(march_safety)
 
-add_compile_options(-std=c++11 -Wall -Wextra)
+add_compile_options(-std=c++14 -Wall -Wextra -Werror)
 
 find_package(catkin REQUIRED COMPONENTS
     march_shared_resources

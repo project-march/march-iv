@@ -47,9 +47,9 @@ TEST_P(TestTemperatureParameterized, valuesAroundThreshold)
   {
     ros::Duration(0.1).sleep();
   }
-  EXPECT_EQ(1, pub_joint1.getNumSubscribers());
-  EXPECT_EQ(1, sub.getNumPublishers());
-  EXPECT_EQ(0, errorCounter.count);
+  EXPECT_EQ(1u, pub_joint1.getNumSubscribers());
+  EXPECT_EQ(1u, sub.getNumPublishers());
+  EXPECT_EQ(0u, errorCounter.count);
 
   sensor_msgs::Temperature msg;
   msg.temperature = temperature;
