@@ -88,9 +88,12 @@ class JointTrajectory(object):
         for i in range(0, len(time)):
             yi.append([position[i], velocity[i]])
 
-        bpoly = BPoly.from_derivatives(time, yi)
+        # We do a cubic spline here, just like the ros joint_trajectory_action_controller,
+        # see https://wiki.ros.org/robot_mechanism_controllers/JointTrajectoryActionController
+        position = BPoly.from_derivatives(time, yi)
+        velocity = position.derivative()
         indices = np.linspace(0, self.duration, self.duration * 100)
-        return [indices, bpoly(indices)]
+        return [indices, position(indices), velocity(indices)]
 
     def get_interpolated_setpoint(self, time):
         # If we have a setpoint this exact time there is no need to interpolate.
@@ -102,8 +105,7 @@ class JointTrajectory(object):
         for i in range(0, len(interpolated_setpoints[0])):
             if interpolated_setpoints[0][i] > time:
                 position = interpolated_setpoints[1][i - 1]
-                velocity = ((interpolated_setpoints[1][i - 1] - interpolated_setpoints[1][i - 2])
-                            / (interpolated_setpoints[0][i - 1] - interpolated_setpoints[0][i - 2]))
+                velocity = interpolated_setpoints[2][i - 1]
                 return self.setpoint_class(time, position, velocity)
         rospy.logerr('Could not interpolate setpoint at time {0}'.format(time))
         return self.setpoint_class(0, 0, 0)
