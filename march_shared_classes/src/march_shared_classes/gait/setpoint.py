@@ -5,9 +5,33 @@ class Setpoint(object):
     digits = 4
 
     def __init__(self, time, position, velocity):
-        self.time = round(time, self.digits)
-        self.position = round(position, self.digits)
-        self.velocity = round(velocity, self.digits)
+        self._time = round(time, self.digits)
+        self._position = round(position, self.digits)
+        self._velocity = round(velocity, self.digits)
+
+    @property
+    def time(self):
+        return self._time
+
+    @time.setter
+    def time(self, time):
+        self._time = round(time, self.digits)
+
+    @property
+    def position(self):
+        return self._position
+
+    @position.setter
+    def position(self, position):
+        self._position = round(position, self.digits)
+
+    @property
+    def velocity(self):
+        return self._velocity
+
+    @velocity.setter
+    def velocity(self, velocity):
+        self._velocity = round(velocity, self.digits)
 
     def __repr__(self):
         return 'Time: %s, Position: %s, Velocity: %s' % (self.time, self.position, self.velocity)
