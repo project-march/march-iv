@@ -1,15 +1,17 @@
 <!--When used by exo call this after launching march.launch, when using test joint use the correct march_type-->
 <launch>
-    <arg name="configuration" default="None"/>
+    <arg name="configuration"/>
     <arg name="linear" default="true"/>
     <arg name="slope" default="10.0"/>
 
     <group if="$(eval configuration == 'test_joint_rotational')">
-        <include file="$(find march_gait_selection)/launch/march_gait_selection.launch"/>
-                    <arg name="robot" value="$(arg configuration)"/>
+        <include file="$(find march_gait_selection)/launch/march_gait_selection.launch">
+            <arg name="robot" value="$(arg configuration)"/>
+        </include>
         <node name="gait_scheduler_node" pkg="march_gait_scheduler" type="march_gait_scheduler_node" output="screen" required="true"/>
-        <include file="$(find march_rqt_input_device)/launch/march_rqt_input_device.launch" if="$(eval not headless and rqt_input)"/>
-                    <arg name="ping_safety_node" value="true"/>
+        <include file="$(find march_rqt_input_device)/launch/march_rqt_input_device.launch"/>
+            <arg name="ping_safety_node" value="true"/>
+        </include>
         <include file="$(find march_hardware_interface)/launch/hardware.launch">
             <arg name="robot" value="$(arg configuration)"/>
         </include>
