@@ -25,15 +25,23 @@
     <xacro:property name="max_effort_linear" value="$(arg max_effort_linear)" />
 
     <!-- Values for the safety limits, see https://wiki.ros.org/pr2_controller_manager/safety_limits -->
-    <xacro:arg name="k_velocity_value_rotary" default="20000.0" />
-    <xacro:arg name="k_velocity_value_linear" default="20000.0" />
-    <xacro:property name="k_velocity_value_rotary" value="$(arg k_velocity_value_rotary)" />
-    <xacro:property name="k_velocity_value_linear" value="$(arg k_velocity_value_linear)" />
+    <xacro:arg name="k_velocity_value_hfe" default="20000.0" />
+    <xacro:arg name="k_velocity_value_kfe" default="20000.0" />
+    <xacro:arg name="k_velocity_value_haa" default="20000.0" />
+    <xacro:arg name="k_velocity_value_adpf" default="20000.0" />
+    <xacro:property name="k_velocity_value_hfe" value="$(arg k_velocity_value_hfe)" />
+    <xacro:property name="k_velocity_value_kfe" value="$(arg k_velocity_value_kfe)" />
+    <xacro:property name="k_velocity_value_haa" value="$(arg k_velocity_value_haa)" />
+    <xacro:property name="k_velocity_value_adpf" value="$(arg k_velocity_value_adpf)" />
 
-    <xacro:arg name="k_position_value_rotary" default="5.0" />
-    <xacro:arg name="k_position_value_linear" default="5.0" />
-    <xacro:property name="k_position_value_rotary" value="$(arg k_position_value_rotary)" />
-    <xacro:property name="k_position_value_linear" value="$(arg k_position_value_linear)" />
+    <xacro:arg name="k_position_value_hfe" default="5.0" />
+    <xacro:arg name="k_position_value_kfe" default="5.0" />
+    <xacro:arg name="k_position_value_haa" default="4.0" />
+    <xacro:arg name="k_position_value_adpf" default="0.44" />
+    <xacro:property name="k_position_value_hfe" value="$(arg k_position_value_hfe)" />
+    <xacro:property name="k_position_value_kfe" value="$(arg k_position_value_kfe)" />
+    <xacro:property name="k_position_value_haa" value="$(arg k_position_value_haa)" />
+    <xacro:property name="k_position_value_adpf" value="$(arg k_position_value_adpf)" />
 
     <!-- Constants for robot dimensions -->
     <!-- Masses determined in https://confluence.projectmarch.nl:8443/display/41TECH/Weights+of+the+Exoskeleton -->
@@ -525,8 +533,8 @@
                upper="${hip_aa_rotation_upper_limit}"/>
         <safety_controller soft_lower_limit="${hip_aa_rotation_lower_limit + hip_aa_soft_buffer}"
                            soft_upper_limit="${hip_aa_rotation_upper_limit - hip_aa_soft_buffer}"
-                           k_position="${k_position_value_linear}"
-                           k_velocity="${k_velocity_value_linear}" />
+                           k_position="${k_position_value_haa}"
+                           k_velocity="${k_velocity_value_haa}" />
     </joint>
 
     <joint name="left_hip_angle" type="fixed">
@@ -547,8 +555,8 @@
                upper="${hip_fe_rotation_upper_limit}"/>
         <safety_controller soft_lower_limit="${hip_fe_rotation_lower_limit + hip_fe_soft_buffer}"
                            soft_upper_limit="${hip_fe_rotation_upper_limit - hip_fe_soft_buffer}"
-                           k_position="${k_position_value_rotary}"
-                           k_velocity="${k_velocity_value_rotary}" />
+                           k_position="${k_position_value_hfe}"
+                           k_velocity="${k_velocity_value_hfe}" />
     </joint>
 
     <joint name="left_knee" type="revolute">
@@ -563,8 +571,8 @@
                upper="${knee_rotation_upper_limit}"/>
         <safety_controller soft_lower_limit="${knee_rotation_lower_limit + knee_extension_soft_buffer}"
                            soft_upper_limit="${knee_rotation_upper_limit - knee_flexion_soft_buffer}"
-                           k_position="${k_position_value_rotary}"
-                           k_velocity="${k_velocity_value_rotary}" />
+                           k_position="${k_position_value_kfe}"
+                           k_velocity="${k_velocity_value_kfe}" />
     </joint>
 
     <joint name="left_ankle" type="revolute">
@@ -579,8 +587,8 @@
                upper="${ankle_rotation_upper_limit}"/>
         <safety_controller soft_lower_limit="${ankle_rotation_lower_limit + ankle_plantarflexion_soft_buffer}"
                            soft_upper_limit="${ankle_rotation_upper_limit - ankle_dorsalflexion_soft_buffer}"
-                           k_position="${k_position_value_linear}"
-                           k_velocity="${k_velocity_value_linear}" />
+                           k_position="${k_position_value_adpf}"
+                           k_velocity="${k_velocity_value_adpf}" />
     </joint>
 
     <joint name="left_foot_angle" type="fixed">
@@ -601,8 +609,8 @@
                upper="${hip_aa_rotation_upper_limit}"/>
         <safety_controller soft_lower_limit="${hip_aa_rotation_lower_limit + hip_aa_soft_buffer}"
                            soft_upper_limit="${hip_aa_rotation_upper_limit - hip_aa_soft_buffer}"
-                           k_position="${k_position_value_linear}"
-                           k_velocity="${k_velocity_value_linear}" />
+                           k_position="${k_position_value_haa}"
+                           k_velocity="${k_velocity_value_haa}" />
 
     </joint>
 
@@ -624,8 +632,8 @@
                upper="${hip_fe_rotation_upper_limit}"/>
         <safety_controller soft_lower_limit="${hip_fe_rotation_lower_limit + hip_fe_soft_buffer}"
                            soft_upper_limit="${hip_fe_rotation_upper_limit - hip_fe_soft_buffer}"
-                           k_position="${k_position_value_rotary}"
-                           k_velocity="${k_velocity_value_rotary}" />
+                           k_position="${k_position_value_hfe}"
+                           k_velocity="${k_velocity_value_hfe}" />
 
     </joint>
 
@@ -641,8 +649,8 @@
                upper="${knee_rotation_upper_limit}"/>
         <safety_controller soft_lower_limit="${knee_rotation_lower_limit + knee_extension_soft_buffer}"
                            soft_upper_limit="${knee_rotation_upper_limit - knee_flexion_soft_buffer}"
-                           k_position="${k_position_value_rotary}"
-                           k_velocity="${k_velocity_value_rotary}" />
+                           k_position="${k_position_value_kfe}"
+                           k_velocity="${k_velocity_value_kfe}" />
     </joint>
 
     <joint name="right_ankle" type="revolute">
@@ -657,8 +665,8 @@
                upper="${ankle_rotation_upper_limit}"/>
         <safety_controller soft_lower_limit="${ankle_rotation_lower_limit + ankle_plantarflexion_soft_buffer}"
                            soft_upper_limit="${ankle_rotation_upper_limit - ankle_dorsalflexion_soft_buffer}"
-                           k_position="${k_position_value_linear}"
-                           k_velocity="${k_velocity_value_linear}" />
+                           k_position="${k_position_value_adpf}"
+                           k_velocity="${k_velocity_value_adpf}" />
     </joint>
 
     <joint name="right_foot_angle" type="fixed">
