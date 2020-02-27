@@ -5,7 +5,7 @@ gait_types: # The used gains are only for testing that the correct set of gains 
     left_hip_fe: {p: 80, i: 0, d: 10}
     left_knee: {p: 50, i: 0, d: 10}
     right_ankle: {p: 130, i: 0, d: 5}
-    right_hip_aa: {p: 220, i: 0, d: 10} # TODO(BaCo) tune HAA joints
+    right_hip_aa: {p: 220, i: 0, d: 10}
     right_hip_fe: {p: 80, i: 0, d: 10}
     right_knee: {p: 50, i: 0, d: 10}
   walk_like:
@@ -14,7 +14,7 @@ gait_types: # The used gains are only for testing that the correct set of gains 
     left_hip_fe: {p: 135, i: 0, d: 10}
     left_knee: {p: 80, i: 0, d: 10}
     right_ankle: {p: 130, i: 0, d: 5}
-    right_hip_aa: {p: 330, i: 0, d: 10} # TODO(BaCo) tune HAA joints
+    right_hip_aa: {p: 330, i: 0, d: 10}
     right_hip_fe: {p: 135, i: 0, d: 10}
     right_knee: {p: 80, i: 0, d: 10}
   stairs_like:
@@ -23,6 +23,6 @@ gait_types: # The used gains are only for testing that the correct set of gains 
     left_hip_fe: {p: 80, i: 0, d: 10}
     left_knee: {p: 50, i: 0, d: 10}
     right_ankle: {p: 140, i: 0, d: 5}
-    right_hip_aa: {p: 290, i: 0, d: 5} # TODO(BaCo) tune HAA joints
+    right_hip_aa: {p: 290, i: 0, d: 5}
     right_hip_fe: {p: 80, i: 0, d: 10}
     right_knee: {p: 50, i: 0, d: 10}
