@@ -57,7 +57,7 @@ class StateMachineWithTransition(smach.StateMachine):
                         self._states['transition'].remove_outcome(label)
                         self._transitions['transition'].pop(label)
 
-                        return super(StateMachineWithTransition, self).execute(parent_ud)
+                return super(StateMachineWithTransition, self).execute(parent_ud)
 
             except ValueError:
                 pass
