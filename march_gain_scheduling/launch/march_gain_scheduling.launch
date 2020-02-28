@@ -1,7 +1,7 @@
 <launch>
     <arg name="configuration" doc="Tuning configuration to use. Must be name of file in config/ directory."/>
     <arg name="linear" default="true" doc="Whether to linearize the change in PID values"/>
-    <arg name="slope" default="10.0" doc="The slope of the linear change in PID values. Only used when 'linear' is true"/>
+    <arg name="slope" default="200.0" doc="The slope of the linear change in PID values. Only used when 'linear' is true"/>
 
     <node name="gain_scheduling_node" pkg="march_gain_scheduling" type="march_gain_scheduling_node" output="screen">
         <rosparam command="load" file="$(find march_gain_scheduling)/config/$(arg configuration).yaml"/>
