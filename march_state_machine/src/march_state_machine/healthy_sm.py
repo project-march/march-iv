@@ -50,7 +50,6 @@ class HealthyStateMachine(smach.StateMachine):
 
         self.add_state('GAIT WALK', walking_state_machine, 'STANDING')
 
-        # self.add_state('GAIT WALK', WalkStateMachine('walk'), 'STANDING')
         self.add_state('GAIT WALK SMALL', WalkStateMachine('walk_small'), 'STANDING')
         self.add_state('GAIT WALK LARGE', WalkStateMachine('walk_large'), 'STANDING')
 
