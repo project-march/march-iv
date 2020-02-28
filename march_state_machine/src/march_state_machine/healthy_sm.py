@@ -2,7 +2,7 @@ import rospy
 import smach
 from std_srvs.srv import Empty, EmptyRequest
 
-from march_shared_resources.srv import PossibleGaits
+from march_shared_resources.srv import CurrentState, PossibleGaits
 
 from .gaits import slope_down_sm
 from .gaits import tilted_path_sideways_end_sm
@@ -34,6 +34,8 @@ class HealthyStateMachine(smach.StateMachine):
         super(HealthyStateMachine, self).__init__(outcomes=['succeeded', 'failed', 'preempted'])
 
         rospy.Service('state_machine/get_possible_gaits', PossibleGaits, self.get_possible_gaits)
+
+        rospy.Service('state_machine/current_states', CurrentState, self.get_current_states)
 
         self.open()
         self.add_auto('START', HealthyStart(), connector_outcomes=['succeeded'])
@@ -172,3 +174,8 @@ class HealthyStateMachine(smach.StateMachine):
                     gaits = [k for k in self._current_state._current_transitions.keys() if k not in non_gaits]
 
         return {'gaits': gaits}
+
+    def get_current_states(self, _req):
+        state = self.get_active_states()[0]
+        state_type = str(type(self[state]))
+        return state_type, state

@@ -1,16 +1,22 @@
 <launch>
+    <arg name="gain_scheduling" default="false" doc="Whether to use gain scheduling, which changes PID values based on executed gait."/>
+    <arg name="gain_tuning" default="groundgait" doc="The configuration to use for gain scheduling. Only used when 'gain_scheduling' is true."/>
     <arg name="rviz" default="true" doc="Launches RViz."/>
     <arg name="rqt_input" default="true" doc="Launches the rqt input device."/>
     <arg name="gazebo_ui" default="false" doc="Launches the Gazebo UI."/>
-    <arg name="rosbag" default="false" doc="Enables rosbag record node."/>
+
     <arg name="unpause" default="$(eval not gazebo_ui)" doc="Unpause simulation when controller starts."/>
     <arg name="fixed" default="true" doc="Fixes the exoskeleton in the world"/>
     <arg name="ground_gait" default="false" doc="Exoskeleton will ground gait in simulation if true."/>
     <arg name="obstacle" default="none" doc="Obstacle to load in the simulation."/>
+
     <arg name="gait_directory" default="training-v" doc="Gait files directory to use"/>
+
     <arg name="input-device" default="false" doc="Launches ros serial node to connect with input device."/>
 
-    <include file="$(find march_launch)/launch/march.launch" pass_all_args="true">
+    <arg name="rosbag" default="false" doc="Enables rosbag record node."/>
+
+    <include file="$(dirname)/march.launch" pass_all_args="true">
         <arg name="configuration" value="simulation"/>
     </include>
 </launch>

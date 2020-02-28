@@ -19,7 +19,8 @@
         </gazebo>
     </xacro:if>
 
-    <xacro:arg name="max_effort_rotary" default="20475" /> <!-- = 25 A -->
+    <!-- Lowered based because of shortcircuit errors, theoretical max 20475 = 25 A -->
+    <xacro:arg name="max_effort_rotary" default="16000.0" />
     <xacro:arg name="max_effort_linear" default="22932.0" />  <!-- = 28 A -->
     <xacro:property name="max_effort_rotary" value="$(arg max_effort_rotary)" />
     <xacro:property name="max_effort_linear" value="$(arg max_effort_linear)" />

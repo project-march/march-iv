@@ -1,4 +1,4 @@
-gait_types: # The used gains are only for testing that the correct set of gains has been loaded.
+gait_types:
   sit_like:
     left_ankle: {p: 130, i: 0, d: 6}
     left_hip_aa: {p: 220, i: 0, d: 10}

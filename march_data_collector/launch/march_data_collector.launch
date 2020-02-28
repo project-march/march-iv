@@ -3,9 +3,15 @@
             EMS switch laptop on standard router"/>
     <arg name="pressure_soles" default="false" doc="Whether pressure soles will be connected"/>
     <arg name="esp" default="false" doc="Whether to launch the esp adapter"/>
+    <arg name="logfile" default="false" doc="Whether the data input is from a log file" />
     <node name="march_data_collector" pkg="march_data_collector" type="march_data_collector" output="screen">
         <param name="moticon_ip" value="$(arg moticon_ip)" />
         <param name="pressure_soles" value="$(arg pressure_soles)" />
     </node>
-    <node if="$(arg esp)" name="esp_adapter" pkg="march_data_collector" type="esp_adapter" output="screen"/>
+    <node if="$(arg esp)" name="esp_adapter" pkg="march_data_collector" type="esp_adapter" output="screen">
+        <param name="logfile" value="$(arg logfile)"/>
+    </node>
+    <group if="$(arg logfile)">
+        <include file="$(find march_launch)/launch/upload_march_urdf.launch" />
+    </group>
 </launch>

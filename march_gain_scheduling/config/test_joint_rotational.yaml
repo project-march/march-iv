@@ -1,0 +1,7 @@
+gait_types:
+  sit_like:
+    rotational_joint: {p: 10, i: 0, d: 10}
+  walk_like:
+    rotational_joint: {p: 50, i: 0, d: 10}
+  stand_like:
+    rotational_joint: {p: 100, i: 0, d: 10}

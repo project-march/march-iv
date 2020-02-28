@@ -1,0 +1,7 @@
+gait_types:
+  sit_gains:
+    linear_joint: {p: 0, i: 0, d: 0}
+  walk_gains:
+    linear_joint: {p: 0, i: 0, d: 0}
+  stand_gains:
+    linear_joint: {p: 0, i: 0, d: 0}

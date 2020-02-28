@@ -1,0 +1,28 @@
+gait_types:
+  sit_like:
+    left_ankle: {p: 130, i: 0, d: 6}
+    left_hip_aa: {p: 200, i: 0, d: 10}
+    left_hip_fe: {p: 120, i: 0, d: 10}
+    left_knee: {p: 50, i: 0, d: 10}
+    right_ankle: {p: 130, i: 0, d: 5}
+    right_hip_aa: {p: 200, i: 0, d: 10}
+    right_hip_fe: {p: 120, i: 0, d: 10}
+    right_knee: {p: 50, i: 0, d: 10}
+  walk_like:
+    left_ankle: {p: 150, i: 0, d: 6}
+    left_hip_aa: {p: 390, i: 0, d: 10}
+    left_hip_fe: {p: 200, i: 0, d: 10}
+    left_knee: {p: 115, i: 0, d: 10}
+    right_ankle: {p: 150, i: 0, d: 5}
+    right_hip_aa: {p: 390, i: 0, d: 10}
+    right_hip_fe: {p: 220, i: 0, d: 10}
+    right_knee: {p: 115, i: 0, d: 10}
+  stairs_like:
+    left_ankle: {p: 160, i: 0, d: 6}
+    left_hip_aa: {p: 290, i: 0, d: 5}
+    left_hip_fe: {p: 80, i: 0, d: 10}
+    left_knee: {p: 50, i: 0, d: 10}
+    right_ankle: {p: 140, i: 0, d: 5}
+    right_hip_aa: {p: 290, i: 0, d: 5}
+    right_hip_fe: {p: 80, i: 0, d: 10}
+    right_knee: {p: 50, i: 0, d: 10}
