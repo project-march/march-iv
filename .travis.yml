@@ -30,6 +30,7 @@ env:
     - BUILDER=colcon
     - CATKIN_LINT=pedantic
     - DOWNSTREAM_WORKSPACE=.rosinstall
+    - AFTER_INSTALL_TARGET_DEPENDENCIES='pip install numpy_ringbuffer'
 
 jobs:
   include:
