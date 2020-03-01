@@ -7,13 +7,16 @@ from .one_step_linear_interpolation import interpolate
 
 
 class DynamicPIDReconfigurer:
-    def __init__(self, gait_type='walk_like', joint_list=None, max_time_step=0.1):
-        self._gait_type = gait_type
+    def __init__(self, joint_list=None, max_time_step=0.1):
+        self._gait_type = None
         self._joint_list = joint_list
         self._max_time_step = max_time_step
-        self.current_gains = [self.look_up_table(i) for i in range(len(self._joint_list))]
+        self.current_gains = []
+        for joint_index in range(len(self._joint_list)):
+            gains = rospy.get_param('/march/controller/trajectory/gains/' + self._joint_list[joint_index])
+            self.current_gains.append([gains['p'], gains['i'], gains['d']])
         self.interpolation_done = True
-        self.last_update_time = 0
+        self.last_update_time = None
         self._clients = []
         for i in range(len(self._joint_list)):
             self._clients.append(Client('/march/controller/trajectory/gains/' + self._joint_list[i], timeout=30))
@@ -22,15 +25,17 @@ class DynamicPIDReconfigurer:
 
     def gait_selection_callback(self, data):
         rospy.logdebug('This is the gait name: %s', data.goal.current_subgait.gait_type)
-        if self._gait_type != data.goal.current_subgait.gait_type or not self.interpolation_done:
+        new_gait_type = data.goal.current_subgait.gait_type
+        if new_gait_type is None or new_gait_type == '':
+            new_gait_type = 'walk_like'
+            rospy.logwarn('The gait has no gait type, default is set to walk_like')
+        if self._gait_type != new_gait_type or not self.interpolation_done:
             rospy.logdebug('The selected gait: {0} is not the same as the previous gait: {1}'.format(
-                data.goal.current_subgait.gait_type, self._gait_type))
-            self._gait_type = data.goal.current_subgait.gait_type
-            if self._gait_type is None or self._gait_type == '':
-                self._gait_type = 'walk_like'
-                rospy.logwarn('The gait has no gait type, default is set to walk_like')
+                new_gait_type, self._gait_type))
+            self._gait_type = new_gait_type
             self.interpolation_done = False
             rate = rospy.Rate(10)
+            self.last_update_time = rospy.get_time()
             while not self.interpolation_done:
                 rate.sleep()
                 self.client_update()
