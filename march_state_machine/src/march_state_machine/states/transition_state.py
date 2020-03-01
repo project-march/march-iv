@@ -30,7 +30,8 @@ class TransitionState(FeedbackActionState):
         new_gait_name = self.get_transition_gait(current_gait_name)
 
         if new_gait_name is None:
-            rospy.logwarn('Not a valid transition requested')
+            rospy.logwarn('Transition from {current} to {transition}'.format(current=current_gait_name,
+                                                                             transition=new_gait_name))
             self._goal = GaitNameGoal(name=current_gait_name, subgait_name=transition_subgait_name)
         else:
             rospy.logdebug('Current gait name: {cgn}, new gait name: {ngn}, transition subgait name: {sgn}'
