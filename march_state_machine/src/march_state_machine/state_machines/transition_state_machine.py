@@ -45,25 +45,19 @@ class StateMachineWithTransition(smach.StateMachine):
             rospy.wait_for_service('/march/gait_selection/get_version_map', 1)
             get_gait_version_map = rospy.ServiceProxy('/march/gait_selection/get_version_map', Trigger)
 
-            try:
-                gait_version_map = ast.literal_eval(get_gait_version_map().message)
+            gait_version_map = ast.literal_eval(get_gait_version_map().message)
 
-                for label in self._states.copy():
-                    if label not in gait_version_map and label != 'transition':
-                        rospy.logwarn('State {lb} does not have a valid gait file, '
-                                      'removing state from transition state machine'.format(lb=label))
+            for label in self._states.copy():
+                if label not in gait_version_map and label != 'transition':
+                    rospy.logwarn('State {lb} does not have a valid gait file, '
+                                  'removing state from transition state machine'.format(lb=label))
 
-                        self._states.pop(label)
-                        self._states['transition'].remove_outcome(label)
-                        self._transitions['transition'].pop(label)
+                    self._states.pop(label)
+                    self._states['transition'].remove_outcome(label)
+                    self._transitions['transition'].pop(label)
 
-                return super(StateMachineWithTransition, self).execute(parent_ud)
+            return super(StateMachineWithTransition, self).execute(parent_ud)
 
-            except ValueError:
-                pass
-
-        except rospy.ROSException:
-            pass
-
-        rospy.logwarn('Transition state could not verify the transitions, do not use rocker-switch buttons!')
-        return super(StateMachineWithTransition, self).execute(parent_ud)
+        except rospy.ROSException and ValueError:
+            rospy.logwarn('Transition state could not verify the transitions, do not use rocker-switch buttons!')
+            return super(StateMachineWithTransition, self).execute(parent_ud)
