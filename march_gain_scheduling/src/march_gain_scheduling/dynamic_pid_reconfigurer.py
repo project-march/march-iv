@@ -66,8 +66,8 @@ class DynamicPIDReconfigurer:
 
     def load_current_gains(self):
         self.current_gains = []
-        for joint_index in range(len(self._joint_list)):
-            gains = rospy.get_param('/march/controller/trajectory/gains/' + self._joint_list[joint_index])
+        for joint_name in self._joint_list:
+            gains = rospy.get_param('/march/controller/trajectory/gains/' + joint_name)
             self.current_gains.append([gains['p'], gains['i'], gains['d']])
 
     # Method that pulls the PID values from the gains_per_gait_type.yaml config file
