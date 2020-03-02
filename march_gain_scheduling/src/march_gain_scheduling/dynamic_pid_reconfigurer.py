@@ -11,10 +11,6 @@ class DynamicPIDReconfigurer:
         self._gait_type = None
         self._joint_list = joint_list
         self._max_time_step = max_time_step
-        self.current_gains = []
-        for joint_index in range(len(self._joint_list)):
-            gains = rospy.get_param('/march/controller/trajectory/gains/' + self._joint_list[joint_index])
-            self.current_gains.append([gains['p'], gains['i'], gains['d']])
         self.interpolation_done = True
         self.last_update_time = None
         self._clients = []
@@ -24,14 +20,17 @@ class DynamicPIDReconfigurer:
         self._linearize = rospy.get_param('~linearize_gain_scheduling')
 
     def gait_selection_callback(self, data):
-        rospy.logdebug('This is the gait name: %s', data.goal.current_subgait.gait_type)
+        rospy.logdebug('This is the gait type: %s', data.goal.current_subgait.gait_type)
         new_gait_type = data.goal.current_subgait.gait_type
         if new_gait_type is None or new_gait_type == '':
             new_gait_type = 'walk_like'
             rospy.logwarn('The gait has no gait type, default is set to walk_like')
+
         if self._gait_type != new_gait_type or not self.interpolation_done:
             rospy.logdebug('The selected gait: {0} is not the same as the previous gait: {1}'.format(
                 new_gait_type, self._gait_type))
+
+            self.load_current_gains()
             self._gait_type = new_gait_type
             self.interpolation_done = False
             rate = rospy.Rate(10)
@@ -64,6 +63,12 @@ class DynamicPIDReconfigurer:
             rospy.logdebug('Config set to {0}, {1}, {2}'.format(self.current_gains[i][0],
                                                                 self.current_gains[i][1],
                                                                 self.current_gains[i][2]))
+
+    def load_current_gains(self):
+        self.current_gains = []
+        for joint_index in range(len(self._joint_list)):
+            gains = rospy.get_param('/march/controller/trajectory/gains/' + self._joint_list[joint_index])
+            self.current_gains.append([gains['p'], gains['i'], gains['d']])
 
     # Method that pulls the PID values from the gains_per_gait_type.yaml config file
     def look_up_table(self, joint_index):
