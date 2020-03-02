@@ -13,8 +13,9 @@ class StoppableState(FeedbackActionState):
                                              GaitNameGoal(name=gait_name, subgait_name=self.subgait_name),
                                              outcomes=['succeeded', 'preempted', 'aborted', 'stopped'])
 
-    def execute(self, userdata):
-        result = super(StoppableState, self).execute(userdata)
+    def execute(self, ud):
+        """Run this function on entry of this state."""
+        result = super(StoppableState, self).execute(ud)
 
         if self.preempt_requested():
             self.service_preempt()
@@ -25,7 +26,15 @@ class StoppableState(FeedbackActionState):
             control_flow.reset_gait()
             return 'stopped'
 
+        if control_flow.is_transition():
+            if 'transition' in self.get_registered_outcomes():
+                return 'transition'
+
         while control_flow.is_paused() and not rospy.core.is_shutdown():
             rospy.loginfo_throttle(5, 'Gait is paused')
 
         return result
+
+    def add_outcome(self, label):
+        """Add new outcome to the state."""
+        self._outcomes.add(label)
