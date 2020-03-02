@@ -1,4 +1,6 @@
+import rospy
 import smach
+from std_msgs.msg import String
 
 from march_state_machine.control_flow import control_flow
 from march_state_machine.states.gait_state import GaitState
@@ -20,6 +22,7 @@ class StepStateMachine(smach.Sequence):
         """
         super(StepStateMachine, self).__init__(outcomes=['succeeded', 'preempted', 'failed'],
                                                connector_outcome='succeeded')
+        self._gait_name = gait_name
 
         if subgaits is None:
             subgaits = ['right_open', 'left_close']
@@ -30,6 +33,11 @@ class StepStateMachine(smach.Sequence):
         self.close()
 
         self.register_termination_cb(self._termination_cb)
+        self._gait_publisher = rospy.Publisher('/march/gait/current', String, queue_size=10)
+
+    def execute(self, ud=smach.UserData()):
+        self._gait_publisher.publish(self._gait_name)
+        return super(StepStateMachine, self).execute(ud)
 
     @staticmethod
     def _termination_cb(_userdata, _terminal_states, _outcome):
