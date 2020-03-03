@@ -5,6 +5,7 @@ from std_srvs.srv import Empty, EmptyRequest
 from march_shared_resources.srv import CurrentState, PossibleGaits
 
 from .gaits import slope_down_sm
+from .gaits import tilted_path_flexed_knee_step_sm
 from .gaits import tilted_path_sideways_end_sm
 from .gaits import tilted_path_sideways_start_sm
 from .gaits import tilted_path_straight_sm
@@ -101,6 +102,8 @@ class HealthyStateMachine(smach.StateMachine):
         self.add_state('GAIT TP SIDEWAYS START', tilted_path_sideways_start_sm.create(), 'STANDING')
         self.add_state('GAIT TP SIDEWAYS END', tilted_path_sideways_end_sm.create(), 'STANDING')
 
+        self.add_state('GAIT TP FLEXED KNEE STEP', tilted_path_flexed_knee_step_sm.create(), 'STANDING')
+
         self.add('SITTING', IdleState(outcomes=['gait_stand', 'preempted']),
                  transitions={'gait_stand': 'GAIT STAND'})
         self.add('STANDING', IdleState(outcomes=['gait_sit', 'gait_walk', 'gait_walk_small', 'gait_single_step_small',
@@ -117,6 +120,7 @@ class HealthyStateMachine(smach.StateMachine):
                                                  'gait_tilted_path_straight_start',
                                                  'gait_tilted_path_first_start',
                                                  'gait_tilted_path_first_end',
+                                                 'gait_tilted_path_flexed_knee_step',
                                                  'preempted']),
                  transitions={'gait_sit': 'GAIT SIT',
                               'gait_walk': 'GAIT WALK',
@@ -140,7 +144,8 @@ class HealthyStateMachine(smach.StateMachine):
                               'gait_ramp_door_slope_down': 'GAIT RD SLOPE DOWN',
                               'gait_tilted_path_straight_start': 'GAIT TP STRAIGHT',
                               'gait_tilted_path_first_start': 'GAIT TP SIDEWAYS START',
-                              'gait_tilted_path_first_end': 'GAIT TP SIDEWAYS END'})
+                              'gait_tilted_path_first_end': 'GAIT TP SIDEWAYS END',
+                              'gait_tilted_path_flexed_knee_step': 'GAIT TP FLEXED KNEE STEP'})
         self.close()
 
     def add_state(self, label, state, succeeded):
