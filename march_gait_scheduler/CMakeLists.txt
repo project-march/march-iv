@@ -57,7 +57,7 @@ install(TARGETS ${PROJECT_NAME}_node
 )
 
 ## Add gtest based cpp test target and link libraries
-if (CATKIN_ENABLE_TESTING)
+if(CATKIN_ENABLE_TESTING)
     find_package(code_coverage REQUIRED)
     find_package(rostest REQUIRED)
 
@@ -67,13 +67,13 @@ if (CATKIN_ENABLE_TESTING)
     endif()
 
     add_rostest_gmock(${PROJECT_NAME}-test
-        test/main-test.test
-        test/TestRunner.cpp
-        test/ScheduleOneGaitTest.cpp
-        test/ScheduleMultipleGaitsTest.cpp
-        test/EndTimeTest.cpp
-        test/AcceptanceTest.cpp
-        test/CallbackCounter.cpp
+        test/launch/march_gait_scheduler.test
+        test/rostest/test_runner.cpp
+        test/rostest/schedule_one_gait_test.cpp
+        test/rostest/schedule_multiple_gaits_test.cpp
+        test/rostest/end_time_test.cpp
+        test/rostest/acceptance_test.cpp
+        test/rostest/callback_counter.cpp
     )
 
     target_link_libraries(${PROJECT_NAME}-test ${catkin_LIBRARIES} ${PROJECT_NAME})
@@ -85,4 +85,4 @@ if (CATKIN_ENABLE_TESTING)
             DEPENDS tests
         )
     endif()
-endif ()
+endif()

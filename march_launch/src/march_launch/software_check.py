@@ -5,8 +5,8 @@ from python_qt_binding.QtWidgets import QPlainTextEdit, QPushButton, QWidget
 from qt_gui.plugin import Plugin
 import rospkg
 
-from .CheckRunner import CheckRunner
-from .Color import Color
+from .check_runner import CheckRunner
+from .color import Color
 
 
 class SoftwareCheckPlugin(Plugin):

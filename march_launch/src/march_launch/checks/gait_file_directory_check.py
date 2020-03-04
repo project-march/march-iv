@@ -3,7 +3,7 @@ import rospy
 
 from march_launch.Color import Color
 
-from .LaunchCheck import LaunchCheck
+from .launch_check import LaunchCheck
 
 
 class GaitFileDirectoryCheck(LaunchCheck):
