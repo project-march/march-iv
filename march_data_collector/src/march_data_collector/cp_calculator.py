@@ -1,6 +1,7 @@
 from math import sqrt
 
 import rospy
+import tf2_ros
 from visualization_msgs.msg import Marker
 
 
@@ -36,22 +37,25 @@ class CPCalculator(object):
             x_dot = (com_mark.pose.position.x - self.prev_x) / time_difference
             y_dot = (com_mark.pose.position.y - self.prev_y) / time_difference
 
-            trans = self.tf_buffer.lookup_transform('world', self.foot_link, rospy.Time())
             try:
-                multiplier = sqrt(com_mark.pose.position.z / self.g)
-            except ValueError:
-                rospy.logwarn_throttle(1, 'Cannot calculate capture point, because center of mass height is smaller '
-                                          'than 0')
-                return self.marker
+                trans = self.tf_buffer.lookup_transform('world', self.foot_link, rospy.Time())
+                try:
+                    multiplier = sqrt(com_mark.pose.position.z / self.g)
+                except ValueError:
+                    rospy.logwarn_throttle(1, 'Cannot calculate capture point, because center of mass height is '
+                                              'smaller than 0')
+                    return self.marker
 
-            x_cp = trans.transform.translation.x + x_dot * multiplier
-            y_cp = trans.transform.translation.y + y_dot * multiplier
+                x_cp = trans.transform.translation.x + x_dot * multiplier
+                y_cp = trans.transform.translation.y + y_dot * multiplier
 
-            self.update_marker(x_cp, y_cp)
+                self.update_marker(x_cp, y_cp)
 
-            self.prev_x = com_mark.pose.position.x
-            self.prev_y = com_mark.pose.position.y
-            self.prev_t = current_time
+                self.prev_x = com_mark.pose.position.x
+                self.prev_y = com_mark.pose.position.y
+                self.prev_t = current_time
+            except tf2_ros.TransformException as e:
+                rospy.logdebug('Error in trying to lookup transform for capture point: {error}'.format(error=e))
 
         return self.marker
 
