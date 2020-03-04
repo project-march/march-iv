@@ -14,7 +14,7 @@ class GaitTest(unittest.TestCase):
     def setUp(self):
         self.gait_name = 'walk'
         self.resources_folder = rospkg.RosPack().get_path('march_shared_classes') + '/test/resources'
-        self.robot = urdf.Robot.from_xml_file(self.resources_folder + '/march4.urdf')
+        self.robot = urdf.Robot.from_xml_file(rospkg.RosPack().get_path('march_description') + '/urdf/march4.urdf')
 
         self.default_yaml = self.resources_folder + '/default.yaml'
         with open(self.default_yaml, 'r') as default_yaml_file:
