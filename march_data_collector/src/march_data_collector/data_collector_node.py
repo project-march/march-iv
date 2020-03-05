@@ -151,7 +151,7 @@ class DataCollectorNode(object):
 def main():
     rospy.init_node('data_collector', anonymous=True)
     try:
-        robot = URDF.from_parameter_server()
+        robot = URDF.from_parameter_server('/robot_description')
     except KeyError:
         rospy.logerr('Cannot retrieve URDF from parameter server.')
         sys.exit()
