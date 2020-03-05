@@ -26,7 +26,7 @@ class HealthyStart(smach.State):
             unpause.wait_for_service()
             unpause(EmptyRequest())
         rospy.loginfo('March is fully operational')
-        if 'sounds' in userdata:
+        if userdata.sounds:
             # Sleep is necessary to wait for the soundplay node
             rospy.sleep(1.0)
             userdata.sounds.play('start')

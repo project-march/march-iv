@@ -43,7 +43,10 @@ def create_userdata():
     :returns created userdata
     """
     userdata = smach.UserData()
-    userdata.sounds = Sounds()
+    if rospy.get_param('~sounds', False):
+        userdata.sounds = Sounds()
+    else:
+        userdata.sounds = None
     return userdata
 
 

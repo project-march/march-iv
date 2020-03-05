@@ -15,6 +15,7 @@ class Sounds:
     def play(self, sound):
         """
         Plays the given sound if it was loaded.
+
         :type sound: str
         :param sound: Name of the sound to play
         """

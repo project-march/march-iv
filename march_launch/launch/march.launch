@@ -4,6 +4,7 @@
     <arg name="hardware_interface" default="true" doc="Launches the hardware interface when config is 'exoskeleton."/>
     <arg name="gain_scheduling" default="true" doc="Whether to use gain scheduling, which changes PID values based on executed gait."/>
     <arg name="gain_tuning" default="groundgait" doc="The configuration to use for gain scheduling. Only used when 'gain_scheduling' is true."/>
+    <arg name="sounds" default="true" doc="Whether to use sounds."/>
 
     <arg name="rviz" default="false" doc="Launches RViz."/>
     <arg name="state_machine_viewer" default="false" doc="Launches the SMACH viewer."/>
@@ -43,11 +44,12 @@
         <include file="$(find march_state_machine)/launch/state_machine.launch">
             <arg name="state_machine_viewer" value="$(eval not headless and state_machine_viewer)"/>
             <arg name="unpause" value="$(eval configuration == 'simulation' and unpause)"/>
+            <arg name="sounds" value="$(arg sounds)"/>
         </include>
 
         <include file="$(find march_safety)/launch/march_safety.launch"/>
 
-        <node name="sound_play" pkg="sound_play" type="soundplay_node.py"/>
+        <node name="sound_play" pkg="sound_play" type="soundplay_node.py" if="$(arg sounds)" output="screen"/>
 
         <include file="$(find march_gait_selection)/launch/march_gait_selection.launch">
             <arg name="gait_directory" value="$(arg gait_directory)"/>
