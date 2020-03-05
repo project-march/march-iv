@@ -16,7 +16,7 @@ catkin_package(CATKIN_DEPENDS
     std_msgs
 )
 
-install(DIRECTORY launch
+install(DIRECTORY launch sounds
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 

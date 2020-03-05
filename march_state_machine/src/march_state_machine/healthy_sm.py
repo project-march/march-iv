@@ -18,21 +18,26 @@ from .states.idle_state import IdleState
 
 class HealthyStart(smach.State):
     def __init__(self):
-        super(HealthyStart, self).__init__(outcomes=['succeeded'])
+        super(HealthyStart, self).__init__(outcomes=['succeeded'], input_keys=['sounds'], output_keys=['sounds'])
 
-    def execute(self, ud):
+    def execute(self, userdata):
         if rospy.get_param('~unpause', False):
             unpause = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
             unpause.wait_for_service()
             unpause(EmptyRequest())
         rospy.loginfo('March is fully operational')
+        if 'sounds' in userdata:
+            # Sleep is necessary to wait for the soundplay node
+            rospy.sleep(1.0)
+            userdata.sounds.play('start')
         return 'succeeded'
 
 
 class HealthyStateMachine(smach.StateMachine):
 
     def __init__(self):
-        super(HealthyStateMachine, self).__init__(outcomes=['succeeded', 'failed', 'preempted'])
+        super(HealthyStateMachine, self).__init__(outcomes=['succeeded', 'failed', 'preempted'], input_keys=['sounds'],
+                                                  output_keys=['sounds'])
 
         rospy.Service('state_machine/get_possible_gaits', PossibleGaits, self.get_possible_gaits)
 

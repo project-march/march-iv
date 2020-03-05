@@ -6,6 +6,7 @@ import smach_ros
 
 from . import launch_sm
 from .healthy_sm import HealthyStateMachine
+from .sounds import Sounds
 from .states.empty_state import EmptyState
 from .states.safety_state import SafetyState
 from .states.shutdown_state import ShutdownState
@@ -35,8 +36,20 @@ def main():
         sis.stop()
 
 
+def create_userdata():
+    """Creates userdata for all state machines.
+
+    :rtype smach.Userdata()
+    :returns created userdata
+    """
+    userdata = smach.UserData()
+    userdata.sounds = Sounds()
+    return userdata
+
+
 def create_sm():
     sm = smach.StateMachine(outcomes=['DONE'])
+    sm.userdata = create_userdata()
     with sm:
         smach.StateMachine.add('LAUNCH', launch_sm.create(),
                                transitions={'succeeded': 'HEALTHY', 'preempted': 'SHUTDOWN', 'failed': 'SHUTDOWN'})
@@ -49,7 +62,8 @@ def create_sm():
                                                                           'STATE_MACHINE': 'preempted'},
                                                             'succeeded': {'SAFETY': 'valid',
                                                                           'STATE_MACHINE': 'succeeded'}},
-                                               child_termination_cb=lambda _: True)
+                                               child_termination_cb=lambda _: True, input_keys=['sounds'],
+                                               output_keys=['sounds'])
 
         with safety_concurrence:
             smach.Concurrence.add('SAFETY', SafetyState())
