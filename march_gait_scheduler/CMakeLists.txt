@@ -67,7 +67,7 @@ if(CATKIN_ENABLE_TESTING)
     endif()
 
     add_rostest_gmock(${PROJECT_NAME}-test
-        test/launch/march_gait_scheduler.test
+        test/launch/${PROJECT_NAME}.test
         test/rostest/test_runner.cpp
         test/rostest/schedule_one_gait_test.cpp
         test/rostest/schedule_multiple_gaits_test.cpp
