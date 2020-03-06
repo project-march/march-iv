@@ -16,8 +16,8 @@
     <xacro:property name="bar_width" value="0.05"/>
 
     <xacro:property name="joint_buffer" value="${3*pi/180}"/> <!-- rad -->
-    <xacro:property name="joint_lower_limit" value="-0.2"/> <!-- rad -->
-    <xacro:property name="joint_upper_limit" value="0.916225"/> <!-- rad -->
+    <xacro:property name="joint_lower_limit" value="-0.5363"/> <!-- rad -->
+    <xacro:property name="joint_upper_limit" value="0.5363"/> <!-- rad -->
     <xacro:property name="joint_effort_limit" value="21840"/> <!-- IU = 20 A -->
     <xacro:property name="joint_velocity_limit" value="2.0"/> <!-- rad/s -->
 
@@ -45,7 +45,7 @@
         <child link="bar"/>
         <origin xyz="0 ${-joint_base_width} 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
-        <limit velocity="${joint_velocity_limit}" effort="${joint_effort_limit}" lower="${joint_lower_limit - joint_buffer*2}" upper="${joint_upper_limit + joint_buffer*2}"/>
+        <limit velocity="${joint_velocity_limit}" effort="${joint_effort_limit}" lower="${joint_lower_limit}" upper="${joint_upper_limit}"/>
         <safety_controller soft_lower_limit="${joint_lower_limit + joint_buffer}" soft_upper_limit="${joint_upper_limit - joint_buffer}" k_position="5" k_velocity="20000" />
     </joint>
 
