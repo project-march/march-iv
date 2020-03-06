@@ -1,13 +1,7 @@
 <?xml version="1.0"?>
 <!-- Revolute-Revolute Manipulator -->
 <robot name="march" xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <!-- Switch between airgaiting or standing on the ground-->
-    <!--Value set to: 'world' fixes the robot to the world-->
-    <!--Value set to: 'base_link' makes the robot stand on the ground-->
-    <!--Important note: when changing value make sure rviz fixed frame is set to the same value (moveit.rviz)-->
-
     <!-- Constants for robot dimensions -->
-    <xacro:property name="PI" value="3.1415926535897931"/>
     <xacro:property name="joint_base_mass" value="1"/> <!-- arbitrary value for joint_base_mass -->
     <xacro:property name="joint_base_width" value="0.05"/> <!-- Cube dimensions (width x width x width) of joint base -->
 
@@ -16,8 +10,8 @@
     <xacro:property name="bar_width" value="0.05"/>
 
     <xacro:property name="joint_buffer" value="${3*pi/180}"/> <!-- rad -->
-    <xacro:property name="joint_lower_limit" value="-0.2"/> <!-- rad -->
-    <xacro:property name="joint_upper_limit" value="0.916225"/> <!-- rad -->
+    <xacro:property name="joint_lower_limit" value="-0.5363"/> <!-- rad -->
+    <xacro:property name="joint_upper_limit" value="0.5363"/> <!-- rad -->
     <xacro:property name="joint_effort_limit" value="21840"/> <!-- IU = 20 A -->
     <xacro:property name="joint_velocity_limit" value="2.0"/> <!-- rad/s -->
 
@@ -25,11 +19,6 @@
 
     <!-- Import all Gazebo-customization elements, including Gazebo colors -->
     <xacro:include filename="$(find march_description)/urdf/march.gazebo"/>
-
-
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-        <robotNamespace>/march</robotNamespace>
-    </plugin>
 
     <!-- Used for fixing robot to Gazebo 'base_link' -->
     <link name="world"/>
@@ -45,7 +34,7 @@
         <child link="bar"/>
         <origin xyz="0 ${-joint_base_width} 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
-        <limit velocity="${joint_velocity_limit}" effort="${joint_effort_limit}" lower="${joint_lower_limit - joint_buffer*2}" upper="${joint_upper_limit + joint_buffer*2}"/>
+        <limit velocity="${joint_velocity_limit}" effort="${joint_effort_limit}" lower="${joint_lower_limit}" upper="${joint_upper_limit}"/>
         <safety_controller soft_lower_limit="${joint_lower_limit + joint_buffer}" soft_upper_limit="${joint_upper_limit - joint_buffer}" k_position="5" k_velocity="20000" />
     </joint>
 
@@ -71,7 +60,6 @@
                     ixx="${joint_base_mass / 12.0 * (2*(joint_base_width*joint_base_width))}" ixy="0.0" ixz="0.0"
                     iyy="${joint_base_mass / 12.0 * (2*(joint_base_width*joint_base_width))}" iyz="0.0"
                     izz="${joint_base_mass / 12.0 * (2*(joint_base_width*joint_base_width))}"/>
-                                                <!--(joint_base_width*joint_base_width + joint_base_width*joint_base_width)-->
         </inertial>
     </link>
 
@@ -101,10 +89,7 @@
             <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
         </joint>
         <actuator name="rotational_joint_motor">
-            <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-            <mechanicalReduction>1</mechanicalReduction>
+            <mechanicalReduction>101</mechanicalReduction>
         </actuator>
     </transmission>
-
-
 </robot>
