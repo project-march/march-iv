@@ -17,7 +17,6 @@ def main():
 
     sm = create_sm()
     rospy.on_shutdown(sm.request_preempt)
-    sm.get_registered_outcomes()
 
     sis = None
     if rospy.get_param('~state_machine_viewer', False):
@@ -47,6 +46,9 @@ def create_userdata():
         userdata.sounds = Sounds()
         userdata.sounds.add_sound('start')
         userdata.sounds.add_sound('error')
+        userdata.sounds.add_sound('gait_start')
+        userdata.sounds.add_sound('gait_end')
+        userdata.sounds.add_sound('gait_stop')
     else:
         userdata.sounds = None
     return userdata

@@ -14,7 +14,8 @@ class StateMachineWithTransition(smach.StateMachine):
         if outcomes is not None:
             self._default_outcomes = outcomes
 
-        super(StateMachineWithTransition, self).__init__(outcomes=self._default_outcomes)
+        super(StateMachineWithTransition, self).__init__(outcomes=self._default_outcomes, input_keys=['sounds'],
+                                                         output_keys=['sounds'])
 
         with self.opened():
             smach.StateMachine.add('transition', TransitionState(transition_sequence),
