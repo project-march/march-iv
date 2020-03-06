@@ -31,7 +31,7 @@ class Sounds:
         :param sound: Name of the sound to play
         """
         if sound in self._sounds:
-            rospy.loginfo('playing sound {0}'.format(sound))
+            rospy.logdebug('playing sound {0}'.format(sound))
             self._sounds[sound].play()
         else:
             rospy.logwarn('Sound {0} is not available'.format(sound))
