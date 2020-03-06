@@ -9,8 +9,19 @@ class Sounds:
     def __init__(self):
         self._sound_client = SoundClient()
 
-        sounds_dir = os.path.join(roslib.packages.get_pkg_dir('march_state_machine'), 'sounds')
-        self._sounds = {'start': self._sound_client.waveSound(sounds_dir + '/start.wav')}
+        self._sounds = {}
+        self._sounds_dir = os.path.join(roslib.packages.get_pkg_dir('march_state_machine'), 'sounds')
+
+    def add_sound(self, sound):
+        """
+        Adds a sound if it was not already added.
+
+        :type sound: str
+        """
+        if sound in self._sounds:
+            rospy.logwarn('Sound {0} already in sounds'.format(sound))
+        else:
+            self._sounds[sound] = self._sound_client.waveSound(os.path.join(self._sounds_dir, '{0}.wav'.format(sound)))
 
     def play(self, sound):
         """

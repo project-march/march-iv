@@ -7,7 +7,7 @@ import smach_ros
 from . import launch_sm
 from .healthy_sm import HealthyStateMachine
 from .sounds import Sounds
-from .states.empty_state import EmptyState
+from .states.error_state import ErrorState
 from .states.safety_state import SafetyState
 from .states.shutdown_state import ShutdownState
 
@@ -45,6 +45,8 @@ def create_userdata():
     userdata = smach.UserData()
     if rospy.get_param('~sounds', False):
         userdata.sounds = Sounds()
+        userdata.sounds.add_sound('start')
+        userdata.sounds.add_sound('error')
     else:
         userdata.sounds = None
     return userdata
@@ -74,7 +76,7 @@ def create_sm():
 
         smach.StateMachine.add('HEALTHY', safety_concurrence,
                                transitions={'succeeded': 'SHUTDOWN', 'failed': 'ERROR', 'preempted': 'SHUTDOWN'})
-        smach.StateMachine.add('ERROR', EmptyState(),
+        smach.StateMachine.add('ERROR', ErrorState(),
                                transitions={'succeeded': 'SHUTDOWN'})
         smach.StateMachine.add('SHUTDOWN', ShutdownState(), transitions={'succeeded': 'DONE'})
 
