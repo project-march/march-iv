@@ -3,7 +3,7 @@ from urdf_parser_py import urdf
 
 from march_launch.Color import Color
 
-from .LaunchCheck import LaunchCheck
+from .launch_check import LaunchCheck
 
 
 class URDFCheck(LaunchCheck):

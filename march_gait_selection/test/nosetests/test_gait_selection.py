@@ -2,7 +2,7 @@
 
 import unittest
 
-from march_gait_selection.GaitSelection import GaitSelection
+from march_gait_selection.gait_selection import GaitSelection
 
 
 PKG = 'march_gait_selection'

@@ -10,7 +10,7 @@
 #include <march_shared_resources/GaitAction.h>
 #include <march_gait_scheduler/scheduler.h>
 
-#include "CallbackCounter.cpp"
+#include "callback_counter.cpp"
 
 class AcceptanceTest : public ::testing::Test
 {

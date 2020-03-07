@@ -1,6 +1,6 @@
 import subprocess
 
-from .SoftwareCheck import SoftwareCheck
+from .software_check import SoftwareCheck
 
 
 class LaunchCheck(SoftwareCheck):

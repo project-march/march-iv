@@ -64,24 +64,24 @@ if(CATKIN_ENABLE_TESTING)
     endif()
 
     add_rostest_gtest(${PROJECT_NAME}_temperature_test
-        test/${PROJECT_NAME}_temperature.test
-        test/temperature_error_test.cpp
-        test/no_temperature_error_test.cpp
-        test/temperature_parameterized_test.cpp
+        test/launch/${PROJECT_NAME}_temperature.test
+        test/rostest/temperature_error_test.cpp
+        test/rostest/no_temperature_error_test.cpp
+        test/rostest/temperature_parameterized_test.cpp
     )
     add_rostest_gtest(${PROJECT_NAME}_connection_lost_test
-        test/${PROJECT_NAME}_connection_lost.test
-        test/connection_lost_test.cpp
+        test/launch/${PROJECT_NAME}_connection_lost.test
+        test/rostest/connection_lost_test.cpp
     )
 
     add_rostest_gtest(${PROJECT_NAME}_connection_never_started_test
-        test/${PROJECT_NAME}_connection_never_started.test
-        test/connection_never_started_test.cpp
+        test/launch/${PROJECT_NAME}_connection_never_started.test
+        test/rostest/connection_never_started_test.cpp
     )
 
     add_rostest_gtest(${PROJECT_NAME}_connection_not_lost_test
-        test/${PROJECT_NAME}_connection_not_lost.test
-        test/connection_not_lost_test.cpp
+        test/launch/${PROJECT_NAME}_connection_not_lost.test
+        test/rostest/connection_not_lost_test.cpp
     )
     target_link_libraries(${PROJECT_NAME}_temperature_test ${catkin_LIBRARIES})
     target_link_libraries(${PROJECT_NAME}_connection_lost_test ${catkin_LIBRARIES})

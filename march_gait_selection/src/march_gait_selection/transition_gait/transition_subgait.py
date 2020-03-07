@@ -1,6 +1,6 @@
 from copy import deepcopy
 
-from march_gait_selection.GaitSelection import GaitSelection
+from march_gait_selection.gait_selection import GaitSelection
 from march_shared_classes.exceptions.gait_exceptions import GaitError, SubgaitNameNotFound, TransitionError
 from march_shared_classes.gait.gait import Gait
 from march_shared_classes.gait.joint_trajectory import JointTrajectory
