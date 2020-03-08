@@ -5,7 +5,7 @@ import rospy
 from sound_play.libsoundplay import SoundClient
 
 
-class Sounds:
+class Sounds(object):
     def __init__(self):
         self._sound_client = SoundClient()
 
