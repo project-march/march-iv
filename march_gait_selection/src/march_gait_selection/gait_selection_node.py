@@ -6,8 +6,8 @@ from std_srvs.srv import Trigger
 from march_shared_classes.exceptions.gait_exceptions import GaitError
 from march_shared_resources.srv import StringTrigger
 
-from .GaitSelection import GaitSelection
-from .PerformGaitAction import PerformGaitAction
+from .gait_selection import GaitSelection
+from .perform_gait_action import PerformGaitAction
 
 
 NODE_NAME = 'gait_selection'

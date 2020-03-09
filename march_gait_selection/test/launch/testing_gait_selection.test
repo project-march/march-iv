@@ -1,8 +1,5 @@
 <launch>
-    <arg name="robot" default="march4" doc="The robot to run. Can be: march3, march4, test_joint_rotational."/>
-
-    <param name="robot_description"
-           command="$(find xacro)/xacro --inorder '$(find march_description)/urdf/$(arg robot).xacro' "/>
+    <param name="robot_description" textfile="$(find march_description)/urdf/march4.urdf"/>
 
     <test test-name=" test_gait_selection" pkg="march_gait_selection" type="run_tests"/>
 </launch>

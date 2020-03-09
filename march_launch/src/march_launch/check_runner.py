@@ -1,12 +1,12 @@
 from python_qt_binding.QtWidgets import QMessageBox
 import rospy
 
-from .checks.GaitFileDirectoryCheck import GaitFileDirectoryCheck
-from .checks.GitBranchCheck import GitBranchCheck
-from .checks.SlaveCountCheck import SlaveCountCheck
-from .checks.URDFCheck import URDFCheck
-from .Color import Color
-from .SoftwareCheckThread import SoftwareCheckThread
+from .checks.gait_file_directory_check import GaitFileDirectoryCheck
+from .checks.git_branch_check import GitBranchCheck
+from .checks.slave_count_check import SlaveCountCheck
+from .checks.urdf_check import URDFCheck
+from .color import Color
+from .software_check_thread import SoftwareCheckThread
 
 
 class CheckRunner:

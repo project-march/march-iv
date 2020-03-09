@@ -1,16 +1,8 @@
 // Copyright 2018 Project March.
 
-#include "ros/ros.h"
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
+#include <ros/ros.h>
 
-class SchedulerTest : public ::testing::Test
-{
-protected:
-};
-
-/**
- * The main method which runs all the tests
- */
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "testnode");
