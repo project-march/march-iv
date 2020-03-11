@@ -143,9 +143,11 @@ class DataCollectorNode(object):
         self.input_sock.close()
 
     def run(self):
-        while not rospy.is_shutdown():
-            if self.pressure_soles_on:
+        if self.pressure_soles_on:
+            while not rospy.is_shutdown() and self.pressure_soles_on:
                 self.receive_udp()
+        else:
+            rospy.spin()
 
 
 def main():

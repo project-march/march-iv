@@ -64,7 +64,7 @@ class CoMCalculator(object):
                 y += self.links[link].inertial.mass * transformed.point.y
                 z += self.links[link].inertial.mass * transformed.point.z
             except tf2_ros.TransformException as err:
-                rospy.logwarn('error in CoM calculation' + str(err))
+                rospy.logdebug('TF Error in trying to lookup transform for center of mass: {error}'.format(error=err))
 
         x = x / self.mass
         y = y / self.mass
