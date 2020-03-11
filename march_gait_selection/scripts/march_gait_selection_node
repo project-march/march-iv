@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from march_gait_selection import GaitSelectionNode
+from march_gait_selection import gait_selection_node
 
 if __name__ == '__main__':
-    GaitSelectionNode.main()
+    gait_selection_node.main()

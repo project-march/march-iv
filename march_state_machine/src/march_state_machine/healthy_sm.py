@@ -84,6 +84,8 @@ class HealthyStateMachine(smach.StateMachine):
 
         self.add_state('GAIT STAIRS UP', WalkStateMachine('stairs_up'), 'STANDING')
         self.add_state('GAIT STAIRS DOWN', WalkStateMachine('stairs_down'), 'STANDING')
+        self.add_state('GAIT STAIRS UP SINGLE STEP', StepStateMachine('stairs_up_single_step'), 'STANDING')
+        self.add_state('GAIT STAIRS DOWN SINGLE STEP', StepStateMachine('stairs_down_single_step'), 'STANDING')
 
         # RT stands for Rough Terrain
         self.add_state('GAIT RT HIGH STEP', StepStateMachine('rough_terrain_high_step'), 'STANDING')
@@ -116,6 +118,7 @@ class HealthyStateMachine(smach.StateMachine):
                                                  'gait_side_step_right', 'gait_side_step_left_small',
                                                  'gait_side_step_right_small', 'gait_sofa_sit',
                                                  'gait_stairs_up', 'gait_stairs_down',
+                                                 'gait_stairs_up_single_step', 'gait_stairs_down_single_step',
                                                  'gait_walk_small', 'gait_rough_terrain_high_step',
                                                  'gait_rough_terrain_middle_steps',
                                                  'gait_rough_terrain_first_middle_step',
@@ -140,6 +143,8 @@ class HealthyStateMachine(smach.StateMachine):
                               'gait_sofa_sit': 'GAIT SOFA SIT',
                               'gait_stairs_up': 'GAIT STAIRS UP',
                               'gait_stairs_down': 'GAIT STAIRS DOWN',
+                              'gait_stairs_up_single_step': 'GAIT STAIRS UP SINGLE STEP',
+                              'gait_stairs_down_single_step': 'GAIT STAIRS DOWN SINGLE STEP',
                               'gait_rough_terrain_high_step': 'GAIT RT HIGH STEP',
                               'gait_rough_terrain_middle_steps': 'GAIT RT MIDDLE STEPS',
                               'gait_rough_terrain_first_middle_step': 'GAIT RT FIRST MIDDLE STEP',
