@@ -1,4 +1,4 @@
 <launch>
     <node name="gait_scheduler_node" pkg="march_gait_scheduler" type="march_gait_scheduler_node" output="screen"/>
-    <test test-name="march_gait_scheduler_tests" pkg="march_gait_scheduler" type="march_gait_scheduler-test"/>
+    <test test-name="march_gait_scheduler_tests" pkg="march_gait_scheduler" type="march_gait_scheduler_test"/>
 </launch>
