@@ -6,6 +6,7 @@ from march_state_machine.states.idle_state import IdleState
 
 def create():
     sm_tilted_path_left_straight = smach.StateMachine(outcomes=['succeeded', 'preempted', 'failed'])
+    sm_tilted_path_left_straight.register_io_keys(['sounds'])
     with sm_tilted_path_left_straight:
         smach.StateMachine.add('GAIT TP LEFT STRAIGHT START', StepStateMachine('tilted_path_left_straight_start',
                                subgaits=['right_open', 'left_close']),
