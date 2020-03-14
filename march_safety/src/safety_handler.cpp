@@ -36,7 +36,7 @@ void SafetyHandler::publishFatal(const std::string& message)
   ROS_ERROR("%s", message.c_str());
 
   this->publishErrorMessage(message, march_shared_resources::Error::FATAL);
-  this->non_fatal_sound_.play();
+  this->fatal_sound_.play();
 }
 
 void SafetyHandler::publishNonFatal(const std::string& message)

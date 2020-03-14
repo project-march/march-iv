@@ -19,7 +19,7 @@ class TemperatureSafety : public SafetyType
 public:
   TemperatureSafety(ros::NodeHandle* n, SafetyHandler* safety_handler, std::vector<std::string> joint_names);
 
-  void update() override
+  void update(const ros::Time& /* now */) override
   {
   }
 

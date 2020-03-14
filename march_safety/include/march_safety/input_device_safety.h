@@ -16,17 +16,18 @@ class InputDeviceSafety : public SafetyType
 public:
   InputDeviceSafety(ros::NodeHandle* n, SafetyHandler* safety_handler);
 
-  void update() override;
+  void update(const ros::Time& now) override;
 
 private:
   void inputDeviceAliveCallback(const std_msgs::TimeConstPtr& msg);
 
   SafetyHandler* safety_handler_;
+
+  ros::Subscriber subscriber_input_device_alive_;
+
   ros::Duration connection_timeout_;
   ros::Time time_last_alive_;
-  ros::Time time_last_send_error_;
-  ros::Subscriber subscriber_input_device_alive_;
-  int send_errors_interval_;
+  bool is_connected_;
 };
 
 #endif  // MARCH_SAFETY_INPUT_DEVICE_SAFETY_H

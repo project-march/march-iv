@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 {
   ros::init(argc, argv, "march_safety_node");
   ros::NodeHandle n;
-  ros::Rate rate(200);
+  ros::Rate rate(20);
 
   ROS_DEBUG("Trying to get parameter /march/joint_names");
   while (ros::ok() && !n.hasParam("/march/joint_names"))
@@ -38,16 +38,18 @@ int main(int argc, char** argv)
   SafetyHandler safety_handler = SafetyHandler(&n, &error_publisher, &gait_instruction_publisher, sound_client);
 
   std::vector<std::unique_ptr<SafetyType>> safety_list;
-  safety_list.push_back(std::unique_ptr<SafetyType>(new TemperatureSafety(&n, &safety_handler, joint_names)));
-  safety_list.push_back(std::unique_ptr<SafetyType>(new InputDeviceSafety(&n, &safety_handler)));
+  safety_list.push_back(std::make_unique<TemperatureSafety>(&n, &safety_handler, joint_names));
+  safety_list.push_back(std::make_unique<InputDeviceSafety>(&n, &safety_handler));
 
   while (ros::ok())
   {
     rate.sleep();
     ros::spinOnce();
+
+    const ros::Time now = ros::Time::now();
     for (auto& i : safety_list)
     {
-      i->update();
+      i->update(now);
     }
   }
 
