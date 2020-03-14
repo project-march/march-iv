@@ -29,6 +29,8 @@
     <arg name="moticon_ip" default="192.168.8.105" doc="The ip-adress with Moticon software running on it, defaults to
             EMS switch laptop on standard router"/>
 
+    <param name="robot_description" textfile="$(find march_description)/urdf/march4.urdf"/>
+
     <node
             if="$(arg rosbag)"
             pkg="rosbag"
