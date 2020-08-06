@@ -59,6 +59,7 @@
     <!-- mass = Moving hip -->
 
     <xacro:property name="upper_leg_height" value="0.385"/>
+    <xacro:property name="upper_leg_offset" value="0.04"/>
     <xacro:property name="upper_leg_mass" value="4.995"/>
     <!-- mass = KFE joint + HFE joint + Upper leg -->
 
@@ -67,6 +68,7 @@
     <!-- mass = Ankle actuator + Lower leg -->
 
     <xacro:property name="ankle_plate_height" value="0.12"/>
+    <xacro:property name="ankle_plate_offset" value="0.07"/>
 
     <xacro:property name="foot_height_forward" value="${0.184}"/>
     <xacro:property name="foot_height_backward" value="${0.059}"/>
@@ -93,15 +95,18 @@
     <xacro:property name="hip_aa_com_z" value="0.029507"/>
 
     <xacro:property name="upper_leg_com_x" value="0.000709"/>
-    <xacro:property name="upper_leg_com_y" value="${-hip_base_height/2 - hip_aa_frame_height + 0.215254}"/>
+    <xacro:property name="upper_leg_com_y" value="${-hip_base_height/2 - hip_aa_frame_height +
+                                                    upper_leg_offset + 0.215254}"/>
     <xacro:property name="upper_leg_com_z" value="-0.19205"/>
 
     <xacro:property name="lower_leg_com_x" value="-0.00321"/>
-    <xacro:property name="lower_leg_com_y" value="${-hip_base_height/2 - hip_aa_frame_height + 0.184081}"/>
+    <xacro:property name="lower_leg_com_y" value="${-hip_base_height/2 - hip_aa_frame_height +
+                                                    upper_leg_offset + 0.184081}"/>
     <xacro:property name="lower_leg_com_z" value="${upper_leg_height - 0.527082}"/>
 
     <xacro:property name="foot_com_x" value="-0.028926"/>
-    <xacro:property name="foot_com_y" value="${-hip_base_height/2 - hip_aa_frame_height + 0.155916}"/>
+    <xacro:property name="foot_com_y" value="${-hip_base_height/2 - hip_aa_frame_height +
+                                               upper_leg_offset + ankle_plate_offset + 0.155916}"/>
     <xacro:property name="foot_com_z" value="${upper_leg_height + lower_leg_height + ankle_plate_height - 0.789788}"/>
     <xacro:property name="foot_scale" value="1.35"/>
 
@@ -284,7 +289,7 @@
     <!-- Upper Leg Left-->
     <link name="upper_leg_left">
         <visual>
-            <origin xyz="0 ${hip_base_height/2 + hip_aa_frame_height} 0" rpy="0 0 ${pi}"/>
+            <origin xyz="0 ${hip_base_height/2 + hip_aa_frame_height - upper_leg_offset} 0" rpy="0 0 ${pi}"/>
             <geometry>
                 <mesh filename="package://march_description/urdf/stl-files/UpperLeftLeg.stl" scale="1 1 1"/>
             </geometry>
@@ -314,7 +319,10 @@
     <!-- Lower Leg Left -->
     <link name="lower_leg_left">
         <visual>
-            <origin xyz="0 ${hip_base_height/2 + hip_aa_frame_height} ${upper_leg_height}" rpy="0 0 ${pi}"/>
+            <origin
+                xyz="0 ${hip_base_height/2 + hip_aa_frame_height - upper_leg_offset} ${upper_leg_height}"
+                rpy="0 0 ${pi}"
+            />
             <geometry>
                 <mesh filename="package://march_description/urdf/stl-files/LowerLeftLeg.stl" scale="1 1 1"/>
             </geometry>
@@ -345,7 +353,9 @@
     <link name="ankle_plate_left">
         <visual>
             <origin
-                xyz="0 ${hip_base_height/2 + hip_aa_frame_height} ${foot_scale * (upper_leg_height + lower_leg_height)}"
+                xyz="0
+                     ${hip_base_height/2 + hip_aa_frame_height - upper_leg_offset - ankle_plate_offset}
+                     ${foot_scale * (upper_leg_height + lower_leg_height)}"
                 rpy="0 0 ${pi}"
             />
             <geometry>
@@ -431,7 +441,7 @@
     <!-- Upper Leg Right-->
     <link name="upper_leg_right">
         <visual>
-            <origin xyz="0 ${-hip_base_height/2 - hip_aa_frame_height} 0" rpy="0 0 ${pi}"/>
+            <origin xyz="0 ${-hip_base_height/2 - hip_aa_frame_height + upper_leg_offset} 0" rpy="0 0 ${pi}"/>
             <geometry>
                 <mesh filename="package://march_description/urdf/stl-files/UpperRightLeg.stl" scale="1 1 1"/>
             </geometry>
@@ -462,7 +472,10 @@
     <!-- Lower Leg Right -->
     <link name="lower_leg_right">
         <visual>
-            <origin xyz="0 ${-hip_base_height/2 - hip_aa_frame_height} ${upper_leg_height}" rpy="0 0 ${pi}"/>
+            <origin
+                xyz="0 ${-hip_base_height/2 - hip_aa_frame_height + upper_leg_offset} ${upper_leg_height}"
+                rpy="0 0 ${pi}"
+            />
             <geometry>
                 <mesh filename="package://march_description/urdf/stl-files/LowerRightLeg.stl" scale="1 1 1"/>
             </geometry>
@@ -493,7 +506,9 @@
     <link name="ankle_plate_right">
         <visual>
             <origin
-                xyz="0 ${-hip_base_height/2 - hip_aa_frame_height} ${foot_scale * (upper_leg_height + lower_leg_height)}"
+                xyz="0
+                    ${-hip_base_height/2 - hip_aa_frame_height+ upper_leg_offset + ankle_plate_offset}
+                    ${foot_scale * (upper_leg_height + lower_leg_height)}"
                 rpy="0 0 ${pi}"/>
             />
             <geometry>
@@ -574,7 +589,7 @@
     <joint name="left_hip_fe" type="revolute">
         <parent link="hip_aa_frame_left_front"/>
         <child link="upper_leg_left"/>
-        <origin xyz="${-hip_aa_frame_width} 0 0" rpy="0 0 0"/>
+        <origin xyz="${-hip_aa_frame_width} ${upper_leg_offset} 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
 
         <limit velocity="${hip_fe_velocity_limit}"
@@ -606,7 +621,7 @@
     <joint name="left_ankle" type="revolute">
         <parent link="lower_leg_left"/>
         <child link="ankle_plate_left"/>
-        <origin xyz="0 0 ${-lower_leg_height}" rpy="0 0 0"/>
+        <origin xyz="0 ${ankle_plate_offset} ${-lower_leg_height}" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
 
         <limit velocity="${ankle_velocity_limit}"
@@ -651,7 +666,7 @@
     <joint name="right_hip_fe" type="revolute">
         <parent link="hip_aa_frame_right_front"/>
         <child link="upper_leg_right"/>
-        <origin xyz="${-hip_aa_frame_width} 0 0" rpy="0 0 0"/>
+        <origin xyz="${-hip_aa_frame_width} ${-upper_leg_offset} 0" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
 
         <limit velocity="${hip_fe_velocity_limit}"
@@ -684,7 +699,7 @@
     <joint name="right_ankle" type="revolute">
         <parent link="lower_leg_right"/>
         <child link="ankle_plate_right"/>
-        <origin xyz="0 0 ${-lower_leg_height}" rpy="0 0 0"/>
+        <origin xyz="0 ${-ankle_plate_offset} ${-lower_leg_height}" rpy="0 0 0"/>
         <axis xyz="0 1 0"/>
 
         <limit velocity="${ankle_velocity_limit}"
