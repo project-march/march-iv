@@ -37,7 +37,7 @@ void doneCallback(const actionlib::SimpleClientGoalState& /* state */,
   else
   {
     schedule_gait_action_server->setAborted();
-    ROS_WARN("Schedule gait action FAILED, FollowJointTrajectory error_code is %d ", result->error_code);
+    ROS_ERROR("Schedule gait action FAILED, FollowJointTrajectory error_code is %d ", result->error_code);
   }
 }
 
