@@ -185,11 +185,11 @@
     <xacro:property name="knee_effort_limit" value="${max_effort_rotary}"/> <!-- IU -->
     <xacro:property name="knee_velocity_limit" value="2.5"/>
 
-    <xacro:property name="left_ankle_rotation_lower_limit" value="${-26.30401611*pi/180}"/>
-    <xacro:property name="left_ankle_rotation_upper_limit" value="${15.88348389*pi/180}"/>
+    <xacro:property name="left_ankle_rotation_lower_limit" value="${-30.30401611*pi/180}"/>
+    <xacro:property name="left_ankle_rotation_upper_limit" value="${11.88348389*pi/180}"/>
 
-    <xacro:property name="right_ankle_rotation_lower_limit" value="${-23.203125*pi/180}"/>
-    <xacro:property name="right_ankle_rotation_upper_limit" value="${14.23828125*pi/180}"/>
+    <xacro:property name="right_ankle_rotation_lower_limit" value="${-27.203125*pi/180}"/>
+    <xacro:property name="right_ankle_rotation_upper_limit" value="${10.23828125*pi/180}"/>
 
     <xacro:property name="ankle_dorsalflexion_soft_buffer" value="${5*pi/180}"/> <!-- rad -->
     <xacro:property name="ankle_plantarflexion_soft_buffer" value="${3*pi/180}"/> <!-- rad -->
